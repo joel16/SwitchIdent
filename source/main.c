@@ -26,10 +26,9 @@ static void SwitchIdent_TermServices(void)
 int main(int argc, char **argv)
 {
 	gfxInitDefault();
-	SwitchIdent_InitServices();
-
-	//Initialize console. Using NULL as the second argument tells the console library to use the internal console structure as current one.
 	consoleInit(NULL);
+
+	SwitchIdent_InitServices();
 
 	printf("\x1b[1;1H"); //Move the cursor to the top left corner of the screen
 	printf("\x1b[32;1mSwitchIdent 0.1\x1b[0m\n\n");
