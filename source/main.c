@@ -6,23 +6,27 @@
 #include "kernel.h"
 #include "system.h"
 
-static Result SwitchIdent_InitServices(void)
+static void SwitchIdent_InitServices(void)
 {
 	Result ret = 0;
 
+	if (R_FAILED(ret = setInitialize()))
+		printf("setInitialize() failed: 0x%x.\n\n", ret);
+
 	if (R_FAILED(ret = splInitialize()))
-		return ret;
+		printf("splInitialize() failed: 0x%x.\n\n", ret);
 }
 
-static Result SwitchIdent_TermServices(void)
+static void SwitchIdent_TermServices(void)
 {
 	splExit();
+	setExit();
 }
 
 int main(int argc, char **argv)
 {
-	SwitchIdent_InitServices();
 	gfxInitDefault();
+	SwitchIdent_InitServices();
 
 	//Initialize console. Using NULL as the second argument tells the console library to use the internal console structure as current one.
 	consoleInit(NULL);
@@ -54,8 +58,8 @@ int main(int argc, char **argv)
 		gfxWaitForVsync();
 	}
 
-	gfxExit();
 	SwitchIdent_TermServices();
+	gfxExit();
 	return 0;
 }
 
