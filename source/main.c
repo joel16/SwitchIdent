@@ -15,10 +15,26 @@ static void SwitchIdent_InitServices(void)
 
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
+
+	static const SocketInitConfig socketInitConfig = 
+	{
+		.bsdsockets_version = 1,
+		.tcp_tx_buf_size = 8 * 65536,
+		.tcp_rx_buf_size = 8 * 65536,
+		.tcp_tx_buf_max_size = 16 * 65536,
+		.tcp_rx_buf_max_size = 16 * 65536,
+		.udp_tx_buf_size = 0x2400,
+		.udp_rx_buf_size = 0xA500,
+		.sb_efficiency = 8,
+	};
+
+	if (R_FAILED(ret = socketInitialize(&socketInitConfig)))
+		printf("socketInitialize() failed: 0x%x.\n\n", ret);
 }
 
 static void SwitchIdent_TermServices(void)
 {
+	socketExit();
 	splExit();
 	setExit();
 }
@@ -37,9 +53,12 @@ int main(int argc, char **argv)
 	printf("\x1b[31;1m*\x1b[0m Hardware: \x1b[31;1m%s\x1b[0m (\x1b[31;1m%s\x1b[0m) \x1b[0m\n\n", SwitchIdent_GetHardwareType(), SwitchIdent_GetUnit());
 
 	printf("\x1b[33;1m*\x1b[0m Language: \x1b[33;1m%s\n", SwitchIdent_GetLanguage());
-	printf("\x1b[33;1m*\x1b[0m Region: \x1b[33;1m%s\n", SwitchIdent_GetRegion());
+	printf("\x1b[33;1m*\x1b[0m Region: \x1b[33;1m%s\n\n", SwitchIdent_GetRegion());
 
-	printf("\n\x1b[32;1m> Press the plus key to exit =)\x1b[0m");
+	/*u32 ip = gethostid();
+	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%lu.%lu.%lu.%lu\x1b[0m \n\n", ip & 0xFF, (ip>>8)&0xFF, (ip>>16)&0xFF, (ip>>24)&0xFF);*/
+
+	printf("\x1b[32;1m> Press the plus key to exit =)\x1b[0m");
 
 	while(appletMainLoop())
 	{

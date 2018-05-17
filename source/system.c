@@ -1,9 +1,13 @@
+#include <stdio.h>
+
 #include <switch.h>
 
 #include "system.h"
 
 const char *SwitchIdent_GetLanguage(void)
 {
+	Result ret = 0;
+
 	const char *languages[] = 
 	{
 		"Japanese",
@@ -26,18 +30,21 @@ const char *SwitchIdent_GetLanguage(void)
 
 	u64 language = 0;
 	
-	if (R_SUCCEEDED(setGetSystemLanguage(&language)))
+	if (R_SUCCEEDED(ret = setGetSystemLanguage(&language)))
 	{
 		if (language < 15)
 			return languages[language];
 	}
 	
+	printf("setGetSystemLanguage(language) failed: 0x%x.\n\n", ret);
 	return languages[15];
 }
 
 // Not sure about this yet.
 const char *SwitchIdent_GetRegion(void)
 {
+	Result ret = 0;
+
 	const char *regions[]=
 	{
 		"JPN",
@@ -58,5 +65,6 @@ const char *SwitchIdent_GetRegion(void)
 			return regions[regionCode];
 	}
 	
+	printf("setGetRegionCode(regionCode) failed: 0x%x.\n\n", ret);
 	return regions[7];
 }
