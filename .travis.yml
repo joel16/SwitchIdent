@@ -9,6 +9,7 @@ cache:
 
 before_install:
   - export DEVKITPRO=/opt/devkitpro
+  - export LIBNX=${DEVKITPRO}/libnx
   - sh resources/.travis-deps.sh
 
 script:

@@ -9,13 +9,13 @@ wget -N https://raw.githubusercontent.com/devkitPro/installer/master/perl/devkit
 chmod +x ./devkitA64update.pl
 ./devkitA64update.pl
 
-# Get latest ctrulib and overwrite bundled one
-rm -rf libnx
+# Get latest libnx and overwrite bundled one
+mkdir libnx-update && cd libnx-update
 git clone https://github.com/switchbrew/libnx.git
 cd libnx/
 make && make install
-cd ../
-rm -rf libnx/
+cd ../../
+rm -rf libnx-update/
 
 rm *.bz2
 rm devkitA64update.pl
