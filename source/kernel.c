@@ -4,11 +4,19 @@
 
 #include "kernel.h"
 
-const char *SwitchIdent_GetVersion(void)
+static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 {
 	Result ret = 0;
-	u64 version = 8;
+	u64 version = 0x0;
 
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
+		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
+
+	return (version + 1); // (Package1 maxver constant - 1) + 1
+}
+
+const char *SwitchIdent_GetVersion(void)
+{
 	const char *versions[] =
 	{
 		"Unknown0",
@@ -23,21 +31,13 @@ const char *SwitchIdent_GetVersion(void)
 		"Unknown3"
 	};
 
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
-		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
-
-	return versions[version + 1]; // (Package1 maxver constant - 1) + 1
+	return versions[SwitchIdent_GetPackage1MaxverConstant()];
 }
 
 const char *SwitchIdent_GetHardwareType(void)
 {
 	Result ret = 0;
-	u64 hardware_type = 4, version = 0;
-
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
-		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
-
-	version = version + 1;
+	u64 hardware_type = 4;
 
 	const char *hardware_300[] =
 	{
@@ -60,7 +60,7 @@ const char *SwitchIdent_GetHardwareType(void)
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_HardwareType, &hardware_type)))
 		printf("splGetConfig(SplConfigItem_HardwareType) failed: 0x%x.\n\n", ret);
 
-	if (version < 0x6)
+	if (SwitchIdent_GetPackage1MaxverConstant() < 0x6)
 		return hardware_300[hardware_type];
 
 	return hardware_400[hardware_type];
@@ -84,12 +84,7 @@ static bool SwitchIdent_IsKiosk(void)
 const char *SwitchIdent_GetUnit(void)
 {
 	Result ret = 0;
-	u64 isRetail = 2, version = 0;
-
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
-		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
-
-	version = version + 1;
+	u64 isRetail = 2;
 
 	const char *unit[] =
 	{
@@ -101,7 +96,7 @@ const char *SwitchIdent_GetUnit(void)
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRetail, &isRetail)))
 		printf("splGetConfig(SplConfigItem_IsRetail) failed: 0x%x.\n\n", ret);
 
-	if (version >= 0x6) // 4.00+
+	if (SwitchIdent_GetPackage1MaxverConstant() >= 0x6) // 4.00+
 	{
 		if (SwitchIdent_IsKiosk())
 			return "Kiosk";
