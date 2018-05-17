@@ -1,0 +1,23 @@
+language: c
+
+sudo: true
+
+#Cache devkitARM and doxygen
+cache:
+  directories:
+    - /home/travis/devkitPro
+
+before_install:
+  - export DEVKITPRO=/opt/devkitpro
+  - sh resources/.travis-deps.sh
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - sh resources/.build.sh
+  
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master
