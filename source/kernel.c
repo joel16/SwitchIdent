@@ -11,22 +11,22 @@ const char *SwitchIdent_GetVersion(void)
 
 	const char *versions[] =
 	{
-		"",          // 0x0
-		"",          // 0x1
-		"",          // 0x2
-		"1.0.0",     // 0x3
-		"2.0.0",     // 0x4
-		"3.0.0",     // 0x5
-		"3.0.2",     // 0x6
-		"4.0.0",     // 0x7
-		"5.0.0"      // 0x8
-		"Unknown"    // Couldn't get version
+		"Unknown0",  // 0x0
+		"Unknown1",  // 0x1
+		"1.0.0",     // 0x2
+		"2.0.0",     // 0x3
+		"3.0.0",     // 0x4
+		"3.0.2",     // 0x5
+		"4.0.0",     // 0x6
+		"5.0.0",     // 0x7
+		"Unknown2"   // 0x8
+		"Unknown3"   // Couldn't get version
 	};
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
 		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
 
-	return versions[version + 1];
+	return versions[version + 1]; // (Package1 maxver constant - 1) + 1
 }
 
 const char *SwitchIdent_GetHardwareType(void)
