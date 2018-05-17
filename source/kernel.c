@@ -62,14 +62,34 @@ const char *SwitchIdent_GetHardwareType(void)
 
 	if (version < 0x6)
 		return hardware_300[hardware_type];
-	
+
 	return hardware_400[hardware_type];
+}
+
+// [4.0.0+] Kiosk mode (0 = retail; 1 = kiosk)
+static bool SwitchIdent_IsKiosk(void)
+{
+	u64 isKiosk = 0;
+	Result ret = 0;
+
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsKiosk , &isKiosk)))
+		printf("splGetConfig(SplConfigItem_IsKiosk ) failed: 0x%x.\n\n", ret);
+
+	if (isKiosk) // if bit 10 returns (1)
+		return true;
+
+	return false; 
 }
 
 const char *SwitchIdent_GetUnit(void)
 {
 	Result ret = 0;
-	u64 isRetail = 2;
+	u64 isRetail = 2, version = 0;
+
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
+		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
+
+	version = version + 1;
 
 	const char *unit[] =
 	{
@@ -80,6 +100,12 @@ const char *SwitchIdent_GetUnit(void)
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRetail, &isRetail)))
 		printf("splGetConfig(SplConfigItem_IsRetail) failed: 0x%x.\n\n", ret);
+
+	if (version >= 0x6) // 4.00+
+	{
+		if (SwitchIdent_IsKiosk())
+			return "Kiosk";
+	}
 
 	return unit[isRetail];
 }
