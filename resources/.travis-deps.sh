@@ -17,4 +17,5 @@ make && make install
 cd ../
 rm -rf libnx/
 
+rm *.bz2
 rm devkitA64update.pl
