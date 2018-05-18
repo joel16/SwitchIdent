@@ -5,6 +5,7 @@
 #include <switch.h>
 
 #include "kernel.h"
+#include "misc.h"
 #include "system.h"
 #include "set.h"
 
@@ -23,10 +24,18 @@ static void SwitchIdent_InitServices(void)
 
 	if (R_FAILED(ret = setsysInitialize2()))
 		printf("setsysInitialize2() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = appletInitialize()))
+		printf("appletInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = apmInitialize()))
+		printf("apmInitialize() failed: 0x%x.\n\n", ret);
 }
 
 static void SwitchIdent_TermServices(void)
 {
+	apmExit();
+	appletExit();
 	setsysExit2();
 	socketExit();
 	splExit();
@@ -55,9 +64,12 @@ int main(int argc, char **argv)
 		printf("\x1b[31;1m*\x1b[0m Serial number: \x1b[31;1m%s\n\n", serial);
 
 	printf("\x1b[33;1m*\x1b[0m Language: \x1b[33;1m%s\n", SwitchIdent_GetLanguage());
-	printf("\x1b[33;1m*\x1b[0m Region: \x1b[33;1m%s\n\n", SwitchIdent_GetRegion());
+	printf("\x1b[33;1m*\x1b[0m Region: \x1b[33;1m%s\n", SwitchIdent_GetRegion());
+	printf("\x1b[33;1m*\x1b[0m CPU clock: \x1b[33;1m%lu\x1b[0m MHz\n", SwitchIdent_GetCPUClock());
+	printf("\x1b[33;1m*\x1b[0m GPU clock: \x1b[33;1m%lu\x1b[0m MHz\n\n", SwitchIdent_GetGPUClock());
 
-	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n\n", inet_ntoa(__nxlink_host));
+	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n", inet_ntoa(__nxlink_host));
+	printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s\n\n", SwitchIdent_GetOperationMode());
 
 	printf("\x1b[32;1m> Press the plus key to exit =)\x1b[0m");
 
@@ -81,4 +93,3 @@ int main(int argc, char **argv)
 	gfxExit();
 	return 0;
 }
-

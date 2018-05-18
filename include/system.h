@@ -3,5 +3,7 @@
 
 const char *SwitchIdent_GetLanguage(void);
 const char *SwitchIdent_GetRegion(void); // Not sure about this yet.
+u32 SwitchIdent_GetCPUClock(void);
+u32 SwitchIdent_GetGPUClock(void);
 
 #endif
