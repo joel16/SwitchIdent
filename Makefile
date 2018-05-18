@@ -36,6 +36,9 @@ DATA		:=	data
 INCLUDES	:=	include include/services
 EXEFS_SRC	:=	exefs_src
 
+APP_TITLE	:=	SwitchIdent
+APP_AUTHOR	:=	Joel16
+
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
