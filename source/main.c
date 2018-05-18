@@ -6,6 +6,7 @@
 
 #include "kernel.h"
 #include "system.h"
+#include "set.h"
 
 static void SwitchIdent_InitServices(void)
 {
@@ -19,10 +20,14 @@ static void SwitchIdent_InitServices(void)
 
 	if (R_FAILED(ret = socketInitializeDefault()))
 		printf("socketInitializeDefault() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = setsysInitialize2()))
+		printf("setsysInitialize2() failed: 0x%x.\n\n", ret);
 }
 
 static void SwitchIdent_TermServices(void)
 {
+	setsysExit2();
 	socketExit();
 	splExit();
 	setExit();
@@ -34,12 +39,20 @@ int main(int argc, char **argv)
 	consoleInit(NULL);
 
 	SwitchIdent_InitServices();
+	
+	Result ret = 0;
+	char serial[0x18];
 
 	printf("\x1b[1;1H"); //Move the cursor to the top left corner of the screen
 	printf("\x1b[32;1mSwitchIdent 0.1\x1b[0m\n\n");
 
 	printf("\x1b[31;1m*\x1b[0m System version: \x1b[31;1m%s\n", SwitchIdent_GetVersion());
-	printf("\x1b[31;1m*\x1b[0m Hardware: \x1b[31;1m%s\x1b[0m (\x1b[31;1m%s\x1b[0m) \x1b[0m\n\n", SwitchIdent_GetHardwareType(), SwitchIdent_GetUnit());
+	printf("\x1b[31;1m*\x1b[0m Hardware: \x1b[31;1m%s\x1b[0m (\x1b[31;1m%s\x1b[0m) \x1b[0m\n", SwitchIdent_GetHardwareType(), SwitchIdent_GetUnit());
+
+	if (R_FAILED(ret = setGetSerialNumber(serial)))
+		printf("setGetSerialNumber() failed: 0x%x.\n\n", ret);
+	else
+		printf("\x1b[31;1m*\x1b[0m Serial number: \x1b[31;1m%s\n\n", serial);
 
 	printf("\x1b[33;1m*\x1b[0m Language: \x1b[33;1m%s\n", SwitchIdent_GetLanguage());
 	printf("\x1b[33;1m*\x1b[0m Region: \x1b[33;1m%s\n\n", SwitchIdent_GetRegion());

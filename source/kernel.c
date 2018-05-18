@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #include <switch.h>
 
 #include "kernel.h"
