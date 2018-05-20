@@ -118,6 +118,17 @@ bool SwitchIdent_IsSafeMode(void)
 	return out;
 }
 
+u64 SwitchIdent_GetDeviceID(void)
+{
+	Result ret = 0;
+	u64 deviceID = 0;
+
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_DeviceId, &deviceID)))
+		printf("splGetConfig(SplConfigItem_DeviceId) failed: 0x%x.\n\n", ret);
+
+	return deviceID;
+}
+
 const char *SwitchIdent_GetSerialNumber(void)
 {
 	Result ret = 0;
