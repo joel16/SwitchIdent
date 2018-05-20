@@ -6,7 +6,9 @@
 
 #include "kernel.h"
 #include "misc.h"
+#include "storage.h"
 #include "system.h"
+#include "utils.h"
 
 static void SwitchIdent_InitServices(void)
 {
@@ -14,6 +16,9 @@ static void SwitchIdent_InitServices(void)
 
 	if (R_FAILED(ret = setInitialize()))
 		printf("setInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = setsysInitialize()))
+		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
@@ -34,6 +39,7 @@ static void SwitchIdent_TermServices(void)
 	appletExit();
 	socketExit();
 	splExit();
+	setsysExit();
 	setExit();
 }
 
@@ -66,7 +72,16 @@ int main(int argc, char **argv)
 		Misc info:
 	*/
 	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n", inet_ntoa(__nxlink_host));
-	printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s\n\n", SwitchIdent_GetOperationMode());
+	printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s\n", SwitchIdent_GetOperationMode());
+	
+	char totalSize[16], freeSize[16], usedSize[16];
+	Utils_GetSizeString(totalSize, SwitchIdent_GetTotalStorage());
+	Utils_GetSizeString(freeSize, SwitchIdent_GetFreeStorage());
+	Utils_GetSizeString(usedSize, SwitchIdent_GetUsedStorage());
+
+	printf("\x1b[36;1m*\x1b[0m Total storage: \x1b[36;1m%s\n", totalSize);
+	printf("\x1b[36;1m*\x1b[0m Available storage: \x1b[36;1m%s\n", freeSize);
+	printf("\x1b[36;1m*\x1b[0m Used storage: \x1b[36;1m%s\n\n", usedSize);
 
 	printf("\x1b[32;1m> Press the plus key to exit =)\x1b[0m");
 
