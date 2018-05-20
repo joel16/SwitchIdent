@@ -29,15 +29,20 @@ include $(DEVKITPRO)/libnx/switch_rules
 #     - icon.jpg
 #     - <libnx folder>/default_icon.jpg
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
-BUILD		:=	build
-SOURCES		:=	source source/services
-DATA		:=	data
-INCLUDES	:=	include include/services
-EXEFS_SRC	:=	exefs_src
+TARGET      := $(notdir $(CURDIR))
+BUILD       := build
+SOURCES     := source source/services
+DATA        := data
+INCLUDES    := include include/services
+EXEFS_SRC   := exefs_src
 
-APP_TITLE	:=	SwitchIdent
-APP_AUTHOR	:=	Joel16
+VERSION_MAJOR := 0
+VERSION_MINOR := 1
+VERSION_MICRO := 0
+
+APP_TITLE   := SwitchIdent
+APP_AUTHOR  := Joel16
+APP_VERSION := ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -45,6 +50,7 @@ APP_AUTHOR	:=	Joel16
 ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 
 CFLAGS	:=	-g -Werror -O2 -ffunction-sections \
+			-DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
 			$(ARCH) $(DEFINES)
 
 CFLAGS	+=	$(INCLUDE) -DSWITCH

@@ -103,3 +103,28 @@ const char *SwitchIdent_GetUnit(void)
 
 	return unit[isRetail];
 }
+
+bool SwitchIdent_IsSafeMode(void)
+{
+	Result ret = 0;
+	u64 safemode = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRecoveryBoot, &safemode)))
+		printf("splGetConfig(SplConfigItem_IsRecoveryBoot) failed: 0x%x.\n\n", ret);
+
+	out = safemode; // 1 = true, 0 = false
+
+	return out;
+}
+
+const char *SwitchIdent_GetSerialNumber(void)
+{
+	Result ret = 0;
+	static char serial[0x19];
+
+	if (R_FAILED(ret = setsysGetSerialNumber(serial)))
+		printf("setsysGetSerialNumber() failed: 0x%x.\n\n", ret);
+
+	return serial;
+}
