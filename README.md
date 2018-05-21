@@ -16,3 +16,4 @@ Test builds can be found in the [gh-pages branch](https://github.com/joel16/Swit
 
 - Eve/Hikari/Junko: Beta testing
 - Klodeckel: Beta testing
+- hopperplaysmc: Beta testing
