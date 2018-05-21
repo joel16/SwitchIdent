@@ -1,6 +1,6 @@
 language: c
 
-sudo: false
+sudo: true
 
 #Cache devkitARM and doxygen
 cache:
@@ -8,8 +8,12 @@ cache:
     - /home/travis/devkitPro
 
 before_install:
-  - export DEVKITPRO=/opt/devkitpro
-  - export LIBNX=${DEVKITPRO}/libnx
+  - wget https://github.com/devkitPro/pacman/releases/download/v1.0.0/devkitpro-pacman.deb
+  - sudo dpkg -i devkitpro-pacman.deb
+
+install:
+  - sudo dkp-pacman -Syu switch-dev --noconfirm --needed
+  - source /etc/profile.d/devkit-env.sh
   - sh resources/.travis-deps.sh
 
 script:
