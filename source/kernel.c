@@ -14,6 +14,17 @@ static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 	return (version + 1); // (Package1 maxver constant - 1) + 1
 }
 
+u64 SwitchIdent_GetDramID(void)
+{
+	Result ret = 0;
+	u64 id = 0;
+
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id)))
+		printf("splGetConfig(SplConfigItem_DramId) failed: 0x%x.\n\n", ret);
+
+	return id;
+}
+
 const char *SwitchIdent_GetVersion(void)
 {
 	const char *versions[] =
