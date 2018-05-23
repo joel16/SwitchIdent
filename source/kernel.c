@@ -14,15 +14,33 @@ static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 	return (version + 1); // (Package1 maxver constant - 1) + 1
 }
 
-u64 SwitchIdent_GetDramID(void)
+const char *SwitchIdent_GetDramDesc(void)
 {
 	Result ret = 0;
 	u64 id = 0;
 
+	const char *dram_desc[] =
+	{
+		"EristaIcosaSamsung4gb",
+		"EristaIcosaHynix4gb",
+		"EristaIcosaMicron4gb",
+		"Unknown",
+		"EristaIcosaSamsung6gb",
+		"Unknown",
+		"Unknown",
+		"MarikoIowax1x2Samsung4gb",
+		"MarikoIowaSamsung4gb",
+		"MarikoIowaSamsung8gb",
+		"Unknown",
+		"Unknown",
+		"MarikoHoagSamsung4gb",
+		"MarikoHoagSamsung8gb"
+	};
+
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id)))
 		printf("splGetConfig(SplConfigItem_DramId) failed: 0x%x.\n\n", ret);
 
-	return id;
+	return dram_desc[id];
 }
 
 const char *SwitchIdent_GetVersion(void)
