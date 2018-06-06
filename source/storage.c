@@ -1,48 +1,30 @@
-#include <errno.h>
-#include <sys/statvfs.h>
 #include <stdio.h>
-#include <switch.h>
 
 #include "storage.h"
 
-u64 SwitchIdent_GetTotalStorage(void)
+u64 SwitchIdent_GetTotalStorage(FsStorageId storage_id)
 {
-	struct statvfs buf;
+	Result ret = 0;
+	u64 total = 0;
 
-	if (R_FAILED(statvfs("/", &buf)))
-	{
-		printf("statvfs: %d\n", errno);
-		return 0;
-	}
+	if (R_FAILED(ret = nsGetTotalSpaceSize(storage_id, &total)))
+		printf("nsGetFreeSpaceSize() failed: 0x%x.\n\n", ret);
 
-	u64 total = buf.f_blocks * buf.f_frsize;
 	return total;
 }
 
-u64 SwitchIdent_GetFreeStorage(void)
+u64 SwitchIdent_GetFreeStorage(FsStorageId storage_id)
 {
-	struct statvfs buf;
+	Result ret = 0;
+	u64 free = 0;
 
-	if (R_FAILED(statvfs("/", &buf)))
-	{
-		printf("statvfs: %d\n", errno);
-		return 0;
-	}
+	if (R_FAILED(ret = nsGetFreeSpaceSize(storage_id, &free)))
+		printf("nsGetFreeSpaceSize() failed: 0x%x.\n\n", ret);
 
-	u64 free = buf.f_bfree * buf.f_frsize;
 	return free;
 }
 
-u64 SwitchIdent_GetUsedStorage(void)
+u64 SwitchIdent_GetUsedStorage(FsStorageId storage_id)
 {
-	struct statvfs buf;
-
-	if (R_FAILED(statvfs("/", &buf)))
-	{
-		printf("statvfs: %d\n", errno);
-		return 0;
-	}
-
-	u64 used = (buf.f_blocks * buf.f_frsize) - (buf.f_bfree * buf.f_frsize);
-	return used;
+	return (SwitchIdent_GetTotalStorage(storage_id) - SwitchIdent_GetFreeStorage(storage_id));
 }

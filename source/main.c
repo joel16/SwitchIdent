@@ -31,10 +31,14 @@ static void SwitchIdent_InitServices(void)
 
 	if (R_FAILED(ret = apmInitialize()))
 		printf("apmInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = nsInitialize()))
+		printf("nsInitialize() failed: 0x%x.\n\n", ret);
 }
 
 static void SwitchIdent_TermServices(void)
 {
+	nsExit();
 	apmExit();
 	appletExit();
 	socketExit();
@@ -82,9 +86,9 @@ int main(int argc, char **argv)
 	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n", SwitchIdent_GetConsoleInfoUploadStatus()? "Enabled" : "Disabled");
 	
 	char totalSize[16], freeSize[16], usedSize[16];
-	Utils_GetSizeString(totalSize, SwitchIdent_GetTotalStorage());
-	Utils_GetSizeString(freeSize, SwitchIdent_GetFreeStorage());
-	Utils_GetSizeString(usedSize, SwitchIdent_GetUsedStorage());
+	Utils_GetSizeString(totalSize, SwitchIdent_GetTotalStorage(FsStorageId_SdCard));
+	Utils_GetSizeString(freeSize, SwitchIdent_GetFreeStorage(FsStorageId_SdCard));
+	Utils_GetSizeString(usedSize, SwitchIdent_GetUsedStorage(FsStorageId_SdCard));
 
 	printf("\x1b[36;1m*\x1b[0m Total storage: \x1b[36;1m%s\n", totalSize);
 	printf("\x1b[36;1m*\x1b[0m Available storage: \x1b[36;1m%s\n", freeSize);

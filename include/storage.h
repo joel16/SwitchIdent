@@ -1,8 +1,10 @@
 #ifndef _SWITCHIDENT_STORAGE_H_
 #define _SWITCHIDENT_STORAGE_H_
 
-u64 SwitchIdent_GetTotalStorage(void);
-u64 SwitchIdent_GetFreeStorage(void);
-u64 SwitchIdent_GetUsedStorage(void);
+#include <switch.h>
+
+u64 SwitchIdent_GetTotalStorage(FsStorageId storage_id);
+u64 SwitchIdent_GetFreeStorage(FsStorageId storage_id);
+u64 SwitchIdent_GetUsedStorage(FsStorageId storage_id);
 
 #endif
