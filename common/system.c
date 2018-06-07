@@ -6,7 +6,7 @@
 #include "misc.h"
 #include "system.h"
 
-const char *SwitchIdent_GetLanguage(void)
+char *SwitchIdent_GetLanguage(void)
 {
 	Result ret = 0;
 	u64 language = 0;
@@ -18,11 +18,11 @@ const char *SwitchIdent_GetLanguage(void)
 }
 
 // Not sure about this yet.
-const char *SwitchIdent_GetRegion(void)
+char *SwitchIdent_GetRegion(void)
 {
 	Result ret = 0;
 
-	const char *regions[]=
+	char *regions[]=
 	{
 		"JPN",
 		"USA",

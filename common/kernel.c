@@ -11,15 +11,14 @@ static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
 		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
 
-	return (version + 1); // (Package1 maxver constant - 1) + 1
 }
 
-const char *SwitchIdent_GetDramDesc(void)
+char *SwitchIdent_GetDramDesc(void)
 {
 	Result ret = 0;
 	u64 id = 0;
 
-	const char *dram_desc[] =
+	char *dram_desc[] =
 	{
 		"EristaIcosaSamsung4gb",
 		"EristaIcosaHynix4gb",
@@ -43,9 +42,9 @@ const char *SwitchIdent_GetDramDesc(void)
 	return dram_desc[id];
 }
 
-const char *SwitchIdent_GetVersion(void)
+char *SwitchIdent_GetVersion(void)
 {
-	const char *versions[] =
+	char *versions[] =
 	{
 		"Unknown0",
 		"Unknown1",
@@ -62,12 +61,12 @@ const char *SwitchIdent_GetVersion(void)
 	return versions[SwitchIdent_GetPackage1MaxverConstant()];
 }
 
-const char *SwitchIdent_GetHardwareType(void)
+char *SwitchIdent_GetHardwareType(void)
 {
 	Result ret = 0;
 	u64 hardware_type = 4;
 
-	const char *hardware_300[] =
+	char *hardware_300[] =
 	{
 		"Icosa",
 		"Copper",
@@ -76,7 +75,7 @@ const char *SwitchIdent_GetHardwareType(void)
 		"Unknown"
 	};
 
-	const char *hardware_400[] =
+	char *hardware_400[] =
 	{
 		"Icosa",
 		"Copper",
@@ -109,12 +108,12 @@ static bool SwitchIdent_IsKiosk(void)
 	return false; 
 }
 
-const char *SwitchIdent_GetUnit(void)
+char *SwitchIdent_GetUnit(void)
 {
 	Result ret = 0;
 	u64 isRetail = 2;
 
-	const char *unit[] =
+	char *unit[] =
 	{
 		"Debug",
 		"Retail",
@@ -158,7 +157,7 @@ u64 SwitchIdent_GetDeviceID(void)
 	return deviceID;
 }
 
-const char *SwitchIdent_GetSerialNumber(void)
+char *SwitchIdent_GetSerialNumber(void)
 {
 	Result ret = 0;
 	static char serial[0x19];
