@@ -78,12 +78,11 @@ int main(int argc, char **argv)
 	*/
 	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n", inet_ntoa(__nxlink_host));
 	printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s\n", SwitchIdent_GetOperationMode());
-	printf("\x1b[36;1m*\x1b[0m Wireless LAN: \x1b[36;1m%s\n", SwitchIdent_GetWLANStatus()? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m Bluetooth: \x1b[36;1m%s\n", SwitchIdent_GetBluetoothStatus()? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m NFC: \x1b[36;1m%s\n", SwitchIdent_GetNFCStatus()? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m Lockscreen: \x1b[36;1m%s\n", SwitchIdent_GetLockscreenStatus()? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m Automatic applicaton download: \x1b[36;1m%s\n", SwitchIdent_GetAutoAppDownloadStatus()? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n", SwitchIdent_GetConsoleInfoUploadStatus()? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m Wireless LAN: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m Bluetooth: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m NFC: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m Automatic update: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
 	
 	char totalSize[16], freeSize[16], usedSize[16];
 	Utils_GetSizeString(totalSize, SwitchIdent_GetTotalStorage(FsStorageId_SdCard));
