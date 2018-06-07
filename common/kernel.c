@@ -11,6 +11,7 @@ static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
 		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
 
+	return (version + 1); // (Package1 maxver constant - 1) + 1
 }
 
 char *SwitchIdent_GetDramDesc(void)

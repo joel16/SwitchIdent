@@ -13,6 +13,12 @@ before_install:
 
 install:
   - sudo dkp-pacman -Syu switch-dev --noconfirm --needed
+  - sudo dkp-pacman -S switch-libpng --noconfirm
+  - sudo dkp-pacman -S switch-libjpeg-turbo --noconfirm
+  - sudo dkp-pacman -S switch-sdl2 --noconfirm
+  - sudo dkp-pacman -S switch-sdl2_gfx --noconfirm
+  - sudo dkp-pacman -S switch-sdl2_image --noconfirm
+  - sudo dkp-pacman -S switch-sdl2_ttf --noconfirm
   - source /etc/profile.d/devkit-env.sh
   - sh resources/.travis-deps.sh
 
