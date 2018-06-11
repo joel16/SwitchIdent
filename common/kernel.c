@@ -43,7 +43,7 @@ char *SwitchIdent_GetDramDesc(void)
 	return dram_desc[id];
 }
 
-char *SwitchIdent_GetVersion(void)
+char *SwitchIdent_GetFirmwareVersion(void)
 {
 	char *versions[] =
 	{
@@ -55,6 +55,25 @@ char *SwitchIdent_GetVersion(void)
 		"3.0.2",     // 0x5
 		"4.X.X",     // 0x6
 		"5.X.X",     // 0x7
+		"Unknown2",
+		"Unknown3"
+	};
+
+	return versions[SwitchIdent_GetPackage1MaxverConstant()];
+}
+
+char *SwitchIdent_GetKernelVersion(void)
+{
+	char *versions[] =
+	{
+		"Unknown0",
+		"Unknown1",
+		"5.0.0",
+		"6.1.0",
+		"7.4.0",
+		"7.4.0",
+		"X.X.X",
+		"9.3.0",
 		"Unknown2",
 		"Unknown3"
 	};

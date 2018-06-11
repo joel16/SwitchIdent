@@ -63,7 +63,8 @@ int main(int argc, char **argv)
 	/*
 		Kernel/Hardware info:
 	*/
-	printf("\x1b[31;1m*\x1b[0m System version: \x1b[31;1m%s\n", SwitchIdent_GetVersion());
+	printf("\x1b[31;1m*\x1b[0m Firmware version: \x1b[31;1m%s\n", SwitchIdent_GetFirmwareVersion());
+	printf("\x1b[31;1m*\x1b[0m Kernel version: \x1b[31;1m%s\n", SwitchIdent_GetKernelVersion());
 	printf("\x1b[31;1m*\x1b[0m Hardware: \x1b[31;1m%s\x1b[0m (\x1b[31;1m%s\x1b[0m) \x1b[0m\n", SwitchIdent_GetHardwareType(), SwitchIdent_GetUnit());
 	printf("\x1b[31;1m*\x1b[0m Serial number: \x1b[31;1m%s\n", SwitchIdent_GetSerialNumber());
 	printf("\x1b[31;1m*\x1b[0m Device ID: \x1b[31;1m%llu\n", SwitchIdent_GetDeviceID());
