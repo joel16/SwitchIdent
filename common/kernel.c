@@ -50,11 +50,11 @@ char *SwitchIdent_GetVersion(void)
 		"Unknown0",
 		"Unknown1",
 		"1.0.0",     // 0x2
-		"2.0.0",     // 0x3
-		"3.0.0",     // 0x4
+		"2.X.0",     // 0x3
+		"3.0.X",     // 0x4
 		"3.0.2",     // 0x5
-		"4.0.0",     // 0x6
-		"5.0.0",     // 0x7
+		"4.X.X",     // 0x6
+		"5.X.X",     // 0x7
 		"Unknown2",
 		"Unknown3"
 	};
