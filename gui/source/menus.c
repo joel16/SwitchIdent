@@ -123,15 +123,11 @@ void Menu_Main(void)
 			case 3:
 				Menu_Misc();
 				break;
-			case 4:
-				if (kDown & KEY_A)
-					break;
-				break;
 		}
 		
 		SDL_RenderPresent(RENDERER);
 
-		if (kDown & KEY_PLUS)
+		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == 4)))
 			break;
 	}
 }
