@@ -1,7 +1,6 @@
-#include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
-#include <arpa/inet.h>
 #include <switch.h>
 
 #include "kernel.h"
@@ -23,6 +22,9 @@ static void SwitchIdent_InitServices(void)
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
 
+	if (R_FAILED(ret = nifmInitialize()))
+		printf("nifmInitialize() failed: 0x%x.\n\n", ret);
+
 	if (R_FAILED(ret = socketInitializeDefault()))
 		printf("socketInitializeDefault() failed: 0x%x.\n\n", ret);
 
@@ -42,6 +44,7 @@ static void SwitchIdent_TermServices(void)
 	apmExit();
 	appletExit();
 	socketExit();
+	nifmExit();
 	splExit();
 	setsysExit();
 	setExit();
@@ -76,7 +79,9 @@ int main(int argc, char **argv)
 	/*
 		Misc info:
 	*/
-	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n", inet_ntoa(__nxlink_host));
+	char hostname[128];
+	Result ret = gethostname(hostname, sizeof(hostname));
+	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n", R_SUCCEEDED(ret)? hostname : NULL);
 	printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s\n", SwitchIdent_GetOperationMode());
 	printf("\x1b[36;1m*\x1b[0m Wireless LAN: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled");
 	printf("\x1b[36;1m*\x1b[0m Bluetooth: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");

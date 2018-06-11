@@ -1,4 +1,4 @@
-#include <arpa/inet.h>
+#include <unistd.h>
 #include <switch.h>
 
 #include "kernel.h"
@@ -59,7 +59,9 @@ static void Menu_Storage(void)
 
 static void Menu_Misc(void)
 {
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "IP:",  inet_ntoa(__nxlink_host));
+	char hostname[128];
+	Result ret = gethostname(hostname, sizeof(hostname));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "IP:",  R_SUCCEEDED(ret)? hostname : NULL);
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "State:", SwitchIdent_GetOperationMode());
 }
 

@@ -9,6 +9,7 @@ static void Term_Services(void)
 	apmExit();
 	appletExit();
 	socketExit();
+	nifmExit();
 	splExit();
 	setsysExit();
 	setExit();
@@ -64,6 +65,9 @@ static void Init_Services(void)
 
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = nifmInitialize()))
+		printf("nifmInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = socketInitializeDefault()))
 		printf("socketInitializeDefault() failed: 0x%x.\n\n", ret);
