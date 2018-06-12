@@ -2,6 +2,7 @@
 #include <switch.h>
 
 #include "kernel.h"
+#include "setsys.h"
 
 static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 {
@@ -43,23 +44,21 @@ char *SwitchIdent_GetDramDesc(void)
 	return dram_desc[id];
 }
 
-char *SwitchIdent_GetFirmwareVersion(void)
+char *SwitchIdent_GetFirmwareVersion(Service *srv)
 {
-	char *versions[] =
-	{
-		"Unknown0",
-		"Unknown1",
-		"1.0.0",     // 0x2
-		"2.X.0",     // 0x3
-		"3.0.X",     // 0x4
-		"3.0.2",     // 0x5
-		"4.X.X",     // 0x6
-		"5.X.X",     // 0x7
-		"Unknown2",
-		"Unknown3"
-	};
+	Result ret = 0;
+	SetSysFirmwareVersion ver;
 
-	return versions[SwitchIdent_GetPackage1MaxverConstant()];
+	if (R_FAILED(ret = setsysGetFirmwareVersion(srv, &ver)))
+	{
+		printf("setsysGetFirmwareVersion() failed: 0x%x.\n\n", ret);
+		return NULL;
+	}
+
+	static char buf[9];
+	snprintf(buf, 9, ver.version_long + 28);
+
+	return buf;
 }
 
 char *SwitchIdent_GetKernelVersion(void)
@@ -120,7 +119,7 @@ static bool SwitchIdent_IsKiosk(void)
 	Result ret = 0;
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsKiosk , &isKiosk)))
-		printf("splGetConfig(SplConfigItem_IsKiosk ) failed: 0x%x.\n\n", ret);
+		printf("splGetConfig(SplConfigItem_IsKiosk) failed: 0x%x.\n\n", ret);
 
 	if (isKiosk) // if bit 10 returns (1)
 		return true;

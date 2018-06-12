@@ -13,6 +13,8 @@
 
 static int item_height = 0;
 
+static Service setsys_service;
+
 static void Menu_DrawItem(int x, int y, char *item_title, char *item_desc)
 {
 	int title_width = 0;
@@ -26,7 +28,7 @@ static void Menu_Kernel(void)
 	static char deviceID[18];
 	snprintf(deviceID, 18, "%llu", SwitchIdent_GetDeviceID());
 
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Firmware version:",  SwitchIdent_GetFirmwareVersion());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Firmware version:",  SwitchIdent_GetFirmwareVersion(&setsys_service));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Kernel version:",  SwitchIdent_GetKernelVersion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Hardware:", SwitchIdent_GetHardwareType());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Unit:", SwitchIdent_GetUnit());
@@ -77,6 +79,10 @@ void Menu_Main(void)
 	SDL_QueryTexture(banner, NULL, NULL, &banner_width, &banner_height);
 
 	int selection = 0;
+
+	Result ret = 0;
+	if (R_FAILED(ret = smGetService(&setsys_service, "set:sys")))
+		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
 
 	while(appletMainLoop())
 	{
@@ -131,4 +137,6 @@ void Menu_Main(void)
 		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == 4)))
 			break;
 	}
+
+	serviceClose(&setsys_service);
 }
