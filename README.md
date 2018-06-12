@@ -16,6 +16,7 @@ Test builds can be found in the [gh-pages branch](https://github.com/joel16/Swit
 - Displays whether the switch is in docked/handheld state.
 - Displays IP Address.
 - Displays storage sizes for SD, NAND (user) and NAND (system).
+- Displays various system statuses. (Bluetooth, WLAN, NFC, etc.)
 
 # Credits:
 
