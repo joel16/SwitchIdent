@@ -94,16 +94,34 @@ int main(int argc, char **argv)
 	printf("\x1b[36;1m*\x1b[0m Bluetooth: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	printf("\x1b[36;1m*\x1b[0m NFC: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 	printf("\x1b[36;1m*\x1b[0m Automatic update: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n\n", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
 	
-	char totalSize[16], freeSize[16], usedSize[16];
-	Utils_GetSizeString(totalSize, SwitchIdent_GetTotalStorage(FsStorageId_SdCard));
-	Utils_GetSizeString(freeSize, SwitchIdent_GetFreeStorage(FsStorageId_SdCard));
-	Utils_GetSizeString(usedSize, SwitchIdent_GetUsedStorage(FsStorageId_SdCard));
+	char sd_total_str[16], sd_free_str[16], sd_used_str[16];
+	Utils_GetSizeString(sd_total_str, SwitchIdent_GetTotalStorage(FsStorageId_SdCard));
+	Utils_GetSizeString(sd_free_str, SwitchIdent_GetFreeStorage(FsStorageId_SdCard));
+	Utils_GetSizeString(sd_used_str, SwitchIdent_GetUsedStorage(FsStorageId_SdCard));
 
-	printf("\x1b[36;1m*\x1b[0m Total storage: \x1b[36;1m%s\n", totalSize);
-	printf("\x1b[36;1m*\x1b[0m Available storage: \x1b[36;1m%s\n", freeSize);
-	printf("\x1b[36;1m*\x1b[0m Used storage: \x1b[36;1m%s\n\n", usedSize);
+	char nand_u_total_str[16], nand_u_free_str[16], nand_u_used_str[16];
+	Utils_GetSizeString(nand_u_total_str, SwitchIdent_GetTotalStorage(FsStorageId_NandUser));
+	Utils_GetSizeString(nand_u_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandUser));
+	Utils_GetSizeString(nand_u_used_str, SwitchIdent_GetUsedStorage(FsStorageId_NandUser));
+	
+	char nand_s_total_str[16], nand_s_free_str[16], nand_s_used_str[16];
+	Utils_GetSizeString(nand_s_total_str, SwitchIdent_GetTotalStorage(FsStorageId_NandSystem));
+	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandSystem));
+	Utils_GetSizeString(nand_s_used_str, SwitchIdent_GetUsedStorage(FsStorageId_NandSystem));
+
+	printf("\x1b[35;1m*\x1b[0m Total SD Capacity: \x1b[35;1m%s\n", sd_total_str);
+	printf("\x1b[35;1m*\x1b[0m Free SD Capacity: \x1b[35;1m%s\n", sd_free_str);
+	printf("\x1b[35;1m*\x1b[0m Used storage: \x1b[35;1m%s\n", sd_used_str);
+
+	printf("\x1b[35;1m*\x1b[0m Total NAND (user) Capacity: \x1b[35;1m%s\n", nand_u_total_str);
+	printf("\x1b[35;1m*\x1b[0m Free NAND (user) Capacity: \x1b[35;1m%s\n", nand_u_free_str);
+	printf("\x1b[35;1m*\x1b[0m Used NAND (user) Capacity: \x1b[35;1m%s\n", nand_u_used_str);
+
+	printf("\x1b[35;1m*\x1b[0m Total NAND (system) Capacity: \x1b[35;1m%s\n", nand_s_total_str);
+	printf("\x1b[35;1m*\x1b[0m Free NAND (system) Capacity: \x1b[35;1m%s\n", nand_s_free_str);
+	printf("\x1b[35;1m*\x1b[0m Used NAND (system) Capacity: \x1b[35;1m%s\n\n", nand_s_used_str);
 
 	printf("\x1b[32;1m> Press the plus key to exit =)\x1b[0m");
 
