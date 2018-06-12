@@ -46,6 +46,9 @@ static void Menu_System(void)
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Region:",  SwitchIdent_GetRegion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", cpu_clock);
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", gpu_clock);
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 }
 
 static void Menu_Storage(void)
@@ -85,7 +88,7 @@ static void Menu_Storage(void)
 	SDL_DrawRect(RENDERER, 450, 434, 128, 25, STATUS_BAR_COLOUR);
 	SDL_DrawRect(RENDERER, 452, 436, 124, 21, BACKGROUND_COLOUR);
 	SDL_DrawRect(RENDERER, 452, 436, (((double)nand_u_used / (double)nand_u_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
-	
+
 	SDL_DrawImage(RENDERER, drive, 450, 504, 128, 128);
 	SDL_DrawRect(RENDERER, 450, 642, 128, 25, STATUS_BAR_COLOUR);
 	SDL_DrawRect(RENDERER, 452, 644, 124, 21, BACKGROUND_COLOUR);
@@ -113,6 +116,8 @@ static void Menu_Misc(void)
 	Result ret = gethostname(hostname, sizeof(hostname));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "IP:",  R_SUCCEEDED(ret)? hostname : NULL);
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "State:", SwitchIdent_GetOperationMode());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Automatic update:", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
 }
 
 void Menu_Main(void)
