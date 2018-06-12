@@ -23,7 +23,7 @@ static inline SDL_Color SDL_MakeColour(Uint8 r, Uint8 g, Uint8 b)
 SDL_Window *WINDOW;
 SDL_Surface *WINDOW_SURFACE;
 SDL_Renderer *RENDERER;
-SDL_Texture *banner;
+SDL_Texture *banner, *drive;
 TTF_Font *Ubuntu_R_large, *Ubuntu_R;
 
 void SDL_ClearScreen(SDL_Renderer* renderer, SDL_Color colour);

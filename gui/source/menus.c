@@ -50,14 +50,61 @@ static void Menu_System(void)
 
 static void Menu_Storage(void)
 {
-	char totalSize[16], freeSize[16], usedSize[16];
-	Utils_GetSizeString(totalSize, SwitchIdent_GetTotalStorage(FsStorageId_SdCard));
-	Utils_GetSizeString(freeSize, SwitchIdent_GetFreeStorage(FsStorageId_SdCard));
-	Utils_GetSizeString(usedSize, SwitchIdent_GetUsedStorage(FsStorageId_SdCard));
+	u64 sd_used = SwitchIdent_GetUsedStorage(FsStorageId_SdCard);
+	u64 sd_total = SwitchIdent_GetTotalStorage(FsStorageId_SdCard);
 
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Total capacity:",  totalSize);
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Free capacity:", freeSize);
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Used capacity:", usedSize);
+	u64 nand_u_used = SwitchIdent_GetUsedStorage(FsStorageId_NandUser);
+	u64 nand_u_total = SwitchIdent_GetTotalStorage(FsStorageId_NandUser);
+
+	u64 nand_s_used = SwitchIdent_GetUsedStorage(FsStorageId_NandSystem);
+	u64 nand_s_total = SwitchIdent_GetTotalStorage(FsStorageId_NandSystem);
+
+	char sd_total_str[16], sd_free_str[16], sd_used_str[16];
+	Utils_GetSizeString(sd_total_str, sd_total);
+	Utils_GetSizeString(sd_free_str, SwitchIdent_GetFreeStorage(FsStorageId_SdCard));
+	Utils_GetSizeString(sd_used_str, sd_used);
+
+	char nand_u_total_str[16], nand_u_free_str[16], nand_u_used_str[16];
+	Utils_GetSizeString(nand_u_total_str, nand_u_total);
+	Utils_GetSizeString(nand_u_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandUser));
+	Utils_GetSizeString(nand_u_used_str, nand_u_used);
+
+	char nand_s_total_str[16], nand_s_free_str[16], nand_s_used_str[16];
+	Utils_GetSizeString(nand_s_total_str, nand_s_total);
+	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandSystem));
+	Utils_GetSizeString(nand_s_used_str, nand_s_used);
+
+	SDL_DrawRect(RENDERER, 400, 50, 880, 670, BACKGROUND_COLOUR);
+
+	SDL_DrawImage(RENDERER, drive, 450, 88, 128, 128);
+	SDL_DrawRect(RENDERER, 450, 226, 128, 25, STATUS_BAR_COLOUR);
+	SDL_DrawRect(RENDERER, 452, 228, 124, 21, BACKGROUND_COLOUR);
+	SDL_DrawRect(RENDERER, 452, 228, (((double)sd_used / (double)sd_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+
+	SDL_DrawImage(RENDERER, drive, 450, 296, 128, 128);
+	SDL_DrawRect(RENDERER, 450, 434, 128, 25, STATUS_BAR_COLOUR);
+	SDL_DrawRect(RENDERER, 452, 436, 124, 21, BACKGROUND_COLOUR);
+	SDL_DrawRect(RENDERER, 452, 436, (((double)nand_u_used / (double)nand_u_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+	
+	SDL_DrawImage(RENDERER, drive, 450, 504, 128, 128);
+	SDL_DrawRect(RENDERER, 450, 642, 128, 25, STATUS_BAR_COLOUR);
+	SDL_DrawRect(RENDERER, 452, 644, 124, 21, BACKGROUND_COLOUR);
+	SDL_DrawRect(RENDERER, 452, 644, (((double)nand_s_used / (double)nand_s_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+
+	SDL_DrawText(Ubuntu_R, 600, 38 + ((MENU_Y_DIST - item_height) / 2) + 50, MENU_INFO_DESC_COLOUR, "SD");
+	Menu_DrawItem(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 88, "Total storage capacity:",  sd_total_str);
+	Menu_DrawItem(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 126, "Free storage capacity:", sd_free_str);
+	Menu_DrawItem(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 164, "Used storage capacity:", sd_used_str);
+
+	SDL_DrawText(Ubuntu_R, 600, 246 + ((MENU_Y_DIST - item_height) / 2) + 50, MENU_INFO_DESC_COLOUR, "NAND User");
+	Menu_DrawItem(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 88, "Total storage capacity:",  nand_u_total_str);
+	Menu_DrawItem(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 126, "Free storage capacity:", nand_u_free_str);
+	Menu_DrawItem(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 164, "Used storage capacity:", nand_u_used_str);
+
+	SDL_DrawText(Ubuntu_R, 600, 454 + ((MENU_Y_DIST - item_height) / 2) + 50, MENU_INFO_DESC_COLOUR, "NAND System");
+	Menu_DrawItem(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 88, "Total storage capacity:",  nand_s_total_str);
+	Menu_DrawItem(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 126, "Free storage capacity:", nand_s_free_str);
+	Menu_DrawItem(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 164, "Used storage capacity:", nand_s_used_str);
 }
 
 static void Menu_Misc(void)

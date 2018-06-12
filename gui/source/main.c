@@ -18,6 +18,7 @@ static void Term_Services(void)
 	TTF_CloseFont(Ubuntu_R);
 	TTF_Quit();
 
+	SDL_DestroyTexture(drive);
 	SDL_DestroyTexture(banner);
 
 	IMG_Quit();
@@ -46,6 +47,7 @@ static void Init_Services(void)
 	IMG_Init(IMG_INIT_PNG);
 
 	SDL_LoadImage(RENDERER, &banner, "romfs:/banner.png");
+	SDL_LoadImage(RENDERER, &drive, "romfs:/drive.png");
 
 	TTF_Init();
 	
