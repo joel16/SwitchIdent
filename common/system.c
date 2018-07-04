@@ -17,7 +17,6 @@ char *SwitchIdent_GetLanguage(void)
 	return strupr((char*)&language);
 }
 
-// Not sure about this yet.
 char *SwitchIdent_GetRegion(void)
 {
 	Result ret = 0;
@@ -28,22 +27,19 @@ char *SwitchIdent_GetRegion(void)
 		"USA",
 		"EUR",
 		"AUS",
-		"CHN",
-		"KOR",
-		"TWN",
 		"Unknown"
 	};
 
-	s32 regionCode = 0;
+	SetRegion regionCode = 0;
 
 	if (R_SUCCEEDED(ret = setGetRegionCode(&regionCode)))
 	{
-		if (regionCode < 7)
+		if (regionCode < 4)
 			return regions[regionCode];
 	}
 	
 	printf("setGetRegionCode(regionCode) failed: 0x%x.\n\n", ret);
-	return regions[7];
+	return regions[4];
 }
 
 static u32 SwitchIdent_GetPerformanceConfig(void)
