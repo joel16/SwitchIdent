@@ -4,16 +4,18 @@
 #include "kernel.h"
 #include "menus.h"
 #include "misc.h"
+#include "power.h"
 #include "SDL_helper.h"
 #include "storage.h"
 #include "system.h"
 #include "utils.h"
 
-#define MENU_Y_DIST 67
+#define MENU_Y_DIST    67
+#define MAX_MENU_ITEMS 5
 
 static int item_height = 0;
 
-static Service setsys_service;
+static Service setsys_service, psm_service;
 
 static void Menu_DrawItem(int x, int y, char *item_title, const char* text, ...)
 {
@@ -48,6 +50,15 @@ static void Menu_System(void)
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
+}
+
+static void Menu_Power(void)
+{
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %%", SwitchIdent_GetBatteryPercent());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage:", "%lu", SwitchIdent_GetVoltage(&psm_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", "%d", SwitchIdent_GetChargerType(&psm_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging status:", SwitchIdent_IsChargingEnabled(&psm_service)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 }
 
 static void Menu_Storage(void)
@@ -132,8 +143,12 @@ void Menu_Main(void)
 	int selection = 0;
 
 	Result ret = 0;
+	
 	if (R_FAILED(ret = smGetService(&setsys_service, "set:sys")))
 		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = smGetService(&psm_service, "psm")))
+		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 
 	while(appletMainLoop())
 	{
@@ -150,9 +165,10 @@ void Menu_Main(void)
 
 		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2), selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Kernel");
 		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "System");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Storage");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
+		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Power");
+		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Storage");
+		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
+		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
 
 		hidScanInput();
 		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
@@ -162,10 +178,10 @@ void Menu_Main(void)
 		else if (kDown & KEY_DUP)
 			selection--;
 
-		if (selection > 4) 
+		if (selection > MAX_MENU_ITEMS) 
 			selection = 0;
 		if (selection < 0) 
-			selection = 4;
+			selection = MAX_MENU_ITEMS;
 
 		switch (selection)
 		{
@@ -176,18 +192,22 @@ void Menu_Main(void)
 				Menu_System();
 				break;
 			case 2:
-				Menu_Storage();
+				Menu_Power();
 				break;
 			case 3:
+				Menu_Storage();
+				break;
+			case 4:
 				Menu_Misc();
 				break;
 		}
 		
 		SDL_RenderPresent(RENDERER);
 
-		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == 4)))
+		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == MAX_MENU_ITEMS)))
 			break;
 	}
 
 	serviceClose(&setsys_service);
+	serviceClose(&psm_service);
 }

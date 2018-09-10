@@ -5,6 +5,7 @@
 
 static void Term_Services(void)
 {
+	psmExit();
 	nsExit();
 	apmExit();
 	appletExit();
@@ -82,6 +83,9 @@ static void Init_Services(void)
 
 	if (R_FAILED(ret = nsInitialize()))
 		printf("nsInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = psmInitialize()))
+		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 }
 
 int main(int argc, char **argv)
