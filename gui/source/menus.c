@@ -57,7 +57,7 @@ static void Menu_Power(void)
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %%", SwitchIdent_GetBatteryPercent());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage:", "%lu", SwitchIdent_GetVoltage(&psm_service));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", "%d", SwitchIdent_GetChargerType(&psm_service));
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging status:", SwitchIdent_IsChargingEnabled(&psm_service)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 }
 
@@ -143,7 +143,7 @@ void Menu_Main(void)
 	int selection = 0;
 
 	Result ret = 0;
-	
+
 	if (R_FAILED(ret = smGetService(&setsys_service, "set:sys")))
 		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
 
