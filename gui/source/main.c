@@ -3,8 +3,7 @@
 #include "menus.h"
 #include "SDL_helper.h"
 
-static void Term_Services(void)
-{
+static void Term_Services(void) {
 	psmExit();
 	nsExit();
 	apmExit();
@@ -14,51 +13,22 @@ static void Term_Services(void)
 	splExit();
 	setsysExit();
 	setExit();
-
-	TTF_CloseFont(Ubuntu_R_large);
-	TTF_CloseFont(Ubuntu_R);
-	TTF_Quit();
-
-	SDL_DestroyTexture(drive);
-	SDL_DestroyTexture(banner);
-
-	IMG_Quit();
-
-	SDL_DestroyRenderer(RENDERER);
-	SDL_FreeSurface(WINDOW_SURFACE);
-	SDL_DestroyWindow(WINDOW);
-
-	SDL_Quit();
+	SDL_HelperTerm();
+	plExit();
 	romfsExit();
 }
 
-static void Init_Services(void)
-{
-	romfsInit();
-	SDL_Init(SDL_INIT_EVERYTHING);
-
-	SDL_CreateWindowAndRenderer(1280, 720, 0, &WINDOW, &RENDERER);
-
-	WINDOW_SURFACE = SDL_GetWindowSurface(WINDOW);
-
-	SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_BLEND);
-
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
-
-	IMG_Init(IMG_INIT_PNG);
-
-	SDL_LoadImage(RENDERER, &banner, "romfs:/banner.png");
-	SDL_LoadImage(RENDERER, &drive, "romfs:/drive.png");
-
-	TTF_Init();
-	
-	Ubuntu_R = TTF_OpenFont("romfs:/Ubuntu-R.ttf", 25);
-	Ubuntu_R_large = TTF_OpenFont("romfs:/Ubuntu-R.ttf", 30);
-	
-	if (!Ubuntu_R || !Ubuntu_R_large)
-		Term_Services();
-
+static void Init_Services(void) {
 	Result ret = 0;
+
+	if (R_FAILED(ret = romfsInit()))
+		printf("romfsInit() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = plInitialize()))
+		printf("plInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = SDL_HelperInit()))
+		printf("SDL_HelperInit() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = setInitialize()))
 		printf("setInitialize() failed: 0x%x.\n\n", ret);
@@ -88,8 +58,7 @@ static void Init_Services(void)
 		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	Init_Services();
 	Menu_Main();
 	Term_Services();

@@ -4,6 +4,7 @@
 #include <switch.h>
 
 #include "misc.h"
+#include "setsys.h"
 #include "system.h"
 
 char *SwitchIdent_GetLanguage(void)
@@ -12,7 +13,7 @@ char *SwitchIdent_GetLanguage(void)
 	u64 language = 0;
 	
 	if (R_FAILED(ret = setGetSystemLanguage(&language)))
-		printf("setGetSystemLanguage(language) failed: 0x%x.\n\n", ret);
+		printf("setGetSystemLanguage() failed: 0x%x.\n\n", ret);
 	
 	return strupr((char*)&language);
 }
@@ -38,7 +39,7 @@ char *SwitchIdent_GetRegion(void)
 			return regions[regionCode];
 	}
 	
-	printf("setGetRegionCode(regionCode) failed: 0x%x.\n\n", ret);
+	printf("setGetRegionCode() failed: 0x%x.\n\n", ret);
 	return regions[4];
 }
 
@@ -145,4 +146,32 @@ u32 SwitchIdent_GetGPUClock(void)
 	}
 
 	return out;
+}
+
+char *SwitchIdent_GetBluetoothBdAddress(Service *srv)
+{
+	Result ret = 0;
+	static char bd_addr[0x7];
+
+	if (R_FAILED(ret = setcalGetBluetoothBdAddress(srv, bd_addr)))
+	{
+		printf("setcalGetBluetoothBdAddress() failed: 0x%x.\n\n", ret);
+		return NULL;
+	}
+
+	return bd_addr;
+}
+
+char *SwitchIdent_GetWirelessLanMacAddress(Service *srv)
+{
+	Result ret = 0;
+	static char mac_addr[0x7];
+
+	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(srv, mac_addr)))
+	{
+		printf("setcalGetWirelessLanMacAddress() failed: 0x%x.\n\n", ret);
+		return NULL;
+	}
+
+	return mac_addr;
 }

@@ -13,26 +13,116 @@
 #define MENU_Y_DIST    67
 #define MAX_MENU_ITEMS 5
 
-static int item_height = 0;
+static u32 item_height = 0;
 
-static Service setsys_service, psm_service;
+static Service setsys_service, setcal_service, psm_service, wlaninf_service;
 
-static void Menu_DrawItem(int x, int y, char *item_title, const char* text, ...)
-{
-	int title_width = 0;
-	TTF_SizeText(Ubuntu_R, item_title, &title_width, NULL);
-	SDL_DrawText(RENDERER, Ubuntu_R, x, y, MENU_INFO_TITLE_COLOUR, item_title);
+static Result wlaninfGetState(Service *srv, u32 *out) {
+    IpcCommand c;
+    ipcInitialize(&c);
+    
+    struct {
+        u64 magic;
+        u64 cmd_id;
+    } *raw;
+    
+    raw = ipcPrepareHeader(&c, sizeof(*raw));
+    
+    raw->magic = SFCI_MAGIC;
+    raw->cmd_id = 10;
+    
+    Result rc = serviceIpcDispatch(srv);
+    
+    if(R_SUCCEEDED(rc)) {
+        IpcParsedCommand r;
+        ipcParse(&r);
+        
+        struct {
+            u64 magic;
+            u64 result;
+            u32 state;
+        } *resp = r.Raw;
+        
+        rc = resp->result;
+        
+        if (R_SUCCEEDED(rc)) {
+            *out = resp->state;
+        }
+    }
+    
+    return rc;
+}
+
+static Result wlaninfGetRssi(Service *srv, u32 *out) {
+    IpcCommand c;
+    ipcInitialize(&c);
+    
+    struct {
+        u64 magic;
+        u64 cmd_id;
+    } *raw;
+    
+    raw = ipcPrepareHeader(&c, sizeof(*raw));
+    
+    raw->magic = SFCI_MAGIC;
+    raw->cmd_id = 12;
+    
+    Result rc = serviceIpcDispatch(srv);
+    
+    if(R_SUCCEEDED(rc)) {
+        IpcParsedCommand r;
+        ipcParse(&r);
+        
+        struct {
+            u64 magic;
+            u64 result;
+            u32 rssi;
+        } *resp = r.Raw;
+        
+        rc = resp->result;
+        
+        if (R_SUCCEEDED(rc)) {
+            *out = resp->rssi;
+        }
+    }
+    
+    return rc;
+}
+
+u32 SwitchIdent_GetWlanState(Service *srv) {
+	Result ret = 0;
+	u32 out = 0;
+
+	if (R_FAILED(ret = wlaninfGetState(srv, &out)))
+		return -1;
+
+	return out;
+}
+
+u32 SwitchIdent_GetWlanRSSI(Service *srv) {
+	Result ret = 0;
+	u32 out = 0;
+
+	if (R_FAILED(ret = wlaninfGetRssi(srv, &out)))
+		return -1;
+
+	return out;
+}
+
+static void Menu_DrawItem(int x, int y, char *item_title, const char* text, ...) {
+	u32 title_width = 0;
+	SDL_GetTextDimensions(25, item_title, &title_width, NULL);
+	SDL_DrawText(x, y, 25, MENU_INFO_TITLE_COLOUR, item_title);
 	
 	char buffer[256];
 	va_list args;
 	va_start(args, text);
 	vsnprintf(buffer, 256, text, args);
-	SDL_DrawText(RENDERER, Ubuntu_R, x + title_width + 20, y, MENU_INFO_DESC_COLOUR, buffer);
+	SDL_DrawText(x + title_width + 20, y, 25, MENU_INFO_DESC_COLOUR, buffer);
 	va_end(args);
 }
 
-static void Menu_Kernel(void)
-{
+static void Menu_Kernel(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Firmware version:",  SwitchIdent_GetFirmwareVersion(&setsys_service));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Kernel version:",  SwitchIdent_GetKernelVersion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Hardware:", SwitchIdent_GetHardwareType());
@@ -42,27 +132,24 @@ static void Menu_Kernel(void)
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "Device ID:", "%llu", SwitchIdent_GetDeviceID());
 }
 
-static void Menu_System(void)
-{
+static void Menu_System(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Region:",  SwitchIdent_GetRegion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetCPUClock());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetGPUClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (state: %d) (RSSI: %d)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanState(&wlaninf_service), SwitchIdent_GetWlanRSSI(&wlaninf_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 }
 
-static void Menu_Power(void)
-{
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %%", SwitchIdent_GetBatteryPercent());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage:", "%lu", SwitchIdent_GetVoltage(&psm_service));
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", "%d", SwitchIdent_GetChargerType(&psm_service));
+static void Menu_Power(void) {
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %% (%s)", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState(&psm_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", SwitchIdent_GetChargerType());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 }
 
-static void Menu_Storage(void)
-{
+static void Menu_Storage(void) {
 	u64 sd_used = SwitchIdent_GetUsedStorage(FsStorageId_SdCard);
 	u64 sd_total = SwitchIdent_GetTotalStorage(FsStorageId_SdCard);
 
@@ -87,41 +174,40 @@ static void Menu_Storage(void)
 	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandSystem));
 	Utils_GetSizeString(nand_s_used_str, nand_s_used);
 
-	SDL_DrawRect(RENDERER, 400, 50, 880, 670, BACKGROUND_COLOUR);
+	SDL_DrawRect(400, 50, 880, 670, BACKGROUND_COLOUR);
 
-	SDL_DrawImage(RENDERER, drive, 450, 88);
-	SDL_DrawRect(RENDERER, 450, 226, 128, 25, STATUS_BAR_COLOUR);
-	SDL_DrawRect(RENDERER, 452, 228, 124, 21, BACKGROUND_COLOUR);
-	SDL_DrawRect(RENDERER, 452, 228, (((double)sd_used / (double)sd_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+	SDL_DrawDriveIcon(450, 88);
+	SDL_DrawRect(450, 226, 128, 25, STATUS_BAR_COLOUR);
+	SDL_DrawRect(452, 228, 124, 21, BACKGROUND_COLOUR);
+	SDL_DrawRect(452, 228, (((double)sd_used / (double)sd_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
 
-	SDL_DrawImage(RENDERER, drive, 450, 296);
-	SDL_DrawRect(RENDERER, 450, 434, 128, 25, STATUS_BAR_COLOUR);
-	SDL_DrawRect(RENDERER, 452, 436, 124, 21, BACKGROUND_COLOUR);
-	SDL_DrawRect(RENDERER, 452, 436, (((double)nand_u_used / (double)nand_u_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+	SDL_DrawDriveIcon(450, 296);
+	SDL_DrawRect(450, 434, 128, 25, STATUS_BAR_COLOUR);
+	SDL_DrawRect(452, 436, 124, 21, BACKGROUND_COLOUR);
+	SDL_DrawRect(452, 436, (((double)nand_u_used / (double)nand_u_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
 
-	SDL_DrawImage(RENDERER, drive, 450, 504);
-	SDL_DrawRect(RENDERER, 450, 642, 128, 25, STATUS_BAR_COLOUR);
-	SDL_DrawRect(RENDERER, 452, 644, 124, 21, BACKGROUND_COLOUR);
-	SDL_DrawRect(RENDERER, 452, 644, (((double)nand_s_used / (double)nand_s_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+	SDL_DrawDriveIcon(450, 504);
+	SDL_DrawRect(450, 642, 128, 25, STATUS_BAR_COLOUR);
+	SDL_DrawRect(452, 644, 124, 21, BACKGROUND_COLOUR);
+	SDL_DrawRect(452, 644, (((double)nand_s_used / (double)nand_s_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
 
-	SDL_DrawText(RENDERER, Ubuntu_R, 600, 38 + ((MENU_Y_DIST - item_height) / 2) + 50, MENU_INFO_DESC_COLOUR, "SD");
+	SDL_DrawText(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 50, 25, MENU_INFO_DESC_COLOUR, "SD");
 	Menu_DrawItem(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 88, "Total storage capacity:",  sd_total_str);
 	Menu_DrawItem(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 126, "Free storage capacity:", sd_free_str);
 	Menu_DrawItem(600, 38 + ((MENU_Y_DIST - item_height) / 2) + 164, "Used storage capacity:", sd_used_str);
 
-	SDL_DrawText(RENDERER, Ubuntu_R, 600, 246 + ((MENU_Y_DIST - item_height) / 2) + 50, MENU_INFO_DESC_COLOUR, "NAND User");
+	SDL_DrawText(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 50, 25, MENU_INFO_DESC_COLOUR, "NAND User");
 	Menu_DrawItem(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 88, "Total storage capacity:",  nand_u_total_str);
 	Menu_DrawItem(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 126, "Free storage capacity:", nand_u_free_str);
 	Menu_DrawItem(600, 246 + ((MENU_Y_DIST - item_height) / 2) + 164, "Used storage capacity:", nand_u_used_str);
 
-	SDL_DrawText(RENDERER, Ubuntu_R, 600, 454 + ((MENU_Y_DIST - item_height) / 2) + 50, MENU_INFO_DESC_COLOUR, "NAND System");
+	SDL_DrawText(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 50, 25, MENU_INFO_DESC_COLOUR, "NAND System");
 	Menu_DrawItem(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 88, "Total storage capacity:",  nand_s_total_str);
 	Menu_DrawItem(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 126, "Free storage capacity:", nand_s_free_str);
 	Menu_DrawItem(600, 454 + ((MENU_Y_DIST - item_height) / 2) + 164, "Used storage capacity:", nand_s_used_str);
 }
 
-static void Menu_Misc(void)
-{
+static void Menu_Misc(void) {
 	char hostname[128];
 	Result ret = gethostname(hostname, sizeof(hostname));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "IP:",  R_SUCCEEDED(ret)? hostname : NULL);
@@ -130,45 +216,44 @@ static void Menu_Misc(void)
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
 }
 
-void Menu_Main(void)
-{
-	int title_height = 0;
-	TTF_SizeText(Ubuntu_R, "SwitchIdent", NULL, &title_height);
+void Menu_Main(void) {
+	u32 title_height = 0;
+	SDL_GetTextDimensions(25, "SwitchIdent", NULL, &title_height);
+	SDL_GetTextDimensions(25, "Test", NULL, &item_height);
 
-	TTF_SizeText(Ubuntu_R, "Test", NULL, &item_height);
-
-	int banner_width = 0;
-	SDL_QueryTexture(banner, NULL, NULL, &banner_width, NULL);
-
+	int banner_width = 200;
 	int selection = 0;
-
 	Result ret = 0;
 
 	if (R_FAILED(ret = smGetService(&setsys_service, "set:sys")))
 		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
 
+	if (R_FAILED(ret = smGetService(&setcal_service, "set:cal")))
+		printf("setcalInitialize() failed: 0x%x.\n\n", ret);
+
 	if (R_FAILED(ret = smGetService(&psm_service, "psm")))
 		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 
-	while(appletMainLoop())
-	{
-		SDL_ClearScreen(RENDERER, BACKGROUND_COLOUR);
-		SDL_RenderClear(RENDERER);
-		SDL_DrawRect(RENDERER, 0, 0, 1280, 50, STATUS_BAR_COLOUR);
-		SDL_DrawRect(RENDERER, 0, 50, 400, 670, MENU_BAR_COLOUR);
+	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
+		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 
-		SDL_DrawText(RENDERER, Ubuntu_R, 40, ((50 - title_height) / 2), BACKGROUND_COLOUR, "SwitchIdent");
+	while(appletMainLoop()) {
+		SDL_ClearScreen(BACKGROUND_COLOUR);
+		SDL_DrawRect(0, 0, 1280, 50, STATUS_BAR_COLOUR);
+		SDL_DrawRect(0, 50, 400, 670, MENU_BAR_COLOUR);
 
-		SDL_DrawImage(RENDERER, banner, 400 + ((880 - (banner_width)) / 2),  80);
+		SDL_DrawText(30, ((50 - title_height) / 2), 25, BACKGROUND_COLOUR, "SwitchIdent");// 0x%lx 0x%lx", connect, disconnect);
 
-		SDL_DrawRect(RENDERER, 0, 50 + (MENU_Y_DIST * selection), 400, MENU_Y_DIST, MENU_SELECTOR_COLOUR);
+		SDL_DrawBanner(400 + ((880 - (banner_width)) / 2),  80);
 
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2), selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Kernel");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "System");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Power");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Storage");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
-		SDL_DrawText(RENDERER, Ubuntu_R, 30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
+		SDL_DrawRect(0, 50 + (MENU_Y_DIST * selection), 400, MENU_Y_DIST, MENU_SELECTOR_COLOUR);
+
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2), 25, selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Kernel");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), 25, selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "System");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), 25, selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Power");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), 25, selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Storage");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), 25, selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), 25, selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
 
 		hidScanInput();
 		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
@@ -183,8 +268,7 @@ void Menu_Main(void)
 		if (selection < 0) 
 			selection = MAX_MENU_ITEMS;
 
-		switch (selection)
-		{
+		switch (selection) {
 			case 0:
 				Menu_Kernel();
 				break;
@@ -202,12 +286,14 @@ void Menu_Main(void)
 				break;
 		}
 		
-		SDL_RenderPresent(RENDERER);
+		SDL_Renderdisplay();
 
 		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == MAX_MENU_ITEMS)))
 			break;
 	}
 
-	serviceClose(&setsys_service);
+	serviceClose(&wlaninf_service);
 	serviceClose(&psm_service);
+	serviceClose(&setcal_service);
+	serviceClose(&setsys_service);
 }

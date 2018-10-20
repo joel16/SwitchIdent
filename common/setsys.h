@@ -10,5 +10,7 @@ typedef struct {
 } SetSysFirmwareVersion;
 
 Result setsysGetFirmwareVersion(Service *srv, SetSysFirmwareVersion *ver);
+Result setcalGetBluetoothBdAddress(Service *srv, char *address);
+Result setcalGetWirelessLanMacAddress(Service *srv, char *address);
 
 #endif

@@ -1,43 +1,8 @@
+#include <stdio.h>
+
 #include <switch.h>
 
 #include "power.h"
-
-static Result psmGetChargerType(Service *srv, u32 *out)
-{
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 1;
-    
-    Result rc = serviceIpcDispatch(srv);
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u32 voltage;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->voltage;
-        }
-    }
-    
-    return rc;
-}
 
 static Result psmIsBatteryChargingEnabled(Service *srv, bool *out)
 {
@@ -235,15 +200,36 @@ u32 SwitchIdent_GetBatteryPercent(void)
 	return out;
 }
 
-u32 SwitchIdent_GetChargerType(Service *srv)
+char *SwitchIdent_GetChargerType(void)
 {
 	Result ret = 0;
-	u32 out = 0;
+	ChargerType charger_type;
 
-	if (R_FAILED(ret = psmGetChargerType(srv, &out)))
-		return -1;
+	if (R_FAILED(ret = psmGetChargerType(&charger_type)))
+		return NULL;
 
-	return out;
+    if (charger_type == ChargerType_Charger)
+        return "Official charger or dock";
+    else if (charger_type == ChargerType_Usb)
+        return "USB-C charger";
+    else
+        return "No charger connected";
+
+    return NULL;
+}
+
+bool SwitchIdent_IsCharging(void)
+{
+    Result ret = 0;
+    ChargerType charger_type;
+
+    if (R_FAILED(ret = psmGetChargerType(&charger_type)))
+        return false;
+
+    if ((charger_type == ChargerType_Charger) || (charger_type == ChargerType_Usb))
+        return true;
+
+    return false;
 }
 
 bool SwitchIdent_IsChargingEnabled(Service *srv)
@@ -257,15 +243,39 @@ bool SwitchIdent_IsChargingEnabled(Service *srv)
 	return out;
 }
 
-u32 SwitchIdent_GetVoltage(Service *srv)
+char *SwitchIdent_GetVoltageState(Service *srv)
 {
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = psmGetBatteryVoltageState(srv, &out)))
-		return -1;
+    char *states[]=
+    {
+        "max77620_sd0",
+        "max77620_sd1",
+        "max77620_sd2",
+        "max77620_sd3",
+        "max77620_ldo0 -> 1.2 V",
+        "max77620_ldo1",
+        "max77620_ldo2 -> 3.3 V - 1.8 V",
+        "max77620_ldo3",
+        "max77620_ldo4 -> 0.85 V",
+        "max77620_ldo5",
+        "max77620_ldo6 -> 2.9 V",
+        "max77620_ldo7",
+        "max77620_ldo8 -> 1.05 V",
+        "max77621_cpu",
+        "max77621_gpu",
+        "Unknown"
+    };
 
-	return out;
+    if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(srv, &out)))
+    {
+        if (out < 15)
+            return states[out];
+    }
+
+    printf("psmGetBatteryVoltageState() failed: 0x%x.\n\n", ret);
+    return states[15];
 }
 
 u64 SwitchIdent_GetRawBatteryChargePercentage(Service *srv)
