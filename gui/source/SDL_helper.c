@@ -26,7 +26,7 @@ static void SDL_LoadImage(SDL_Texture **texture, char *path) {
 Result SDL_HelperInit(void) {
 	Result ret = 0;
 
-	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_Init(SDL_INIT_VIDEO);
 	WINDOW = SDL_CreateWindow("SwitchIdent", 0, 0, 1280, 720, SDL_WINDOW_FULLSCREEN);
 	RENDERER = SDL_CreateRenderer(WINDOW, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_BLEND);

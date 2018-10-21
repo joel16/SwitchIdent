@@ -4,8 +4,7 @@
 
 #include "power.h"
 
-static Result psmIsBatteryChargingEnabled(Service *srv, bool *out)
-{
+static Result psmIsBatteryChargingEnabled(Service *srv, bool *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -41,8 +40,7 @@ static Result psmIsBatteryChargingEnabled(Service *srv, bool *out)
     return rc;
 }
 
-static Result psmGetBatteryVoltageState(Service *srv, u32 *out)
-{
+static Result psmGetBatteryVoltageState(Service *srv, u32 *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -78,8 +76,7 @@ static Result psmGetBatteryVoltageState(Service *srv, u32 *out)
     return rc;
 }
 
-static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out)
-{
+static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -115,8 +112,7 @@ static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out)
     return rc;
 }
 
-static Result psmIsEnoughPowerSupplied(Service *srv, bool *out)
-{
+static Result psmIsEnoughPowerSupplied(Service *srv, bool *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -152,8 +148,7 @@ static Result psmIsEnoughPowerSupplied(Service *srv, bool *out)
     return rc;
 }
 
-static Result psmGetBatteryAgePercentage(Service *srv, u64 *out)
-{
+static Result psmGetBatteryAgePercentage(Service *srv, u64 *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -189,8 +184,7 @@ static Result psmGetBatteryAgePercentage(Service *srv, u64 *out)
     return rc;
 }
 
-u32 SwitchIdent_GetBatteryPercent(void)
-{
+u32 SwitchIdent_GetBatteryPercent(void) {
 	Result ret = 0;
 	u32 out = 0;
 
@@ -200,8 +194,7 @@ u32 SwitchIdent_GetBatteryPercent(void)
 	return out;
 }
 
-char *SwitchIdent_GetChargerType(void)
-{
+char *SwitchIdent_GetChargerType(void) {
 	Result ret = 0;
 	ChargerType charger_type;
 
@@ -218,8 +211,7 @@ char *SwitchIdent_GetChargerType(void)
     return NULL;
 }
 
-bool SwitchIdent_IsCharging(void)
-{
+bool SwitchIdent_IsCharging(void) {
     Result ret = 0;
     ChargerType charger_type;
 
@@ -232,8 +224,7 @@ bool SwitchIdent_IsCharging(void)
     return false;
 }
 
-bool SwitchIdent_IsChargingEnabled(Service *srv)
-{
+bool SwitchIdent_IsChargingEnabled(Service *srv) {
 	Result ret = 0;
 	bool out = 0;
 
@@ -243,8 +234,7 @@ bool SwitchIdent_IsChargingEnabled(Service *srv)
 	return out;
 }
 
-char *SwitchIdent_GetVoltageState(Service *srv)
-{
+char *SwitchIdent_GetVoltageState(Service *srv) {
 	Result ret = 0;
 	u32 out = 0;
 
@@ -268,8 +258,7 @@ char *SwitchIdent_GetVoltageState(Service *srv)
         "Unknown"
     };
 
-    if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(srv, &out)))
-    {
+    if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(srv, &out))) {
         if (out < 15)
             return states[out];
     }
@@ -278,8 +267,7 @@ char *SwitchIdent_GetVoltageState(Service *srv)
     return states[15];
 }
 
-u64 SwitchIdent_GetRawBatteryChargePercentage(Service *srv)
-{
+u64 SwitchIdent_GetRawBatteryChargePercentage(Service *srv) {
 	Result ret = 0;
 	u64 out = 0;
 
@@ -289,8 +277,7 @@ u64 SwitchIdent_GetRawBatteryChargePercentage(Service *srv)
 	return out;
 }
 
-bool SwitchIdent_IsEnoughPowerSupplied(Service *srv)
-{
+bool SwitchIdent_IsEnoughPowerSupplied(Service *srv) {
 	Result ret = 0;
 	bool out = 0;
 
@@ -300,8 +287,7 @@ bool SwitchIdent_IsEnoughPowerSupplied(Service *srv)
 	return out;
 }
 
-u64 SwitchIdent_GetBatteryAgePercent(Service *srv)
-{
+u64 SwitchIdent_GetBatteryAgePercent(Service *srv) {
 	Result ret = 0;
 	u64 out = 0;
 

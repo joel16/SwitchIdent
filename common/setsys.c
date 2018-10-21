@@ -3,8 +3,7 @@
 
 #include "setsys.h"
 
-static Result GetFirmwareVersion(Service *srv, SetSysFirmwareVersion *ver)
-{
+static Result GetFirmwareVersion(Service *srv, SetSysFirmwareVersion *ver) {
     char buffer[0x100];
     size_t size = sizeof(buffer);
     memset(buffer, 0, size);
@@ -43,8 +42,7 @@ static Result GetFirmwareVersion(Service *srv, SetSysFirmwareVersion *ver)
     return rc;
 }
 
-static Result GetFirmwareVersion2(Service *srv, SetSysFirmwareVersion *ver)
-{
+static Result GetFirmwareVersion2(Service *srv, SetSysFirmwareVersion *ver) {
     char buffer[0x100];
     size_t size = sizeof(buffer);
     memset(buffer, 0, size);
@@ -83,15 +81,13 @@ static Result GetFirmwareVersion2(Service *srv, SetSysFirmwareVersion *ver)
     return rc;
 }
 
-Result setsysGetFirmwareVersion(Service *srv, SetSysFirmwareVersion *ver)
-{
+Result setsysGetFirmwareVersion(Service *srv, SetSysFirmwareVersion *ver) {
 	if (kernelAbove200())
 		return GetFirmwareVersion2(srv, ver);
 	return GetFirmwareVersion(srv, ver);
 }
 
-Result setcalGetBluetoothBdAddress(Service *srv, char *address)
-{
+Result setcalGetBluetoothBdAddress(Service *srv, char *address) {
     IpcCommand c;
     ipcInitialize(&c);
 
@@ -128,8 +124,7 @@ Result setcalGetBluetoothBdAddress(Service *srv, char *address)
     return rc;
 }
 
-Result setcalGetWirelessLanMacAddress(Service *srv, char *address)
-{
+Result setcalGetWirelessLanMacAddress(Service *srv, char *address) {
     IpcCommand c;
     ipcInitialize(&c);
 

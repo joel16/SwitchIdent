@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <switch.h>
 
-char *SwitchIdent_GetOperationMode(void)
-{
+char *SwitchIdent_GetOperationMode(void) {
 	if (appletGetOperationMode() == AppletOperationMode_Handheld)
 		return "Handheld";
 
 	return "Docked";
 }
 
-bool SwitchIdent_GetFlag(SetSysFlag flag)
-{
+bool SwitchIdent_GetFlag(SetSysFlag flag) {
 	Result ret = 0;
 	bool out = false;
 

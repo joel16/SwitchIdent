@@ -7,8 +7,7 @@
 #include "setsys.h"
 #include "system.h"
 
-char *SwitchIdent_GetLanguage(void)
-{
+char *SwitchIdent_GetLanguage(void) {
 	Result ret = 0;
 	u64 language = 0;
 	
@@ -18,12 +17,10 @@ char *SwitchIdent_GetLanguage(void)
 	return strupr((char*)&language);
 }
 
-char *SwitchIdent_GetRegion(void)
-{
+char *SwitchIdent_GetRegion(void) {
 	Result ret = 0;
 
-	char *regions[]=
-	{
+	char *regions[] = {
 		"JPN",
 		"USA",
 		"EUR",
@@ -33,8 +30,7 @@ char *SwitchIdent_GetRegion(void)
 
 	SetRegion regionCode = 0;
 
-	if (R_SUCCEEDED(ret = setGetRegionCode(&regionCode)))
-	{
+	if (R_SUCCEEDED(ret = setGetRegionCode(&regionCode))) {
 		if (regionCode < 4)
 			return regions[regionCode];
 	}
@@ -43,8 +39,7 @@ char *SwitchIdent_GetRegion(void)
 	return regions[4];
 }
 
-static u32 SwitchIdent_GetPerformanceConfig(void)
-{
+static u32 SwitchIdent_GetPerformanceConfig(void) {
 	Result ret = 0;
 	u32 performanceConfig = 0;
 
@@ -54,12 +49,10 @@ static u32 SwitchIdent_GetPerformanceConfig(void)
 	return performanceConfig;
 }
 
-u32 SwitchIdent_GetCPUClock(void)
-{
+u32 SwitchIdent_GetCPUClock(void) {
 	u32 out = 0;
 
-	switch (SwitchIdent_GetPerformanceConfig())
-	{
+	switch (SwitchIdent_GetPerformanceConfig()) {
 		case 0x00010000:
 			out = 1020;
 			break;
@@ -101,12 +94,10 @@ u32 SwitchIdent_GetCPUClock(void)
 	return out;
 }
 
-u32 SwitchIdent_GetGPUClock(void)
-{
+u32 SwitchIdent_GetGPUClock(void) {
 	u32 out = 0;
 
-	switch (SwitchIdent_GetPerformanceConfig())
-	{
+	switch (SwitchIdent_GetPerformanceConfig()) {
 		case 0x00010000:
 			out = 384;
 			break;
@@ -148,13 +139,11 @@ u32 SwitchIdent_GetGPUClock(void)
 	return out;
 }
 
-char *SwitchIdent_GetBluetoothBdAddress(Service *srv)
-{
+char *SwitchIdent_GetBluetoothBdAddress(Service *srv) {
 	Result ret = 0;
 	static char bd_addr[0x7];
 
-	if (R_FAILED(ret = setcalGetBluetoothBdAddress(srv, bd_addr)))
-	{
+	if (R_FAILED(ret = setcalGetBluetoothBdAddress(srv, bd_addr))) {
 		printf("setcalGetBluetoothBdAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}
@@ -162,13 +151,11 @@ char *SwitchIdent_GetBluetoothBdAddress(Service *srv)
 	return bd_addr;
 }
 
-char *SwitchIdent_GetWirelessLanMacAddress(Service *srv)
-{
+char *SwitchIdent_GetWirelessLanMacAddress(Service *srv) {
 	Result ret = 0;
 	static char mac_addr[0x7];
 
-	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(srv, mac_addr)))
-	{
+	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(srv, mac_addr))) {
 		printf("setcalGetWirelessLanMacAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}

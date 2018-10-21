@@ -4,8 +4,7 @@
 #include "kernel.h"
 #include "setsys.h"
 
-static u64 SwitchIdent_GetPackage1MaxverConstant(void)
-{
+static u64 SwitchIdent_GetPackage1MaxverConstant(void) {
 	Result ret = 0;
 	u64 version = 0x0;
 
@@ -15,13 +14,11 @@ static u64 SwitchIdent_GetPackage1MaxverConstant(void)
 	return (version + 1); // (Package1 maxver constant - 1) + 1
 }
 
-char *SwitchIdent_GetDramDesc(void)
-{
+char *SwitchIdent_GetDramDesc(void) {
 	Result ret = 0;
 	u64 id = 0;
 
-	char *dram_desc[] =
-	{
+	char *dram_desc[] = {
 		"EristaIcosaSamsung4gb",
 		"EristaIcosaHynix4gb",
 		"EristaIcosaMicron4gb",
@@ -44,13 +41,11 @@ char *SwitchIdent_GetDramDesc(void)
 	return dram_desc[id];
 }
 
-char *SwitchIdent_GetFirmwareVersion(Service *srv)
-{
+char *SwitchIdent_GetFirmwareVersion(Service *srv) {
 	Result ret = 0;
 	SetSysFirmwareVersion ver;
 
-	if (R_FAILED(ret = setsysGetFirmwareVersion(srv, &ver)))
-	{
+	if (R_FAILED(ret = setsysGetFirmwareVersion(srv, &ver))) {
 		printf("setsysGetFirmwareVersion() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}
@@ -61,10 +56,8 @@ char *SwitchIdent_GetFirmwareVersion(Service *srv)
 	return buf;
 }
 
-char *SwitchIdent_GetKernelVersion(void)
-{
-	char *versions[] =
-	{
+char *SwitchIdent_GetKernelVersion(void) {
+	char *versions[] = {
 		"Unknown0",
 		"Unknown1",
 		"5.0.0",
@@ -80,13 +73,11 @@ char *SwitchIdent_GetKernelVersion(void)
 	return versions[SwitchIdent_GetPackage1MaxverConstant()];
 }
 
-char *SwitchIdent_GetHardwareType(void)
-{
+char *SwitchIdent_GetHardwareType(void) {
 	Result ret = 0;
 	u64 hardware_type = 4;
 
-	char *hardware_300[] =
-	{
+	char *hardware_300[] = {
 		"Icosa",
 		"Copper",
 		"Unknown",
@@ -94,8 +85,7 @@ char *SwitchIdent_GetHardwareType(void)
 		"Unknown"
 	};
 
-	char *hardware_400[] =
-	{
+	char *hardware_400[] = {
 		"Icosa",
 		"Copper",
 		"Unknown",
@@ -113,8 +103,7 @@ char *SwitchIdent_GetHardwareType(void)
 }
 
 // [4.0.0+] Kiosk mode (0 = retail; 1 = kiosk)
-static bool SwitchIdent_IsKiosk(void)
-{
+static bool SwitchIdent_IsKiosk(void) {
 	u64 isKiosk = 0;
 	Result ret = 0;
 
@@ -127,13 +116,11 @@ static bool SwitchIdent_IsKiosk(void)
 	return false; 
 }
 
-char *SwitchIdent_GetUnit(void)
-{
+char *SwitchIdent_GetUnit(void) {
 	Result ret = 0;
 	u64 isRetail = 2;
 
-	char *unit[] =
-	{
+	char *unit[] = {
 		"Debug",
 		"Retail",
 		"Unknown"
@@ -142,8 +129,7 @@ char *SwitchIdent_GetUnit(void)
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRetail, &isRetail)))
 		printf("splGetConfig(SplConfigItem_IsRetail) failed: 0x%x.\n\n", ret);
 
-	if (SwitchIdent_GetPackage1MaxverConstant() >= 0x6) // 4.00+
-	{
+	if (SwitchIdent_GetPackage1MaxverConstant() >= 0x6) {// 4.00+
 		if (SwitchIdent_IsKiosk())
 			return "Kiosk";
 	}
@@ -151,8 +137,7 @@ char *SwitchIdent_GetUnit(void)
 	return unit[isRetail];
 }
 
-bool SwitchIdent_IsSafeMode(void)
-{
+bool SwitchIdent_IsSafeMode(void) {
 	Result ret = 0;
 	u64 safemode = 0;
 	bool out = false;
@@ -165,8 +150,7 @@ bool SwitchIdent_IsSafeMode(void)
 	return out;
 }
 
-u64 SwitchIdent_GetDeviceID(void)
-{
+u64 SwitchIdent_GetDeviceID(void) {
 	Result ret = 0;
 	u64 deviceID = 0;
 
@@ -176,8 +160,7 @@ u64 SwitchIdent_GetDeviceID(void)
 	return deviceID;
 }
 
-char *SwitchIdent_GetSerialNumber(void)
-{
+char *SwitchIdent_GetSerialNumber(void) {
 	Result ret = 0;
 	static char serial[0x19];
 

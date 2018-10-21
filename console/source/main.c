@@ -11,8 +11,7 @@
 
 static Service setsys_service;
 
-static void SwitchIdent_InitServices(void)
-{
+static void SwitchIdent_InitServices(void) {
 	Result ret = 0;
 
 	if (R_FAILED(ret = setInitialize()))
@@ -43,8 +42,7 @@ static void SwitchIdent_InitServices(void)
 		printf("nsInitialize() failed: 0x%x.\n\n", ret);
 }
 
-static void SwitchIdent_TermServices(void)
-{
+static void SwitchIdent_TermServices(void) {
 	nsExit();
 	apmExit();
 	appletExit();
@@ -56,8 +54,7 @@ static void SwitchIdent_TermServices(void)
 	setExit();
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	gfxInitDefault();
 	consoleInit(NULL);
 
@@ -125,8 +122,7 @@ int main(int argc, char **argv)
 
 	printf("\x1b[32;1m> Press the plus key to exit =)\x1b[0m");
 
-	while(appletMainLoop())
-	{
+	while(appletMainLoop()) {
 		//Scan all the inputs. This should be done once for each frame
 		hidScanInput();
 

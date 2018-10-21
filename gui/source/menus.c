@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <switch.h>
 
+#include "fs.h"
 #include "kernel.h"
 #include "menus.h"
 #include "misc.h"
@@ -9,6 +10,7 @@
 #include "storage.h"
 #include "system.h"
 #include "utils.h"
+#include "wlan.h"
 
 #define MENU_Y_DIST    67
 #define MAX_MENU_ITEMS 5
@@ -16,100 +18,9 @@
 static u32 item_height = 0;
 
 static Service setsys_service, setcal_service, psm_service, wlaninf_service;
+static FsDeviceOperator fsDeviceOperator;
 
-static Result wlaninfGetState(Service *srv, u32 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 10;
-    
-    Result rc = serviceIpcDispatch(srv);
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u32 state;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->state;
-        }
-    }
-    
-    return rc;
-}
-
-static Result wlaninfGetRssi(Service *srv, u32 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 12;
-    
-    Result rc = serviceIpcDispatch(srv);
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u32 rssi;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->rssi;
-        }
-    }
-    
-    return rc;
-}
-
-u32 SwitchIdent_GetWlanState(Service *srv) {
-	Result ret = 0;
-	u32 out = 0;
-
-	if (R_FAILED(ret = wlaninfGetState(srv, &out)))
-		return -1;
-
-	return out;
-}
-
-u32 SwitchIdent_GetWlanRSSI(Service *srv) {
-	Result ret = 0;
-	u32 out = 0;
-
-	if (R_FAILED(ret = wlaninfGetRssi(srv, &out)))
-		return -1;
-
-	return out;
-}
-
-static void Menu_DrawItem(int x, int y, char *item_title, const char* text, ...) {
+static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...) {
 	u32 title_width = 0;
 	SDL_GetTextDimensions(25, item_title, &title_width, NULL);
 	SDL_DrawText(x, y, 25, MENU_INFO_TITLE_COLOUR, item_title);
@@ -214,6 +125,8 @@ static void Menu_Misc(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "State:", SwitchIdent_GetOperationMode());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Automatic update:", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", SwitchIdent_IsSDCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", SwitchIdent_IsGameCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
 }
 
 void Menu_Main(void) {
@@ -236,6 +149,9 @@ void Menu_Main(void) {
 
 	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
+		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);
 
 	while(appletMainLoop()) {
 		SDL_ClearScreen(BACKGROUND_COLOUR);
@@ -292,6 +208,7 @@ void Menu_Main(void) {
 			break;
 	}
 
+	fsDeviceOperatorClose(&fsDeviceOperator);
 	serviceClose(&wlaninf_service);
 	serviceClose(&psm_service);
 	serviceClose(&setcal_service);
