@@ -37,9 +37,9 @@ INCLUDES    := include ../common
 EXEFS_SRC   := exefs_src
 ROMFS       := romfs
 
-VERSION_MAJOR := 1
-VERSION_MINOR := 0
-VERSION_MICRO := 1
+VERSION_MAJOR := 0
+VERSION_MINOR := 2
+VERSION_MICRO := 0
 
 APP_TITLE   := SwitchIdent-gui
 APP_AUTHOR  := Joel16

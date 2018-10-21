@@ -47,7 +47,8 @@ static void Menu_System(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Region:",  SwitchIdent_GetRegion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetCPUClock());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetGPUClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (state: %d) (RSSI: %d)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanState(&wlaninf_service), SwitchIdent_GetWlanRSSI(&wlaninf_service));
+	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (state: %d) (RSSI: %d)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanState(&wlaninf_service), SwitchIdent_GetWlanRSSI(&wlaninf_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 }
@@ -158,7 +159,7 @@ void Menu_Main(void) {
 		SDL_DrawRect(0, 0, 1280, 50, STATUS_BAR_COLOUR);
 		SDL_DrawRect(0, 50, 400, 670, MENU_BAR_COLOUR);
 
-		SDL_DrawText(30, ((50 - title_height) / 2), 25, BACKGROUND_COLOUR, "SwitchIdent");// 0x%lx 0x%lx", connect, disconnect);
+		SDL_DrawTextf(30, ((50 - title_height) / 2), 25, BACKGROUND_COLOUR, "SwitchIdent v%d.%d", VERSION_MAJOR, VERSION_MINOR);// 0x%lx 0x%lx", connect, disconnect);
 
 		SDL_DrawBanner(400 + ((880 - (banner_width)) / 2),  80);
 

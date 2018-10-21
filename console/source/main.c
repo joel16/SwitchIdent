@@ -3,13 +3,17 @@
 #include <inttypes.h>
 #include <switch.h>
 
+#include "fs.h"
 #include "kernel.h"
 #include "misc.h"
+#include "power.h"
 #include "storage.h"
 #include "system.h"
 #include "utils.h"
+#include "wlan.h"
 
-static Service setsys_service;
+static Service setsys_service, psm_service, wlaninf_service;
+static FsDeviceOperator fsDeviceOperator;
 
 static void SwitchIdent_InitServices(void) {
 	Result ret = 0;
@@ -40,9 +44,25 @@ static void SwitchIdent_InitServices(void) {
 
 	if (R_FAILED(ret = nsInitialize()))
 		printf("nsInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = psmInitialize()))
+		printf("psmInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = smGetService(&psm_service, "psm")))
+		printf("psmInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
+		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
+		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);
 }
 
 static void SwitchIdent_TermServices(void) {
+	fsDeviceOperatorClose(&fsDeviceOperator);
+	serviceClose(&wlaninf_service);
+	serviceClose(&psm_service);
+	psmExit();
 	nsExit();
 	apmExit();
 	appletExit();
@@ -61,7 +81,7 @@ int main(int argc, char **argv) {
 	SwitchIdent_InitServices();
 
 	printf("\x1b[1;1H"); //Move the cursor to the top left corner of the screen
-	printf("\x1b[32;1mSwitchIdent %d.%d %s\x1b[0m\n\n", VERSION_MAJOR, VERSION_MINOR, SwitchIdent_IsSafeMode()? "(SafeMode)" : "");
+	printf("\x1b[32;1mSwitchIdent v%d.%d %s\x1b[0m\n\n", VERSION_MAJOR, VERSION_MINOR, SwitchIdent_IsSafeMode()? "(SafeMode)" : "");
 
 	/*
 		Kernel/Hardware info:
@@ -78,7 +98,18 @@ int main(int argc, char **argv) {
 	*/
 	printf("\x1b[33;1m*\x1b[0m Region: \x1b[33;1m%s\n", SwitchIdent_GetRegion());
 	printf("\x1b[33;1m*\x1b[0m CPU clock: \x1b[33;1m%lu\x1b[0m MHz\n", SwitchIdent_GetCPUClock());
-	printf("\x1b[33;1m*\x1b[0m GPU clock: \x1b[33;1m%lu\x1b[0m MHz\n\n", SwitchIdent_GetGPUClock());
+	printf("\x1b[33;1m*\x1b[0m GPU clock: \x1b[33;1m%lu\x1b[0m MHz\n", SwitchIdent_GetGPUClock());
+	printf("\x1b[33;1m*\x1b[0m Wireless LAN: \x1b[33;1m%s\x1b[0m (RSSI: \x1b[33;1m%d\x1b[0m) (Quality: \x1b[33;1m%lu\x1b[0m)\n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
+	printf("\x1b[33;1m*\x1b[0m Bluetooth: \x1b[33;1m%s\x1b[0m\n\n", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
+
+	/*
+		Battery info:
+	*/
+	printf("\x1b[94;1m*\x1b[0m Battery percentage:  \x1b[94;1m%lu %%\x1b[0m (\x1b[94;1m%s\x1b[0m) \x1b[0m\n", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
+	printf("\x1b[94;1m*\x1b[0m Battery voltage state: \x1b[94;1m%s\n", SwitchIdent_GetVoltageState(&psm_service));
+	printf("\x1b[94;1m*\x1b[0m Battery charger type: \x1b[94;1m%s\n", SwitchIdent_GetChargerType());
+	printf("\x1b[94;1m*\x1b[0m Battery charging enabled: \x1b[94;1m%s\n", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
+	printf("\x1b[94;1m*\x1b[0m Battery ample power supplied: \x1b[94;1m%s\n\n", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 
 	/*
 		Misc info:
@@ -91,7 +122,9 @@ int main(int argc, char **argv) {
 	printf("\x1b[36;1m*\x1b[0m Bluetooth: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	printf("\x1b[36;1m*\x1b[0m NFC: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 	printf("\x1b[36;1m*\x1b[0m Automatic update: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
-	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n\n", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m Console information upload: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
+	printf("\x1b[36;1m*\x1b[0m SD card status: \x1b[36;1m%s\n", SwitchIdent_IsSDCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
+	printf("\x1b[36;1m*\x1b[0m Game card status: \x1b[36;1m%s\n\n", SwitchIdent_IsGameCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
 	
 	char sd_total_str[16], sd_free_str[16], sd_used_str[16];
 	Utils_GetSizeString(sd_total_str, SwitchIdent_GetTotalStorage(FsStorageId_SdCard));

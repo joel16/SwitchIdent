@@ -37,7 +37,7 @@ INCLUDES    := include ../common
 EXEFS_SRC   := exefs_src
 
 VERSION_MAJOR := 0
-VERSION_MINOR := 1
+VERSION_MINOR := 2
 VERSION_MICRO := 0
 
 APP_TITLE   := SwitchIdent-console

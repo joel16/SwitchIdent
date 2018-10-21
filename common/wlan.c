@@ -82,6 +82,19 @@ u32 SwitchIdent_GetWlanState(Service *srv) {
 	return out;
 }
 
+u32 SwitchIdent_GetWlanQuality(u32 dBm) {
+    u32 quality = 0;
+
+    if (dBm <= -100)
+        quality = 0;
+    else if (dBm >= -50)
+        quality = 100;
+    else
+        quality = 2 * (dBm + 100);
+
+    return quality;
+}
+
 u32 SwitchIdent_GetWlanRSSI(Service *srv) {
 	Result ret = 0;
 	u32 out = 0;
