@@ -951,7 +951,7 @@ Uint8 FC_LoadFontFromTTF(FC_Font* font, SDL_Renderer* renderer, TTF_Font* ttf, T
 
     // load system symbols
     FC_SetLoadingString(font,
-        "\ue000\ue001\ue002\ue003\ue004\ue005\ue041\ue045\ue046\ue085\ue086"
+        "\ue000\ue001\ue002\ue003\ue004\ue005\ue041\ue045\ue046\ue085\ue086\ue140\ue142\ue0b7\ue135\ue130\ue145"
 
         // TODO: figure out why it crashes while loading the whole symbols
         // "\ue000\ue001\ue002\ue003\ue004\ue005\ue006\ue007\ue008\ue009\ue00a\ue00b\ue00c\ue00d\ue00e\ue00f"

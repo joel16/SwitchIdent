@@ -18,7 +18,7 @@
 static u32 item_height = 0;
 
 static Service setcal_service, psm_service, wlaninf_service;
-static FsDeviceOperator fsDeviceOperator;
+//static FsDeviceOperator fsDeviceOperator;
 
 static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...) {
 	u32 title_width = 0;
@@ -47,7 +47,6 @@ static void Menu_System(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Region:",  SwitchIdent_GetRegion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetCPUClock());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetGPUClock());
-	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (state: %d) (RSSI: %d)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanState(&wlaninf_service), SwitchIdent_GetWlanRSSI(&wlaninf_service));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
@@ -55,10 +54,10 @@ static void Menu_System(void) {
 
 static void Menu_Power(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %% (%s)", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState(&psm_service));
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", SwitchIdent_GetChargerType());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
+	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState(&psm_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery charger type:", SwitchIdent_GetChargerType());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 }
 
 static void Menu_Storage(void) {
@@ -126,8 +125,8 @@ static void Menu_Misc(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "State:", SwitchIdent_GetOperationMode());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Automatic update:", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", SwitchIdent_IsSDCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", SwitchIdent_IsGameCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
+	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", SwitchIdent_IsSDCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
+	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", SwitchIdent_IsGameCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
 }
 
 void Menu_Main(void) {
@@ -148,8 +147,8 @@ void Menu_Main(void) {
 	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
-		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);
+	/*if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
+		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);*/
 
 	while(appletMainLoop()) {
 		SDL_ClearScreen(BACKGROUND_COLOUR);
@@ -162,12 +161,12 @@ void Menu_Main(void) {
 
 		SDL_DrawRect(0, 50 + (MENU_Y_DIST * selection), 400, MENU_Y_DIST, MENU_SELECTOR_COLOUR);
 
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2), 25, selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Kernel");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), 25, selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "System");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), 25, selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Power");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), 25, selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Storage");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), 25, selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), 25, selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2), 25, selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue140  Kernel");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), 25, selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue142  System");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), 25, selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue0b7  Power");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), 25, selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue135  Storage");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), 25, selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue130  Misc");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), 25, selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue145  Exit");
 
 		hidScanInput();
 		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
@@ -206,7 +205,7 @@ void Menu_Main(void) {
 			break;
 	}
 
-	fsDeviceOperatorClose(&fsDeviceOperator);
+	//fsDeviceOperatorClose(&fsDeviceOperator);
 	serviceClose(&wlaninf_service);
 	serviceClose(&psm_service);
 	serviceClose(&setcal_service);

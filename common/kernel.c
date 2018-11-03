@@ -51,7 +51,7 @@ char *SwitchIdent_GetFirmwareVersion(void) {
 	}
 
 	static char buf[9];
-	snprintf(buf, 9, "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
+	snprintf(buf, 19, "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
 
 	return buf;
 }

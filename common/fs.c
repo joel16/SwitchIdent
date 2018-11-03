@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "fs.h"
 
 static Result fsDeviceOperatorIsGameCardInserted(FsDeviceOperator *d, bool *out) {
@@ -38,18 +39,24 @@ static Result fsDeviceOperatorIsGameCardInserted(FsDeviceOperator *d, bool *out)
 
 bool SwitchIdent_IsSDCardInserted(FsDeviceOperator *fsDeviceOperator) {
 	bool inserted;
+    Result ret = 0;
 
-	if (R_FAILED(fsDeviceOperatorIsSdCardInserted(fsDeviceOperator, &inserted)))
+	if (R_FAILED(ret = fsDeviceOperatorIsSdCardInserted(fsDeviceOperator, &inserted))) {
+        printf("fsDeviceOperatorIsSdCardInserted() failed: 0x%x.\n\n", ret);
 		return false;
+    }
 
 	return inserted;
 }
 
 bool SwitchIdent_IsGameCardInserted(FsDeviceOperator *fsDeviceOperator) {
 	bool inserted;
+    Result ret = 0;
 
-	if (R_FAILED(fsDeviceOperatorIsGameCardInserted(fsDeviceOperator, &inserted)))
+	if (R_FAILED(ret = fsDeviceOperatorIsGameCardInserted(fsDeviceOperator, &inserted))) {
+        printf("fsDeviceOperatorIsGameCardInserted() failed: 0x%x.\n\n", ret);
 		return false;
+    }
 
 	return inserted;
 }
