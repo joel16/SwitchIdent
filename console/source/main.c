@@ -12,7 +12,7 @@
 #include "utils.h"
 #include "wlan.h"
 
-static Service setsys_service, psm_service, wlaninf_service;
+static Service psm_service, wlaninf_service;
 static FsDeviceOperator fsDeviceOperator;
 
 static void SwitchIdent_InitServices(void) {
@@ -22,9 +22,6 @@ static void SwitchIdent_InitServices(void) {
 		printf("setInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = setsysInitialize()))
-		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
-
-	if (R_FAILED(ret = smGetService(&setsys_service, "set:sys")))
 		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = splInitialize()))
@@ -69,7 +66,6 @@ static void SwitchIdent_TermServices(void) {
 	socketExit();
 	nifmExit();
 	splExit();
-	serviceClose(&setsys_service);
 	setsysExit();
 	setExit();
 }
@@ -86,7 +82,7 @@ int main(int argc, char **argv) {
 	/*
 		Kernel/Hardware info:
 	*/
-	printf("\x1b[31;1m*\x1b[0m Firmware version: \x1b[31;1m%s\n", SwitchIdent_GetFirmwareVersion(&setsys_service));
+	printf("\x1b[31;1m*\x1b[0m Firmware version: \x1b[31;1m%s\n", SwitchIdent_GetFirmwareVersion());
 	printf("\x1b[31;1m*\x1b[0m Kernel version: \x1b[31;1m%s\n", SwitchIdent_GetKernelVersion());
 	printf("\x1b[31;1m*\x1b[0m Hardware: \x1b[31;1m%s\x1b[0m (\x1b[31;1m%s\x1b[0m) \x1b[0m\n", SwitchIdent_GetHardwareType(), SwitchIdent_GetUnit());
 	printf("\x1b[31;1m*\x1b[0m Serial number: \x1b[31;1m%s\n", SwitchIdent_GetSerialNumber());

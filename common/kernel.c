@@ -41,17 +41,17 @@ char *SwitchIdent_GetDramDesc(void) {
 	return dram_desc[id];
 }
 
-char *SwitchIdent_GetFirmwareVersion(Service *srv) {
+char *SwitchIdent_GetFirmwareVersion(void) {
 	Result ret = 0;
 	SetSysFirmwareVersion ver;
 
-	if (R_FAILED(ret = setsysGetFirmwareVersion(srv, &ver))) {
+	if (R_FAILED(ret = setsysGetFirmwareVersion(&ver))) {
 		printf("setsysGetFirmwareVersion() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}
 
 	static char buf[9];
-	snprintf(buf, 9, ver.version_long + 28);
+	snprintf(buf, 9, "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
 
 	return buf;
 }

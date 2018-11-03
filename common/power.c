@@ -40,42 +40,6 @@ static Result psmIsBatteryChargingEnabled(Service *srv, bool *out) {
     return rc;
 }
 
-static Result psmGetBatteryVoltageState(Service *srv, u32 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 12;
-    
-    Result rc = serviceIpcDispatch(srv);
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u32 voltage;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->voltage;
-        }
-    }
-    
-    return rc;
-}
-
 static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out) {
     IpcCommand c;
     ipcInitialize(&c);
@@ -258,7 +222,7 @@ char *SwitchIdent_GetVoltageState(Service *srv) {
         "Unknown"
     };
 
-    if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(srv, &out))) {
+    if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(&out))) {
         if (out < 15)
             return states[out];
     }

@@ -17,7 +17,7 @@
 
 static u32 item_height = 0;
 
-static Service setsys_service, setcal_service, psm_service, wlaninf_service;
+static Service setcal_service, psm_service, wlaninf_service;
 static FsDeviceOperator fsDeviceOperator;
 
 static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...) {
@@ -34,7 +34,7 @@ static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...)
 }
 
 static void Menu_Kernel(void) {
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Firmware version:",  SwitchIdent_GetFirmwareVersion(&setsys_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Firmware version:",  SwitchIdent_GetFirmwareVersion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Kernel version:",  SwitchIdent_GetKernelVersion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Hardware:", SwitchIdent_GetHardwareType());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Unit:", SwitchIdent_GetUnit());
@@ -139,9 +139,6 @@ void Menu_Main(void) {
 	int selection = 0;
 	Result ret = 0;
 
-	if (R_FAILED(ret = smGetService(&setsys_service, "set:sys")))
-		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
-
 	if (R_FAILED(ret = smGetService(&setcal_service, "set:cal")))
 		printf("setcalInitialize() failed: 0x%x.\n\n", ret);
 
@@ -213,5 +210,4 @@ void Menu_Main(void) {
 	serviceClose(&wlaninf_service);
 	serviceClose(&psm_service);
 	serviceClose(&setcal_service);
-	serviceClose(&setsys_service);
 }
