@@ -11,15 +11,19 @@ Bleeding edge builds can be found in the [gh-pages branch](https://github.com/jo
 - Displays serial number.
 - Displays DRAM ID.
 - Displays device ID.
-- Displays region (needs more testing).
+- Displays system region.
 - Displays CPU and GPU clocks based on the performance configuration returned by the APM service.
 - Displays whether the switch is in docked/handheld state.
 - Displays IP Address.
 - Displays storage sizes for SD, NAND (user) and NAND (system).
 - Displays various system statuses. (Bluetooth, WLAN, NFC, etc.)
+- Displays battery percentage and charging status.
+- Displays battery charger type.
+- Displays if battery charging is enabled.
+- Displays if ample power is supplied.
+- Displays WIreless RSSI signals and quality.
 
 # Credits:
-
 - Eve/Hikari/Junko: Beta testing
 - Klodeckel: Beta testing
 - hopperplaysmc: Beta testing
