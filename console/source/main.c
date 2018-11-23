@@ -3,7 +3,6 @@
 #include <inttypes.h>
 #include <switch.h>
 
-#include "fs.h"
 #include "kernel.h"
 #include "misc.h"
 #include "power.h"
@@ -13,7 +12,7 @@
 #include "wlan.h"
 
 static Service psm_service, wlaninf_service;
-//static FsDeviceOperator fsDeviceOperator;
+static bool isSDInserted = false, isGameCardInserted = false;
 
 static void SwitchIdent_InitServices(void) {
 	Result ret = 0;
@@ -45,20 +44,29 @@ static void SwitchIdent_InitServices(void) {
 	if (R_FAILED(ret = psmInitialize()))
 		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 
+	if (R_FAILED(ret = pcvInitialize()))
+		printf("pcvInitialize() failed: 0x%x.\n\n", ret);
+
 	if (R_FAILED(ret = smGetService(&psm_service, "psm")))
 		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 
-	/*if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
-		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);*/
+	FsDeviceOperator fsDeviceOperator;
+	if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
+		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);
+
+	isSDInserted = SwitchIdent_IsSDCardInserted(&fsDeviceOperator);
+	isGameCardInserted = SwitchIdent_IsGameCardInserted(&fsDeviceOperator);
+
+	fsDeviceOperatorClose(&fsDeviceOperator);
 }
 
 static void SwitchIdent_TermServices(void) {
-	//fsDeviceOperatorClose(&fsDeviceOperator);
 	serviceClose(&wlaninf_service);
 	serviceClose(&psm_service);
+	pcvExit();
 	psmExit();
 	nsExit();
 	apmExit();
@@ -123,7 +131,7 @@ int main(int argc, char **argv) {
 	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandSystem));
 	Utils_GetSizeString(nand_s_used_str, SwitchIdent_GetUsedStorage(FsStorageId_NandSystem));
 
-	printf("\x1b[28;0H");
+	printf("\x1b[30;0H");
 	printf("\x1b[35;1m*\x1b[0m Total SD Capacity: \x1b[35;1m%s\n", sd_total_str);
 	printf("\x1b[35;1m*\x1b[0m Free SD Capacity: \x1b[35;1m%s\n", sd_free_str);
 	printf("\x1b[35;1m*\x1b[0m Used storage: \x1b[35;1m%s\n", sd_used_str);
@@ -144,7 +152,7 @@ int main(int argc, char **argv) {
 		*/
 		printf("\x1b[11;0H");
 		printf("\x1b[33;1m*\x1b[0m CPU clock: \x1b[33;1m%lu\x1b[0m MHz          \n", SwitchIdent_GetCPUClock());
-		printf("\x1b[33;1m*\x1b[0m CPU clock: \x1b[33;1m%lu\x1b[0m MHz          \n", SwitchIdent_GetCPUClock());
+		printf("\x1b[33;1m*\x1b[0m GPU clock: \x1b[33;1m%lu\x1b[0m MHz          \n", SwitchIdent_GetGPUClock());
 		printf("\x1b[33;1m*\x1b[0m Wireless LAN: \x1b[33;1m%s\x1b[0m (RSSI: \x1b[33;1m%d\x1b[0m) (Quality: \x1b[33;1m%lu\x1b[0m)          \n\n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
 
 		/*
@@ -159,10 +167,9 @@ int main(int argc, char **argv) {
 		printf("\x1b[94;1m*\x1b[0m Battery ample power supplied: \x1b[94;1m%s          \n\n", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 
 		printf("\x1b[26;0H");
-		printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s          \n\n", SwitchIdent_GetOperationMode());
-		// The following aren't working
-		//printf("\x1b[36;1m*\x1b[0m SD card status: \x1b[36;1m%s          \n", SwitchIdent_IsSDCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
-		//printf("\x1b[36;1m*\x1b[0m Game card status: \x1b[36;1m%s          \n\n", SwitchIdent_IsGameCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
+		printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s          \n", SwitchIdent_GetOperationMode());
+		printf("\x1b[36;1m*\x1b[0m SD card status: \x1b[36;1m%s          \n", isSDInserted? "Inserted" : "Not inserted");
+		printf("\x1b[36;1m*\x1b[0m Game card status: \x1b[36;1m%s          \n\n", isGameCardInserted? "Inserted" : "Not inserted");
 
 		//Scan all the inputs. This should be done once for each frame
 		hidScanInput();

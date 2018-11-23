@@ -4,6 +4,7 @@
 #include "SDL_helper.h"
 
 static void Term_Services(void) {
+	pcvExit();
 	psmExit();
 	nsExit();
 	apmExit();
@@ -56,6 +57,9 @@ static void Init_Services(void) {
 
 	if (R_FAILED(ret = psmInitialize()))
 		printf("psmInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = pcvInitialize()))
+		printf("pcvInitialize() failed: 0x%x.\n\n", ret);
 }
 
 int main(int argc, char **argv) {

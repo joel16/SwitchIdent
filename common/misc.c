@@ -17,3 +17,23 @@ bool SwitchIdent_GetFlag(SetSysFlag flag) {
 
 	return out;
 }
+
+bool SwitchIdent_IsSDCardInserted(FsDeviceOperator *fsDeviceOperator) {
+	Result ret = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = fsDeviceOperatorIsSdCardInserted(fsDeviceOperator, &out)))
+		printf("fsDeviceOperatorIsSdCardInserted() failed: 0x%x.\n\n", ret);
+
+	return out;
+}
+
+bool SwitchIdent_IsGameCardInserted(FsDeviceOperator *fsDeviceOperator) {
+	Result ret = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = fsDeviceOperatorIsGameCardInserted(fsDeviceOperator, &out)))
+		printf("fsDeviceOperatorIsGameCardInserted() failed: 0x%x.\n\n", ret);
+
+	return out;
+}

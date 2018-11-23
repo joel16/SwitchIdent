@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <switch.h>
 
-#include "fs.h"
 #include "kernel.h"
 #include "menus.h"
 #include "misc.h"
@@ -16,9 +15,8 @@
 #define MAX_MENU_ITEMS 5
 
 static u32 item_height = 0;
-
 static Service setcal_service, psm_service, wlaninf_service;
-//static FsDeviceOperator fsDeviceOperator;
+static bool isSDInserted = false, isGameCardInserted = false;
 
 static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...) {
 	u32 title_width = 0;
@@ -125,8 +123,8 @@ static void Menu_Misc(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "State:", SwitchIdent_GetOperationMode());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Automatic update:", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
-	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", SwitchIdent_IsSDCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
-	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", SwitchIdent_IsGameCardInserted(&fsDeviceOperator)? "Inserted" : "Not inserted");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", isSDInserted? "Inserted" : "Not inserted");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", isGameCardInserted? "Inserted" : "Not inserted");
 }
 
 void Menu_Main(void) {
@@ -147,8 +145,14 @@ void Menu_Main(void) {
 	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 
-	/*if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
-		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);*/
+	FsDeviceOperator fsDeviceOperator;
+	if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
+		printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);
+
+	isSDInserted = SwitchIdent_IsSDCardInserted(&fsDeviceOperator);
+	isGameCardInserted = SwitchIdent_IsGameCardInserted(&fsDeviceOperator);
+
+	fsDeviceOperatorClose(&fsDeviceOperator);
 
 	while(appletMainLoop()) {
 		SDL_ClearScreen(BACKGROUND_COLOUR);
@@ -205,7 +209,6 @@ void Menu_Main(void) {
 			break;
 	}
 
-	//fsDeviceOperatorClose(&fsDeviceOperator);
 	serviceClose(&wlaninf_service);
 	serviceClose(&psm_service);
 	serviceClose(&setcal_service);
