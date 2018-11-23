@@ -204,31 +204,20 @@ char *SwitchIdent_GetVoltageState(Service *srv) {
 
     char *states[]=
     {
-        "max77620_sd0",
-        "max77620_sd1",
-        "max77620_sd2",
-        "max77620_sd3",
-        "max77620_ldo0 -> 1.2 V",
-        "max77620_ldo1",
-        "max77620_ldo2 -> 3.3 V - 1.8 V",
-        "max77620_ldo3",
-        "max77620_ldo4 -> 0.85 V",
-        "max77620_ldo5",
-        "max77620_ldo6 -> 2.9 V",
-        "max77620_ldo7",
-        "max77620_ldo8 -> 1.05 V",
-        "max77621_cpu",
-        "max77621_gpu",
+        "Power state needs shutdown",
+        "Power state needs sleep",
+        "Performance boost cannot be entered",
+        "Normal",
         "Unknown"
     };
 
     if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(&out))) {
-        if (out < 15)
+        if (out < 4)
             return states[out];
     }
 
     printf("psmGetBatteryVoltageState() failed: 0x%x.\n\n", ret);
-    return states[15];
+    return states[4];
 }
 
 u64 SwitchIdent_GetRawBatteryChargePercentage(Service *srv) {

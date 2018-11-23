@@ -53,10 +53,10 @@ static void Menu_System(void) {
 
 static void Menu_Power(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %% (%s)", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
-	//Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState(&psm_service));
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery charger type:", SwitchIdent_GetChargerType());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState(&psm_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", SwitchIdent_GetChargerType());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 }
 
 static void Menu_Storage(void) {
