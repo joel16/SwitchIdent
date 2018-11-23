@@ -45,9 +45,10 @@ static void Menu_System(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Region:",  SwitchIdent_GetRegion());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetCPUClock());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetGPUClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "EMC clock:", "%lu MHz", SwitchIdent_GetEMCClock());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 }
 
 static void Menu_Power(void) {

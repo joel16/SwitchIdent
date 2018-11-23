@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
 	char hostname[128];
 	Result ret = gethostname(hostname, sizeof(hostname));
 	// 21
-	printf("\x1b[20;0H");
+	printf("\x1b[21;0H");
 	printf("\x1b[36;1m*\x1b[0m IP: \x1b[36;1m%s\n", R_SUCCEEDED(ret)? hostname : NULL);
 	printf("\x1b[36;1m*\x1b[0m Wireless LAN: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled");
 	printf("\x1b[36;1m*\x1b[0m Bluetooth: \x1b[36;1m%s\n", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandSystem));
 	Utils_GetSizeString(nand_s_used_str, SwitchIdent_GetUsedStorage(FsStorageId_NandSystem));
 
-	printf("\x1b[30;0H");
+	printf("\x1b[31;0H");
 	printf("\x1b[35;1m*\x1b[0m Total SD Capacity: \x1b[35;1m%s\n", sd_total_str);
 	printf("\x1b[35;1m*\x1b[0m Free SD Capacity: \x1b[35;1m%s\n", sd_free_str);
 	printf("\x1b[35;1m*\x1b[0m Used storage: \x1b[35;1m%s\n", sd_used_str);
@@ -153,12 +153,13 @@ int main(int argc, char **argv) {
 		printf("\x1b[11;0H");
 		printf("\x1b[33;1m*\x1b[0m CPU clock: \x1b[33;1m%lu\x1b[0m MHz          \n", SwitchIdent_GetCPUClock());
 		printf("\x1b[33;1m*\x1b[0m GPU clock: \x1b[33;1m%lu\x1b[0m MHz          \n", SwitchIdent_GetGPUClock());
+		printf("\x1b[33;1m*\x1b[0m EMC clock: \x1b[33;1m%lu\x1b[0m MHz          \n", SwitchIdent_GetGPUClock());
 		printf("\x1b[33;1m*\x1b[0m Wireless LAN: \x1b[33;1m%s\x1b[0m (RSSI: \x1b[33;1m%d\x1b[0m) (Quality: \x1b[33;1m%lu\x1b[0m)          \n\n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
 
 		/*
 			Battery info:
 		*/
-		printf("\x1b[15;0H");
+		printf("\x1b[16;0H");
 		printf("\x1b[94;1m*\x1b[0m Battery percentage:  \x1b[94;1m%lu %%\x1b[0m (\x1b[94;1m%s\x1b[0m) \x1b[0m          \n", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
 		// Voltage state needs more clarification
 		//printf("\x1b[94;1m*\x1b[0m Battery voltage state: \x1b[94;1m%s          \n", SwitchIdent_GetVoltageState(&psm_service));
@@ -166,7 +167,7 @@ int main(int argc, char **argv) {
 		printf("\x1b[94;1m*\x1b[0m Battery charging enabled: \x1b[94;1m%s          \n", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
 		printf("\x1b[94;1m*\x1b[0m Battery ample power supplied: \x1b[94;1m%s          \n\n", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
 
-		printf("\x1b[26;0H");
+		printf("\x1b[27;0H");
 		printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s          \n", SwitchIdent_GetOperationMode());
 		printf("\x1b[36;1m*\x1b[0m SD card status: \x1b[36;1m%s          \n", isSDInserted? "Inserted" : "Not inserted");
 		printf("\x1b[36;1m*\x1b[0m Game card status: \x1b[36;1m%s          \n\n", isGameCardInserted? "Inserted" : "Not inserted");
