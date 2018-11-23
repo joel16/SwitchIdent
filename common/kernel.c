@@ -4,16 +4,6 @@
 #include "kernel.h"
 #include "setsys.h"
 
-static u64 SwitchIdent_GetPackage1MaxverConstant(void) {
-	Result ret = 0;
-	u64 version = 0x0;
-
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_Version, &version)))
-		printf("splGetConfig(SplConfigItem_Version) failed: 0x%x.\n\n", ret);
-
-	return (version + 1); // (Package1 maxver constant - 1) + 1
-}
-
 char *SwitchIdent_GetDramDesc(void) {
 	Result ret = 0;
 	u64 id = 0;
@@ -29,14 +19,17 @@ char *SwitchIdent_GetDramDesc(void) {
 		"MarikoIowax1x2Samsung4gb",
 		"MarikoIowaSamsung4gb",
 		"MarikoIowaSamsung8gb",
-		"Unknown",
+		"MarikoIowaHynix4gb",
 		"Unknown",
 		"MarikoHoagSamsung4gb",
-		"MarikoHoagSamsung8gb"
+		"MarikoHoagSamsung8gb",
+		"Unknown"
 	};
 
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id)))
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id))) {
 		printf("splGetConfig(SplConfigItem_DramId) failed: 0x%x.\n\n", ret);
+		return dram_desc[14];
+	}
 
 	return dram_desc[id];
 }
@@ -56,23 +49,6 @@ char *SwitchIdent_GetFirmwareVersion(void) {
 	return buf;
 }
 
-char *SwitchIdent_GetKernelVersion(void) {
-	char *versions[] = {
-		"Unknown0",
-		"Unknown1",
-		"5.0.0",
-		"6.1.0",
-		"7.4.0",
-		"7.4.0",
-		"X.X.X",
-		"9.3.0",
-		"Unknown2",
-		"Unknown3"
-	};
-
-	return versions[SwitchIdent_GetPackage1MaxverConstant()];
-}
-
 char *SwitchIdent_GetHardwareType(void) {
 	Result ret = 0;
 	u64 hardware_type = 4;
@@ -80,30 +56,32 @@ char *SwitchIdent_GetHardwareType(void) {
 	char *hardware_300[] = {
 		"Icosa",
 		"Copper",
-		"Unknown",
-		"Unknown",
+		"Hoag",
 		"Unknown"
 	};
 
 	char *hardware_400[] = {
 		"Icosa",
 		"Copper",
-		"Unknown",
+		"Hoag",
 		"Mariko",
 		"Unknown"
 	};
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_HardwareType, &hardware_type)))
 		printf("splGetConfig(SplConfigItem_HardwareType) failed: 0x%x.\n\n", ret);
+	else {
+		if (kernelAbove400())
+			return hardware_400[hardware_type];
+		else
+			return hardware_300[hardware_type];
+	}
 
-	if (SwitchIdent_GetPackage1MaxverConstant() < 0x6)
-		return hardware_300[hardware_type];
-
-	return hardware_400[hardware_type];
+	return hardware_400[4];
 }
 
 // [4.0.0+] Kiosk mode (0 = retail; 1 = kiosk)
-static bool SwitchIdent_IsKiosk(void) {
+bool SwitchIdent_IsKiosk(void) {
 	u64 isKiosk = 0;
 	Result ret = 0;
 
@@ -118,7 +96,7 @@ static bool SwitchIdent_IsKiosk(void) {
 
 char *SwitchIdent_GetUnit(void) {
 	Result ret = 0;
-	u64 isRetail = 2;
+	u64 isRetail = 0;
 
 	char *unit[] = {
 		"Debug",
@@ -126,12 +104,9 @@ char *SwitchIdent_GetUnit(void) {
 		"Unknown"
 	};
 
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRetail, &isRetail)))
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRetail, &isRetail))) {
 		printf("splGetConfig(SplConfigItem_IsRetail) failed: 0x%x.\n\n", ret);
-
-	if (SwitchIdent_GetPackage1MaxverConstant() >= 0x6) {// 4.00+
-		if (SwitchIdent_IsKiosk())
-			return "Kiosk";
+		return unit[2];
 	}
 
 	return unit[isRetail];
@@ -140,14 +115,14 @@ char *SwitchIdent_GetUnit(void) {
 bool SwitchIdent_IsSafeMode(void) {
 	Result ret = 0;
 	u64 safemode = 0;
-	bool out = false;
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRecoveryBoot, &safemode)))
 		printf("splGetConfig(SplConfigItem_IsRecoveryBoot) failed: 0x%x.\n\n", ret);
 
-	out = safemode; // 1 = true, 0 = false
+	if (safemode)
+		return true;
 
-	return out;
+	return false;
 }
 
 u64 SwitchIdent_GetDeviceID(void) {

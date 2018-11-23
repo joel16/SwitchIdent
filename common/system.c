@@ -30,13 +30,12 @@ char *SwitchIdent_GetRegion(void) {
 
 	SetRegion regionCode = 0;
 
-	if (R_SUCCEEDED(ret = setGetRegionCode(&regionCode))) {
-		if (regionCode < 4)
-			return regions[regionCode];
+	if (R_FAILED(ret = setGetRegionCode(&regionCode))) {
+		printf("setGetRegionCode() failed: 0x%x.\n\n", ret);
+		return regions[4];
 	}
-	
-	printf("setGetRegionCode() failed: 0x%x.\n\n", ret);
-	return regions[4];
+
+	return regions[regionCode];
 }
 
 u32 SwitchIdent_GetCPUClock(void) {

@@ -33,12 +33,11 @@ static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...)
 
 static void Menu_Kernel(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Firmware version:",  SwitchIdent_GetFirmwareVersion());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Kernel version:",  SwitchIdent_GetKernelVersion());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Hardware:", SwitchIdent_GetHardwareType());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Unit:", SwitchIdent_GetUnit());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Serial:", SwitchIdent_GetSerialNumber());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "DRAM ID:", SwitchIdent_GetDramDesc());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "Device ID:", "%llu", SwitchIdent_GetDeviceID());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Hardware:", SwitchIdent_GetHardwareType());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Unit:", SwitchIdent_GetUnit());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Serial:", SwitchIdent_GetSerialNumber());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "DRAM ID:", SwitchIdent_GetDramDesc());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Device ID:", "%llu", SwitchIdent_GetDeviceID());
 }
 
 static void Menu_System(void) {

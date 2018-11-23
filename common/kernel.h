@@ -3,7 +3,6 @@
 
 char *SwitchIdent_GetDramDesc(void);
 char *SwitchIdent_GetFirmwareVersion(void);
-char *SwitchIdent_GetKernelVersion(void);
 char *SwitchIdent_GetHardwareType(void);
 char *SwitchIdent_GetUnit(void);
 bool SwitchIdent_IsSafeMode(void);
