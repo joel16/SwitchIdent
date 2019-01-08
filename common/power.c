@@ -4,6 +4,9 @@
 
 #include "power.h"
 
+static bool psm_initialized = false;
+PsmSession psm_session;
+
 static Result psmIsBatteryChargingEnabled(Service *srv, bool *out) {
     IpcCommand c;
     ipcInitialize(&c);
@@ -148,6 +151,33 @@ static Result psmGetBatteryAgePercentage(Service *srv, u64 *out) {
     return rc;
 }
 
+Result powerInitialize(void) {
+    Result rc = 0;
+    if (psm_initialized) {
+        return rc;
+    }
+    rc = psmInitialize();
+    if (R_FAILED(rc)) {
+        return rc;
+    }
+    rc = psmBindStateChangeEvent(&psm_session, 1, 1, 1);
+    if (R_FAILED(rc)) {
+        psmExit();
+        return rc;
+    }
+    psm_initialized = true;
+    return rc;
+}
+
+void powerExit(void) {
+    if (!psm_initialized) {
+        return;
+    }
+    psmUnbindStateChangeEvent(&psm_session);
+    psmExit();
+    psm_initialized = false;
+}
+
 u32 SwitchIdent_GetBatteryPercent(void) {
 	Result ret = 0;
 	u32 out = 0;
@@ -188,17 +218,17 @@ bool SwitchIdent_IsCharging(void) {
     return false;
 }
 
-bool SwitchIdent_IsChargingEnabled(Service *srv) {
+bool SwitchIdent_IsChargingEnabled(void) {
 	Result ret = 0;
 	bool out = 0;
 
-	if (R_FAILED(ret = psmIsBatteryChargingEnabled(srv, &out)))
+	if (R_FAILED(ret = psmIsBatteryChargingEnabled(&psm_session.s, &out)))
 		return -1;
 
 	return out;
 }
 
-char *SwitchIdent_GetVoltageState(Service *srv) {
+char *SwitchIdent_GetVoltageState(void) {
 	Result ret = 0;
 	u32 out = 0;
 
@@ -220,31 +250,31 @@ char *SwitchIdent_GetVoltageState(Service *srv) {
     return states[4];
 }
 
-u64 SwitchIdent_GetRawBatteryChargePercentage(Service *srv) {
+u64 SwitchIdent_GetRawBatteryChargePercentage(void) {
 	Result ret = 0;
 	u64 out = 0;
 
-	if (R_FAILED(ret = psmGetRawBatteryChargePercentage(srv, &out)))
+	if (R_FAILED(ret = psmGetRawBatteryChargePercentage(&psm_session.s, &out)))
 		return -1;
 
 	return out;
 }
 
-bool SwitchIdent_IsEnoughPowerSupplied(Service *srv) {
+bool SwitchIdent_IsEnoughPowerSupplied(void) {
 	Result ret = 0;
 	bool out = 0;
 
-	if (R_FAILED(ret = psmIsEnoughPowerSupplied(srv, &out)))
+	if (R_FAILED(ret = psmIsEnoughPowerSupplied(&psm_session.s, &out)))
 		return -1;
 
 	return out;
 }
 
-u64 SwitchIdent_GetBatteryAgePercent(Service *srv) {
+u64 SwitchIdent_GetBatteryAgePercent(void) {
 	Result ret = 0;
 	u64 out = 0;
 
-	if (R_FAILED(ret = psmGetBatteryAgePercentage(srv, &out)))
+	if (R_FAILED(ret = psmGetBatteryAgePercentage(&psm_session.s, &out)))
 		return -1;
 
 	return out;
