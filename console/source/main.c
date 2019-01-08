@@ -79,7 +79,6 @@ static void SwitchIdent_TermServices(void) {
 }
 
 int main(int argc, char **argv) {
-	gfxInitDefault();
 	consoleInit(NULL);
 
 	SwitchIdent_InitServices();
@@ -179,12 +178,11 @@ int main(int argc, char **argv) {
 		if (kDown & KEY_PLUS) 
 			break; // break in order to return to hbmenu
 
-		gfxFlushBuffers();
-		gfxSwapBuffers();
-		gfxWaitForVsync();
+		consoleUpdate(NULL);
 	}
 
 	SwitchIdent_TermServices();
-	gfxExit();
+
+	consoleExit(NULL);
 	return 0;
 }
