@@ -15,7 +15,7 @@
 #define MAX_MENU_ITEMS 5
 
 static u32 item_height = 0;
-static Service setcal_service, psm_service, wlaninf_service;
+static Service setcal_service, wlaninf_service;
 static bool isSDInserted = false, isGameCardInserted = false;
 
 static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...) {
@@ -52,10 +52,10 @@ static void Menu_System(void) {
 
 static void Menu_Power(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Battery percentage:",  "%lu %% (%s)", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState(&psm_service));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "Battery voltage state:", SwitchIdent_GetVoltageState());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", SwitchIdent_GetChargerType());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled()? "Yes" : "No");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied()? "Yes" : "No");
 }
 
 static void Menu_Storage(void) {
@@ -139,9 +139,6 @@ void Menu_Main(void) {
 	if (R_FAILED(ret = smGetService(&setcal_service, "set:cal")))
 		printf("setcalInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = smGetService(&psm_service, "psm")))
-		printf("psmInitialize() failed: 0x%x.\n\n", ret);
-
 	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 
@@ -210,6 +207,5 @@ void Menu_Main(void) {
 	}
 
 	serviceClose(&wlaninf_service);
-	serviceClose(&psm_service);
 	serviceClose(&setcal_service);
 }

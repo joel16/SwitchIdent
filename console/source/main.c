@@ -11,7 +11,7 @@
 #include "utils.h"
 #include "wlan.h"
 
-static Service psm_service, wlaninf_service;
+static Service wlaninf_service;
 static bool isSDInserted = false, isGameCardInserted = false;
 
 static void SwitchIdent_InitServices(void) {
@@ -41,14 +41,11 @@ static void SwitchIdent_InitServices(void) {
 	if (R_FAILED(ret = nsInitialize()))
 		printf("nsInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = psmInitialize()))
-		printf("psmInitialize() failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = powerInitialize()))
+		printf("powerInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = pcvInitialize()))
 		printf("pcvInitialize() failed: 0x%x.\n\n", ret);
-
-	if (R_FAILED(ret = smGetService(&psm_service, "psm")))
-		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
@@ -65,9 +62,8 @@ static void SwitchIdent_InitServices(void) {
 
 static void SwitchIdent_TermServices(void) {
 	serviceClose(&wlaninf_service);
-	serviceClose(&psm_service);
 	pcvExit();
-	psmExit();
+	powerExit();
 	nsExit();
 	apmExit();
 	appletExit();
@@ -160,10 +156,10 @@ int main(int argc, char **argv) {
 		*/
 		printf("\x1b[15;0H");
 		printf("\x1b[94;1m*\x1b[0m Battery percentage:  \x1b[94;1m%lu %%\x1b[0m (\x1b[94;1m%s\x1b[0m) \x1b[0m          \n", SwitchIdent_GetBatteryPercent(), SwitchIdent_IsCharging()? "charging" : "not charging");
-		printf("\x1b[94;1m*\x1b[0m Battery voltage state: \x1b[94;1m%s          \n", SwitchIdent_GetVoltageState(&psm_service));
+		printf("\x1b[94;1m*\x1b[0m Battery voltage state: \x1b[94;1m%s          \n", SwitchIdent_GetVoltageState());
 		printf("\x1b[94;1m*\x1b[0m Battery charger type: \x1b[94;1m%s          \n", SwitchIdent_GetChargerType());
-		printf("\x1b[94;1m*\x1b[0m Battery charging enabled: \x1b[94;1m%s          \n", SwitchIdent_IsChargingEnabled(&psm_service)? "Yes" : "No");
-		printf("\x1b[94;1m*\x1b[0m Battery ample power supplied: \x1b[94;1m%s          \n\n", SwitchIdent_IsEnoughPowerSupplied(&psm_service)? "Yes" : "No");
+		printf("\x1b[94;1m*\x1b[0m Battery charging enabled: \x1b[94;1m%s          \n", SwitchIdent_IsChargingEnabled()? "Yes" : "No");
+		printf("\x1b[94;1m*\x1b[0m Battery ample power supplied: \x1b[94;1m%s          \n\n", SwitchIdent_IsEnoughPowerSupplied()? "Yes" : "No");
 
 		printf("\x1b[27;0H");
 		printf("\x1b[36;1m*\x1b[0m State: \x1b[36;1m%s          \n", SwitchIdent_GetOperationMode());

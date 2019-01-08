@@ -1,11 +1,12 @@
 #include <switch.h>
 
 #include "menus.h"
+#include "power.h"
 #include "SDL_helper.h"
 
 static void Term_Services(void) {
 	pcvExit();
-	psmExit();
+	powerExit();
 	nsExit();
 	apmExit();
 	appletExit();
@@ -55,8 +56,8 @@ static void Init_Services(void) {
 	if (R_FAILED(ret = nsInitialize()))
 		printf("nsInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = psmInitialize()))
-		printf("psmInitialize() failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = powerInitialize()))
+		printf("powerInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = pcvInitialize()))
 		printf("pcvInitialize() failed: 0x%x.\n\n", ret);
