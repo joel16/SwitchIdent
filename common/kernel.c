@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <switch.h>
 
-#include "kernel.h"
-#include "setsys.h"
-
 char *SwitchIdent_GetDramDesc(void) {
 	Result ret = 0;
 	u64 id = 0;

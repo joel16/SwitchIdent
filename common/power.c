@@ -1,8 +1,5 @@
 #include <stdio.h>
-
 #include <switch.h>
-
-#include "power.h"
 
 static bool psm_initialized = false;
 PsmSession psm_session;

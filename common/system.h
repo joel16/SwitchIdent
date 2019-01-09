@@ -6,7 +6,7 @@ char *SwitchIdent_GetRegion(void);
 u32 SwitchIdent_GetCPUClock(void);
 u32 SwitchIdent_GetGPUClock(void);
 u32 SwitchIdent_GetEMCClock(void);
-char *SwitchIdent_GetBluetoothBdAddress(Service *srv);
-char *SwitchIdent_GetWirelessLanMacAddress(Service *srv);
+char *SwitchIdent_GetBluetoothBdAddress(void);
+char *SwitchIdent_GetWirelessLanMacAddress(void);
 
 #endif

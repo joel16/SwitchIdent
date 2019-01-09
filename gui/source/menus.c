@@ -15,7 +15,6 @@
 #define MAX_MENU_ITEMS 5
 
 static u32 item_height = 0;
-static Service setcal_service, wlaninf_service;
 static bool isSDInserted = false, isGameCardInserted = false;
 
 static void Menu_DrawItem(int x, int y, char *item_title, const char *text, ...) {
@@ -45,7 +44,7 @@ static void Menu_System(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetCPUClock());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetGPUClock());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "EMC clock:", "%lu MHz", SwitchIdent_GetEMCClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(&wlaninf_service), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI(&wlaninf_service)));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI()));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
 }
@@ -125,6 +124,8 @@ static void Menu_Misc(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", isSDInserted? "Inserted" : "Not inserted");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", isGameCardInserted? "Inserted" : "Not inserted");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "BT addr:", SwitchIdent_GetBluetoothBdAddress());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 400, "WLAN addr:", SwitchIdent_GetWirelessLanMacAddress());
 }
 
 void Menu_Main(void) {
@@ -135,12 +136,6 @@ void Menu_Main(void) {
 	int banner_width = 200;
 	int selection = 0;
 	Result ret = 0;
-
-	if (R_FAILED(ret = smGetService(&setcal_service, "set:cal")))
-		printf("setcalInitialize() failed: 0x%x.\n\n", ret);
-
-	if (R_FAILED(ret = smGetService(&wlaninf_service, "wlan:inf")))
-		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 
 	FsDeviceOperator fsDeviceOperator;
 	if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
@@ -205,7 +200,4 @@ void Menu_Main(void) {
 		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == MAX_MENU_ITEMS)))
 			break;
 	}
-
-	serviceClose(&wlaninf_service);
-	serviceClose(&setcal_service);
 }

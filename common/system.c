@@ -4,8 +4,7 @@
 #include <switch.h>
 
 #include "misc.h"
-#include "setsys.h"
-#include "system.h"
+#include "setcal.h"
 
 char *SwitchIdent_GetLanguage(void) {
 	Result ret = 0;
@@ -68,11 +67,11 @@ u32 SwitchIdent_GetEMCClock(void) {
 	return out/1000000;
 }
 
-char *SwitchIdent_GetBluetoothBdAddress(Service *srv) {
+char *SwitchIdent_GetBluetoothBdAddress(void) {
 	Result ret = 0;
-	static char bd_addr[0x7];
+	static char bd_addr[0x13];
 
-	if (R_FAILED(ret = setcalGetBluetoothBdAddress(srv, bd_addr))) {
+	if (R_FAILED(ret = setcalGetBluetoothBdAddress(bd_addr))) {
 		printf("setcalGetBluetoothBdAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}
@@ -80,11 +79,11 @@ char *SwitchIdent_GetBluetoothBdAddress(Service *srv) {
 	return bd_addr;
 }
 
-char *SwitchIdent_GetWirelessLanMacAddress(Service *srv) {
+char *SwitchIdent_GetWirelessLanMacAddress(void) {
 	Result ret = 0;
-	static char mac_addr[0x7];
+	static char mac_addr[0x13];
 
-	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(srv, mac_addr))) {
+	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(mac_addr))) {
 		printf("setcalGetWirelessLanMacAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}

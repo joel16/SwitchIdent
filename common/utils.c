@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <switch.h>
 
-#include "utils.h"
-
 void Utils_GetSizeString(char *string, u64 size) {
 	double double_size = (double)size;
 

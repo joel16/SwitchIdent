@@ -2,9 +2,12 @@
 
 #include "menus.h"
 #include "power.h"
+#include "setcal.h"
 #include "SDL_helper.h"
+#include "wlan.h"
 
 static void Term_Services(void) {
+	wlaninfExit();
 	pcvExit();
 	powerExit();
 	nsExit();
@@ -13,6 +16,7 @@ static void Term_Services(void) {
 	socketExit();
 	nifmExit();
 	splExit();
+	setcalExit();
 	setsysExit();
 	setExit();
 	SDL_HelperTerm();
@@ -38,6 +42,9 @@ static void Init_Services(void) {
 	if (R_FAILED(ret = setsysInitialize()))
 		printf("setsysInitialize() failed: 0x%x.\n\n", ret);
 
+	if (R_FAILED(ret = setcalInitialize()))
+		printf("setcalInitialize() failed: 0x%x.\n\n", ret);
+
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
 
@@ -61,6 +68,9 @@ static void Init_Services(void) {
 
 	if (R_FAILED(ret = pcvInitialize()))
 		printf("pcvInitialize() failed: 0x%x.\n\n", ret);
+
+	if (R_FAILED(ret = wlaninfInitialize()))
+		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
 }
 
 int main(int argc, char **argv) {
