@@ -89,3 +89,40 @@ Result setcalGetWirelessLanMacAddress(char *address) {
 
     return rc;
 }
+
+Result setcalGetBatteryLot(char *out) {
+    IpcCommand c;
+    ipcInitialize(&c);
+
+    if (out) memset(out, 0, 0x19);
+
+    struct {
+        u64 magic;
+        u64 cmd_id;
+    } *raw;
+
+    raw = ipcPrepareHeader(&c, sizeof(*raw));
+
+    raw->magic = SFCI_MAGIC;
+    raw->cmd_id = 12;
+
+    Result rc = serviceIpcDispatch(&setcal_service);
+
+    if (R_SUCCEEDED(rc)) {
+        IpcParsedCommand r;
+        ipcParse(&r);
+
+        struct {
+            u64 magic;
+            u64 result;
+            char battery_lot[0x18];
+        } *resp = r.Raw;
+
+        rc = resp->result;
+
+        if (R_SUCCEEDED(rc) && out)
+            memcpy(out, resp->battery_lot, 0x18);
+    }
+
+    return rc;
+}

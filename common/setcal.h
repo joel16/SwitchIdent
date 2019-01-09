@@ -5,5 +5,6 @@ Result setcalInitialize(void);
 void setcalExit(void);
 Result setcalGetBluetoothBdAddress(char *address);
 Result setcalGetWirelessLanMacAddress(char *address);
+Result setcalGetBatteryLot(char *out);
 
 #endif

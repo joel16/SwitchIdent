@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <switch.h>
 
+#include "setcal.h"
+
 static bool psm_initialized = false;
 PsmSession psm_session;
 
@@ -275,4 +277,16 @@ u64 SwitchIdent_GetBatteryAgePercent(void) {
 		return -1;
 
 	return out;
+}
+
+char *SwitchIdent_GetBatteryLot(void) {
+    Result ret = 0;
+    static char battery_lot[0x13];
+
+    if (R_FAILED(ret = setcalGetBatteryLot(battery_lot))) {
+        printf("setcalGetBatteryLot() failed: 0x%x.\n\n", ret);
+        return NULL;
+    }
+
+    return battery_lot;
 }

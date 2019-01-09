@@ -55,6 +55,7 @@ static void Menu_Power(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Battery charger type:", SwitchIdent_GetChargerType());
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent_IsChargingEnabled()? "Yes" : "No");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent_IsEnoughPowerSupplied()? "Yes" : "No");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Battery lot number:", SwitchIdent_GetBatteryLot());
 }
 
 static void Menu_Storage(void) {

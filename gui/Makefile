@@ -50,7 +50,7 @@ APP_VERSION := ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
 #---------------------------------------------------------------------------------
 ARCH     := -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS   := -g -O3 -ffunction-sections -Wall -Wno-write-strings `freetype-config --cflags` `sdl2-config --cflags` \
+CFLAGS   := -g -Wall -O3 -ffunction-sections `freetype-config --cflags` `sdl2-config --cflags` \
             -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_MICRO=$(VERSION_MICRO) \
             -DAPP_TITLE="\"$(APP_TITLE)\"" \
             -DGITVERSION="\"${GITVERSION}\"" \
