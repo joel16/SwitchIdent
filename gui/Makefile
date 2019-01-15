@@ -38,7 +38,7 @@ EXEFS_SRC   := exefs_src
 ROMFS       := romfs
 
 VERSION_MAJOR := 0
-VERSION_MINOR := 2
+VERSION_MINOR := 3
 VERSION_MICRO := 0
 
 APP_TITLE   := SwitchIdent-gui
