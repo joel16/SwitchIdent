@@ -20,7 +20,6 @@ static void Term_Services(void) {
 	setsysExit();
 	setExit();
 	SDL_HelperTerm();
-	plExit();
 	romfsExit();
 }
 
@@ -29,12 +28,6 @@ static void Init_Services(void) {
 
 	if (R_FAILED(ret = romfsInit()))
 		printf("romfsInit() failed: 0x%x.\n\n", ret);
-
-	if (R_FAILED(ret = plInitialize()))
-		printf("plInitialize() failed: 0x%x.\n\n", ret);
-
-	if (R_FAILED(ret = SDL_HelperInit()))
-		printf("SDL_HelperInit() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = setInitialize()))
 		printf("setInitialize() failed: 0x%x.\n\n", ret);
@@ -71,6 +64,8 @@ static void Init_Services(void) {
 
 	if (R_FAILED(ret = wlaninfInitialize()))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+
+	SDL_HelperInit();
 }
 
 int main(int argc, char **argv) {

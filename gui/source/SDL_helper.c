@@ -1,14 +1,11 @@
 #include "SDL_helper.h"
 
+#define FC_USE_SDL_GPU 1
+
 static SDL_Window *WINDOW;
 static SDL_Renderer *RENDERER;
 static FC_Font *font;
-static PlFontData fontData, fontExtData;
 static SDL_Texture *banner, *drive;
-
-static FC_Font *GetFont(int size) {
-	return font;
-}
 
 static void SDL_LoadImage(SDL_Texture **texture, char *path) {
 	SDL_Surface *loaded_surface = NULL;
@@ -23,12 +20,10 @@ static void SDL_LoadImage(SDL_Texture **texture, char *path) {
 	SDL_FreeSurface(loaded_surface);
 }
 
-Result SDL_HelperInit(void) {
-	Result ret = 0;
-
+void SDL_HelperInit(void) {
 	SDL_Init(SDL_INIT_VIDEO);
 	WINDOW = SDL_CreateWindow("SwitchIdent", 0, 0, 1280, 720, SDL_WINDOW_FULLSCREEN);
-	RENDERER = SDL_CreateRenderer(WINDOW, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_BLEND);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
@@ -37,16 +32,8 @@ Result SDL_HelperInit(void) {
 	SDL_LoadImage(&banner, "romfs:/banner.png");
 	SDL_LoadImage(&drive, "romfs:/drive.png");
 
-	if (R_FAILED(ret = plGetSharedFontByType(&fontData, PlSharedFontType_Standard)))
-		return ret;
-
-	if (R_FAILED(ret = plGetSharedFontByType(&fontExtData, PlSharedFontType_NintendoExt)))
-		return ret;
-
 	font = FC_CreateFont();
-	FC_LoadFont_RW(font, RENDERER, SDL_RWFromMem((void*)fontData.address, fontData.size), SDL_RWFromMem((void*)fontExtData.address, fontExtData.size), 1, 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);
-
-	return 0;
+	FC_LoadFont(font, RENDERER, "romfs:/Ubuntu-R.ttf", 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);
 }
 
 void SDL_HelperTerm(void) {
@@ -73,7 +60,7 @@ void SDL_DrawRect(int x, int y, int w, int h, SDL_Color colour) {
 }
 
 void SDL_DrawText(int x, int y, int size, SDL_Color colour, const char *text) {
-	FC_DrawColor(GetFont(size), RENDERER, x, y, colour, text);
+	FC_DrawColor(font, RENDERER, x, y, colour, text);
 }
 
 void SDL_DrawTextf(int x, int y, int size, SDL_Color colour, const char* text, ...) {
@@ -86,8 +73,6 @@ void SDL_DrawTextf(int x, int y, int size, SDL_Color colour, const char* text, .
 }
 
 void SDL_GetTextDimensions(int size, const char *text, u32 *width, u32 *height) {
-	FC_Font *font = GetFont(size);
-
 	if (width != NULL) 
 		*width = FC_GetWidth(font, text);
 	if (height != NULL) 

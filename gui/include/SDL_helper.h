@@ -15,7 +15,7 @@
 #define MENU_INFO_TITLE_COLOUR FC_MakeColor(144, 137, 129, 255)
 #define MENU_INFO_DESC_COLOUR  FC_MakeColor(51, 51, 51, 255)
 
-Result SDL_HelperInit(void);
+void SDL_HelperInit(void);
 void SDL_HelperTerm(void);
 void SDL_ClearScreen(SDL_Color colour);
 void SDL_DrawRect(int x, int y, int w, int h, SDL_Color colour);

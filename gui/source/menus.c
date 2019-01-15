@@ -125,8 +125,8 @@ static void Menu_Misc(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", isSDInserted? "Inserted" : "Not inserted");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", isGameCardInserted? "Inserted" : "Not inserted");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "BT addr:", SwitchIdent_GetBluetoothBdAddress());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 400, "WLAN addr:", SwitchIdent_GetWirelessLanMacAddress());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "BT address:", SwitchIdent_GetBluetoothBdAddress());
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 400, "WLAN address:", SwitchIdent_GetWirelessLanMacAddress());
 }
 
 void Menu_Main(void) {
@@ -158,12 +158,12 @@ void Menu_Main(void) {
 
 		SDL_DrawRect(0, 50 + (MENU_Y_DIST * selection), 400, MENU_Y_DIST, MENU_SELECTOR_COLOUR);
 
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2), 25, selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue140  Kernel");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), 25, selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue142  System");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), 25, selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue0b7  Power");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), 25, selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue135  Storage");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), 25, selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue130  Misc");
-		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), 25, selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "\ue145  Exit");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2), 25, selection == 0? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Kernel");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 1), 25, selection == 1? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "System");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 2), 25, selection == 2? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Power");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 3), 25, selection == 3? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Storage");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), 25, selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
+		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), 25, selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
 
 		hidScanInput();
 		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
