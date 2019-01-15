@@ -22,7 +22,9 @@ Bleeding edge builds can be found in the [gh-pages branch](https://github.com/jo
 - Displays if ample power is supplied.
 - Displays wireless RSSI signals and quality.
 - Displays battery voltage sate.
-- Display SD and gamecard slot statuses.
+- Displays battery lot number.
+- Displays SD and gamecard slot statuses.
+- Displays WiFi and Bluetooth MAC address.
 
 # Credits:
 - Eve/Hikari/Junko, Klodeckel and hopperplaysmc: Beta testing
