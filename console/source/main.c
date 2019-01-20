@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 		printf("\x1b[10;0H");
 		printf("\x1b[33;1m*\x1b[0m CPU clock: \x1b[33;1m%d\x1b[0m MHz          \n", SwitchIdent_GetCPUClock());
 		printf("\x1b[33;1m*\x1b[0m GPU clock: \x1b[33;1m%d\x1b[0m MHz          \n", SwitchIdent_GetGPUClock());
-		printf("\x1b[33;1m*\x1b[0m EMC clock: \x1b[33;1m%d\x1b[0m MHz          \n", SwitchIdent_GetGPUClock());
+		printf("\x1b[33;1m*\x1b[0m EMC clock: \x1b[33;1m%d\x1b[0m MHz          \n", SwitchIdent_GetEMCClock());
 		printf("\x1b[33;1m*\x1b[0m Wireless LAN: \x1b[33;1m%s\x1b[0m (RSSI: \x1b[33;1m%d\x1b[0m) (Quality: \x1b[33;1m%d\x1b[0m)          \n", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI()));
 
 		/*
