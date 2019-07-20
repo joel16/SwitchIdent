@@ -41,8 +41,8 @@ u32 SwitchIdent_GetCPUClock(void) {
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_Cpu, &out)))
-		printf("pcvGetClockRate(PcvModule_Cpu) failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = pcvGetClockRate(PcvModule_CpuBus, &out)))
+		printf("pcvGetClockRate(PcvModule_CpuBus) failed: 0x%x.\n\n", ret);
 
 	return out/1000000;
 }
@@ -51,8 +51,8 @@ u32 SwitchIdent_GetGPUClock(void) {
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_Gpu, &out)))
-		printf("pcvGetClockRate(PcvModule_Gpu) failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = pcvGetClockRate(PcvModule_GPU, &out)))
+		printf("pcvGetClockRate(PcvModule_GPU) failed: 0x%x.\n\n", ret);
 	
 	return out/1000000;
 }
@@ -61,8 +61,8 @@ u32 SwitchIdent_GetEMCClock(void) {
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_Emc, &out)))
-		printf("pcvGetClockRate(PcvModule_Emc) failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = pcvGetClockRate(PcvModule_EMC , &out)))
+		printf("pcvGetClockRate(PcvModule_EMC ) failed: 0x%x.\n\n", ret);
 	
 	return out/1000000;
 }

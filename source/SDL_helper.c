@@ -1,3 +1,5 @@
+#include <SDL2/SDL_image.h>
+
 #include "SDL_helper.h"
 
 #define FC_USE_SDL_GPU 1
@@ -8,32 +10,39 @@ static FC_Font *font;
 static SDL_Texture *banner, *drive;
 
 static void SDL_LoadImage(SDL_Texture **texture, char *path) {
-	SDL_Surface *loaded_surface = NULL;
-	loaded_surface = IMG_Load(path);
+	SDL_Surface *image = NULL;
 
-	if (loaded_surface) {
-		Uint32 colorkey = SDL_MapRGB(loaded_surface->format, 0, 0, 0);
-		SDL_SetColorKey(loaded_surface, SDL_TRUE, colorkey);
-		*texture = SDL_CreateTextureFromSurface(RENDERER, loaded_surface);
-	}
-
-	SDL_FreeSurface(loaded_surface);
+	image = IMG_Load(path);
+	if (!image)
+		return;
+	
+	SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGBA8888, 0);
+	*texture = SDL_CreateTextureFromSurface(RENDERER, image);
+	SDL_FreeSurface(image);
 }
 
-void SDL_HelperInit(void) {
-	SDL_Init(SDL_INIT_VIDEO);
+int SDL_HelperInit(void) {
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+		return -1;
+	
 	WINDOW = SDL_CreateWindow("SwitchIdent", 0, 0, 1280, 720, SDL_WINDOW_FULLSCREEN);
+	if (WINDOW == NULL)
+		return -1;
+	
 	RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_BLEND);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
-	IMG_Init(IMG_INIT_PNG);
+	int flags = IMG_INIT_PNG;
+	if ((IMG_Init(flags) & flags) != flags)
+		return -1;
 
 	SDL_LoadImage(&banner, "romfs:/banner.png");
 	SDL_LoadImage(&drive, "romfs:/drive.png");
 
 	font = FC_CreateFont();
 	FC_LoadFont(font, RENDERER, "romfs:/Ubuntu-R.ttf", 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);
+
+	return 0;
 }
 
 void SDL_HelperTerm(void) {

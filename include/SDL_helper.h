@@ -1,9 +1,9 @@
-#ifndef NX_SHELL_SDL_HELPER_H
-#define NX_SHELL_SDL_HELPER_H
+#ifndef _SWITCHIDENT_SDL_HELPER_H_
+#define _SWITCHIDENT_SDL_HELPER_H_
 
 #include <switch.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+
 #include "SDL_FontCache.h"
 
 #define BACKGROUND_COLOUR      FC_MakeColor(242, 241, 240, 255)
@@ -15,7 +15,7 @@
 #define MENU_INFO_TITLE_COLOUR FC_MakeColor(144, 137, 129, 255)
 #define MENU_INFO_DESC_COLOUR  FC_MakeColor(51, 51, 51, 255)
 
-void SDL_HelperInit(void);
+int SDL_HelperInit(void);
 void SDL_HelperTerm(void);
 void SDL_ClearScreen(SDL_Color colour);
 void SDL_DrawRect(int x, int y, int w, int h, SDL_Color colour);

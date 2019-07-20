@@ -1,87 +1,5 @@
 #include <switch.h>
 
-static Service wlaninf_service;
-
-Result wlaninfInitialize(void) {
-    return smGetService(&wlaninf_service, "wlan:inf");
-}
-
-void wlaninfExit(void) {
-    serviceClose(&wlaninf_service); 
-}
-
-static Result wlaninfGetState(u32 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 10;
-    
-    Result rc = serviceIpcDispatch(&wlaninf_service);
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u32 state;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->state;
-        }
-    }
-    
-    return rc;
-}
-
-static Result wlaninfGetRssi(u32 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 12;
-    
-    Result rc = serviceIpcDispatch(&wlaninf_service);
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u32 rssi;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->rssi;
-        }
-    }
-    
-    return rc;
-}
-
 u32 SwitchIdent_GetWlanState(void) {
 	Result ret = 0;
 	u32 out = 0;
@@ -107,9 +25,9 @@ u32 SwitchIdent_GetWlanQuality(u32 dBm) {
 
 u32 SwitchIdent_GetWlanRSSI(void) {
 	Result ret = 0;
-	u32 out = 0;
+	s32 out = 0;
 
-	if (R_FAILED(ret = wlaninfGetRssi(&out)))
+	if (R_FAILED(ret = wlaninfGetRSSI(&out)))
 		return -1;
 
 	return out;
