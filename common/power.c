@@ -3,10 +3,7 @@
 
 #include "setcal.h"
 
-static bool psm_initialized = false;
-PsmSession psm_session;
-
-static Result psmIsBatteryChargingEnabled(Service *srv, bool *out) {
+static Result psmIsBatteryChargingEnabled(bool *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -20,7 +17,7 @@ static Result psmIsBatteryChargingEnabled(Service *srv, bool *out) {
     raw->magic = SFCI_MAGIC;
     raw->cmd_id = 4;
     
-    Result rc = serviceIpcDispatch(srv);
+    Result rc = serviceIpcDispatch(psmGetServiceSession());
     
     if(R_SUCCEEDED(rc)) {
         IpcParsedCommand r;
@@ -42,7 +39,7 @@ static Result psmIsBatteryChargingEnabled(Service *srv, bool *out) {
     return rc;
 }
 
-static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out) {
+static Result psmGetRawBatteryChargePercentage(u64 *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -56,7 +53,7 @@ static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out) {
     raw->magic = SFCI_MAGIC;
     raw->cmd_id = 13;
     
-    Result rc = serviceIpcDispatch(srv);
+    Result rc = serviceIpcDispatch(psmGetServiceSession());
     
     if(R_SUCCEEDED(rc)) {
         IpcParsedCommand r;
@@ -78,7 +75,7 @@ static Result psmGetRawBatteryChargePercentage(Service *srv, u64 *out) {
     return rc;
 }
 
-static Result psmIsEnoughPowerSupplied(Service *srv, bool *out) {
+static Result psmIsEnoughPowerSupplied(bool *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -92,7 +89,7 @@ static Result psmIsEnoughPowerSupplied(Service *srv, bool *out) {
     raw->magic = SFCI_MAGIC;
     raw->cmd_id = 14;
     
-    Result rc = serviceIpcDispatch(srv);
+    Result rc = serviceIpcDispatch(psmGetServiceSession());
     
     if(R_SUCCEEDED(rc)) {
         IpcParsedCommand r;
@@ -114,7 +111,7 @@ static Result psmIsEnoughPowerSupplied(Service *srv, bool *out) {
     return rc;
 }
 
-static Result psmGetBatteryAgePercentage(Service *srv, u64 *out) {
+static Result psmGetBatteryAgePercentage(u64 *out) {
     IpcCommand c;
     ipcInitialize(&c);
     
@@ -128,7 +125,7 @@ static Result psmGetBatteryAgePercentage(Service *srv, u64 *out) {
     raw->magic = SFCI_MAGIC;
     raw->cmd_id = 15;
     
-    Result rc = serviceIpcDispatch(srv);
+    Result rc = serviceIpcDispatch(psmGetServiceSession());
     
     if(R_SUCCEEDED(rc)) {
         IpcParsedCommand r;
@@ -148,33 +145,6 @@ static Result psmGetBatteryAgePercentage(Service *srv, u64 *out) {
     }
     
     return rc;
-}
-
-Result powerInitialize(void) {
-    Result rc = 0;
-    if (psm_initialized) {
-        return rc;
-    }
-    rc = psmInitialize();
-    if (R_FAILED(rc)) {
-        return rc;
-    }
-    rc = psmBindStateChangeEvent(&psm_session, 1, 1, 1);
-    if (R_FAILED(rc)) {
-        psmExit();
-        return rc;
-    }
-    psm_initialized = true;
-    return rc;
-}
-
-void powerExit(void) {
-    if (!psm_initialized) {
-        return;
-    }
-    psmUnbindStateChangeEvent(&psm_session);
-    psmExit();
-    psm_initialized = false;
 }
 
 u32 SwitchIdent_GetBatteryPercent(void) {
@@ -221,7 +191,7 @@ bool SwitchIdent_IsChargingEnabled(void) {
 	Result ret = 0;
 	bool out = 0;
 
-	if (R_FAILED(ret = psmIsBatteryChargingEnabled(&psm_session.s, &out)))
+	if (R_FAILED(ret = psmIsBatteryChargingEnabled(&out)))
 		return -1;
 
 	return out;
@@ -253,7 +223,7 @@ u64 SwitchIdent_GetRawBatteryChargePercentage(void) {
 	Result ret = 0;
 	u64 out = 0;
 
-	if (R_FAILED(ret = psmGetRawBatteryChargePercentage(&psm_session.s, &out)))
+	if (R_FAILED(ret = psmGetRawBatteryChargePercentage(&out)))
 		return -1;
 
 	return out;
@@ -263,7 +233,7 @@ bool SwitchIdent_IsEnoughPowerSupplied(void) {
 	Result ret = 0;
 	bool out = 0;
 
-	if (R_FAILED(ret = psmIsEnoughPowerSupplied(&psm_session.s, &out)))
+	if (R_FAILED(ret = psmIsEnoughPowerSupplied(&out)))
 		return -1;
 
 	return out;
@@ -273,7 +243,7 @@ u64 SwitchIdent_GetBatteryAgePercent(void) {
 	Result ret = 0;
 	u64 out = 0;
 
-	if (R_FAILED(ret = psmGetBatteryAgePercentage(&psm_session.s, &out)))
+	if (R_FAILED(ret = psmGetBatteryAgePercentage(&out)))
 		return -1;
 
 	return out;
