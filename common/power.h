@@ -9,6 +9,6 @@ char *SwitchIdent_GetVoltageState(void);
 u64 SwitchIdent_GetRawBatteryChargePercentage(void);
 bool SwitchIdent_IsEnoughPowerSupplied(void);
 u64 SwitchIdent_GetBatteryAgePercent(void);
-char *SwitchIdent_GetBatteryLot(void);
+SetBatteryLot SwitchIdent_GetBatteryLot(void);
 
 #endif

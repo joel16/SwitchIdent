@@ -7,13 +7,14 @@
 #include "wlan.h"
 
 static void Term_Services(void) {
+	socketExit();
 	wlaninfExit();
 	pcvExit();
 	psmExit();
 	nsExit();
 	apmExit();
 	appletExit();
-	socketExit();
+	clkrstExit();
 	nifmExit();
 	splExit();
 	setcalExit();
@@ -41,11 +42,11 @@ static void Init_Services(void) {
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = nifmInitialize()))
+	if (R_FAILED(ret = nifmInitialize(NifmServiceType_User)))
 		printf("nifmInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = socketInitializeDefault()))
-		printf("socketInitializeDefault() failed: 0x%x.\n\n", ret);
+	if(R_FAILED(ret = clkrstInitialize()))
+		printf("clkrstInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = appletInitialize()))
 		printf("appletInitialize() failed: 0x%x.\n\n", ret);
@@ -64,6 +65,8 @@ static void Init_Services(void) {
 
 	if (R_FAILED(ret = wlaninfInitialize()))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+
+	printf("Loaded services!\n");
 
 	SDL_HelperInit();
 }

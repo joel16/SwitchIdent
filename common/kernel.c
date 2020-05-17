@@ -134,10 +134,10 @@ u64 SwitchIdent_GetDeviceID(void) {
 
 char *SwitchIdent_GetSerialNumber(void) {
 	Result ret = 0;
-	static char serial[0x19];
+	SetSysSerialNumber *serial = {0};
 
 	if (R_FAILED(ret = setsysGetSerialNumber(serial)))
 		printf("setsysGetSerialNumber() failed: 0x%x.\n\n", ret);
 
-	return serial;
+	return serial->number;
 }

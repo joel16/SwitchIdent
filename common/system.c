@@ -38,31 +38,46 @@ char *SwitchIdent_GetRegion(void) {
 }
 
 u32 SwitchIdent_GetCPUClock(void) {
+	ClkrstSession clkSession;
 	Result ret = 0;
 	u32 out = 0;
+	
+	clkrstOpenSession(&clkSession, PcvModuleId_CpuBus, 3);
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_CpuBus, &out)))
-		printf("pcvGetClockRate(PcvModule_CpuBus) failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = clkrstGetClockRate(&clkSession, &out)))
+		printf("clkrstGetClockRate(PcvModuleId_CpuBus) failed: 0x%x.\n\n", ret);
+
+	clkrstCloseSession(&clkSession);
 
 	return out/1000000;
 }
 
 u32 SwitchIdent_GetGPUClock(void) {
+	ClkrstSession clkSession;
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_GPU, &out)))
-		printf("pcvGetClockRate(PcvModule_GPU) failed: 0x%x.\n\n", ret);
+	clkrstOpenSession(&clkSession, PcvModuleId_GPU, 3);
+
+	if (R_FAILED(ret = clkrstGetClockRate(&clkSession, &out)))
+		printf("clkrstGetClockRate(PcvModuleId_GPU) failed: 0x%x.\n\n", ret);
+
+	clkrstCloseSession(&clkSession);
 	
 	return out/1000000;
 }
 
 u32 SwitchIdent_GetEMCClock(void) {
+	ClkrstSession clkSession;
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_EMC , &out)))
-		printf("pcvGetClockRate(PcvModule_EMC ) failed: 0x%x.\n\n", ret);
+	clkrstOpenSession(&clkSession, PcvModuleId_EMC, 3);
+
+	if (R_FAILED(ret = clkrstGetClockRate(&clkSession, &out)))
+		printf("clkrstGetClockRate(PcvModuleId_EMC) failed: 0x%x.\n\n", ret);
+
+	clkrstCloseSession(&clkSession);
 	
 	return out/1000000;
 }
@@ -83,7 +98,7 @@ char *SwitchIdent_GetWirelessLanMacAddress(void) {
 	Result ret = 0;
 	static char mac_addr[0x13];
 
-	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(mac_addr))) {
+	if (R_FAILED(ret = setcalGetWirelessLanAddress(mac_addr))) {
 		printf("setcalGetWirelessLanMacAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}

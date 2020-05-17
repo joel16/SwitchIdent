@@ -3,8 +3,8 @@
 
 #include <switch.h>
 
-u64 SwitchIdent_GetTotalStorage(FsStorageId storage_id);
-u64 SwitchIdent_GetFreeStorage(FsStorageId storage_id);
-u64 SwitchIdent_GetUsedStorage(FsStorageId storage_id);
+s64 SwitchIdent_GetTotalStorage(NcmStorageId storage_id);
+s64 SwitchIdent_GetFreeStorage(NcmStorageId storage_id);
+s64 SwitchIdent_GetUsedStorage(NcmStorageId storage_id);
 
 #endif

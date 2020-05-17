@@ -3,148 +3,21 @@
 
 #include "setcal.h"
 
+
 static Result psmIsBatteryChargingEnabled(bool *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 4;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u8 enable;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->enable;
-        }
-    }
-    
-    return rc;
+    return serviceDispatchOut(psmGetServiceSession(), 4, out);
 }
 
 static Result psmGetRawBatteryChargePercentage(u64 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 13;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u64 age_percentage;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->age_percentage;
-        }
-    }
-    
-    return rc;
+    return serviceDispatchOut(psmGetServiceSession(), 13, out);
 }
 
 static Result psmIsEnoughPowerSupplied(bool *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 14;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u8 power_supplied;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->power_supplied;
-        }
-    }
-    
-    return rc;
+    return serviceDispatchOut(psmGetServiceSession(), 14, out);
 }
 
 static Result psmGetBatteryAgePercentage(u64 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 15;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u64 age_percentage;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->age_percentage;
-        }
-    }
-    
-    return rc;
+    return serviceDispatchOut(psmGetServiceSession(), 15, out);
 }
 
 u32 SwitchIdent_GetBatteryPercent(void) {
@@ -249,14 +122,14 @@ u64 SwitchIdent_GetBatteryAgePercent(void) {
 	return out;
 }
 
-char *SwitchIdent_GetBatteryLot(void) {
+SetBatteryLot SwitchIdent_GetBatteryLot(void) {
     Result ret = 0;
-    static char battery_lot[0x13];
+    SetBatteryLot lot = {0};
 
-    if (R_FAILED(ret = setcalGetBatteryLot(battery_lot))) {
+    if (R_FAILED(ret = setcalGetBatteryLot(&lot))) {
         printf("setcalGetBatteryLot() failed: 0x%x.\n\n", ret);
-        return NULL;
+        return lot;
     }
 
-    return battery_lot;
+    return lot;
 }
