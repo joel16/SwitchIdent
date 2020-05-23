@@ -6,6 +6,8 @@
 #include "SDL_helper.h"
 #include "wlan.h"
 
+//#define DEBUG
+
 static void Term_Services(void) {
 	socketExit();
 	wlaninfExit();
@@ -72,6 +74,11 @@ static void Init_Services(void) {
 }
 
 int main(int argc, char **argv) {
+#ifdef DEBUG
+	socketInitializeDefault();
+    nxlinkStdio();
+	printf("Loading Services...\n");
+#endif
 	Init_Services();
 	Menu_Main();
 	Term_Services();

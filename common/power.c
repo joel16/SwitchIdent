@@ -4,20 +4,20 @@
 #include "setcal.h"
 
 
-static Result psmIsBatteryChargingEnabled(bool *out) {
-    return serviceDispatchOut(psmGetServiceSession(), 4, out);
+static Result psmIsBatteryChargingEnabled(u8 *out) {
+    return serviceDispatchOut(psmGetServiceSession(), 4, *out);
 }
 
 static Result psmGetRawBatteryChargePercentage(u64 *out) {
-    return serviceDispatchOut(psmGetServiceSession(), 13, out);
+    return serviceDispatchOut(psmGetServiceSession(), 13, *out);
 }
 
-static Result psmIsEnoughPowerSupplied(bool *out) {
-    return serviceDispatchOut(psmGetServiceSession(), 14, out);
+static Result psmIsEnoughPowerSupplied(u8 *out) {
+    return serviceDispatchOut(psmGetServiceSession(), 14, *out);
 }
 
 static Result psmGetBatteryAgePercentage(u64 *out) {
-    return serviceDispatchOut(psmGetServiceSession(), 15, out);
+    return serviceDispatchOut(psmGetServiceSession(), 15, *out);
 }
 
 u32 SwitchIdent_GetBatteryPercent(void) {
@@ -60,9 +60,9 @@ bool SwitchIdent_IsCharging(void) {
     return false;
 }
 
-bool SwitchIdent_IsChargingEnabled(void) {
+u8 SwitchIdent_IsChargingEnabled(void) {
 	Result ret = 0;
-	bool out = 0;
+	u8 out = 0;
 
 	if (R_FAILED(ret = psmIsBatteryChargingEnabled(&out)))
 		return -1;
@@ -102,9 +102,9 @@ u64 SwitchIdent_GetRawBatteryChargePercentage(void) {
 	return out;
 }
 
-bool SwitchIdent_IsEnoughPowerSupplied(void) {
+u8 SwitchIdent_IsEnoughPowerSupplied(void) {
 	Result ret = 0;
-	bool out = 0;
+	u8 out = 0;
 
 	if (R_FAILED(ret = psmIsEnoughPowerSupplied(&out)))
 		return -1;
@@ -116,8 +116,10 @@ u64 SwitchIdent_GetBatteryAgePercent(void) {
 	Result ret = 0;
 	u64 out = 0;
 
-	if (R_FAILED(ret = psmGetBatteryAgePercentage(&out)))
+	if (R_FAILED(ret = psmGetBatteryAgePercentage(&out))){
+        printf("psmGetBatteryAgePercentage() failed: 0x%x.\n\n", ret);
 		return -1;
+    }
 
 	return out;
 }
