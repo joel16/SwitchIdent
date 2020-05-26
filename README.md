@@ -1,8 +1,8 @@
-# SwitchIdent [![Travis](https://img.shields.io/travis/joel16/SwitchIdent.svg?style=flat-square)](https://github.com/joel16/SwitchIdent/tree/gh-pages)
+# SwitchIdent [![Travis](https://travis-ci.org/Rai/SwitchIdent.svg?branch=master)](https://github.com/Rai/SwitchIdent/tree/gh-pages)
 
 This is yet another identity tool that is continuing the series of <*device name here*>ident. This tool allows users to get various bits of information from your Nintendo Switch device, hence the name 'ident' as in identifying your Nintendo Switch.
 
-Bleeding edge builds can be found in the [gh-pages branch](https://github.com/joel16/SwitchIdent/tree/gh-pages).
+Bleeding edge builds can be found in the [gh-pages branch](https://github.com/Rai/SwitchIdent/tree/gh-pages).
 
 # Features: 
 - Displays system firmware version.
