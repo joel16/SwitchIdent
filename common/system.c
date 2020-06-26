@@ -24,6 +24,9 @@ char *SwitchIdent_GetRegion(void) {
 		"USA",
 		"EUR",
 		"AUS",
+		"CHN",
+		"KOR",
+		"TWN",
 		"Unknown"
 	};
 
@@ -31,7 +34,7 @@ char *SwitchIdent_GetRegion(void) {
 
 	if (R_FAILED(ret = setGetRegionCode(&regionCode))) {
 		printf("setGetRegionCode() failed: 0x%x.\n\n", ret);
-		return regions[4];
+		return regions[7];
 	}
 
 	return regions[regionCode];
