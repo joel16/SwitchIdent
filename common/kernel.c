@@ -9,24 +9,41 @@ char *SwitchIdent_GetDramDesc(void) {
 		"EristaIcosaSamsung4gb",
 		"EristaIcosaHynix4gb",
 		"EristaIcosaMicron4gb",
-		"Unknown",
+		"MarikoIowaHynix1y4gb",
 		"EristaIcosaSamsung6gb",
-		"Unknown",
-		"Unknown",
+		"MarikoHoagHynix1y4gb",
+		"MarikoAulaHynix1y4gb",
 		"MarikoIowax1x2Samsung4gb",
 		"MarikoIowaSamsung4gb",
 		"MarikoIowaSamsung8gb",
 		"MarikoIowaHynix4gb",
-		"Unknown",
+		"MarikoIowaMicron4gb",
 		"MarikoHoagSamsung4gb",
 		"MarikoHoagSamsung8gb",
+		"MarikoHoagSamsung8gb",
+		"MarikoHoagHynix4gb",
+		"MarikoHoagMicron4gb",
+		"MarikoIowaSamsung4gbY",
+		"MarikoIowaSamsung1y4gbX",
+		"MarikoIowaSamsung1y8gbX",
+		"MarikoHoagSamsung1y4gbX",
+		"MarikoIowaSamsung1y4gbY",
+		"MarikoIowaSamsung1y8gbY",
+		"MarikoAulaSamsung1y4gb",
+		"MarikoHoagSamsung1y8gbX",
+		"MarikoAulaSamsung1y4gbX",
+		"MarikoIowaMicron1y4gb",
+		"MarikoHoagMicron1y4gb",
+		"MarikoAulaMicron1y4gb",
+		"MarikoAulaSamsung1y8gbX",
 		"Unknown"
 	};
 
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id))) {
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id)))
 		printf("splGetConfig(SplConfigItem_DramId) failed: 0x%x.\n\n", ret);
-		return dram_desc[14];
-	}
+
+	if (id >= 30)
+		return dram_desc[30];
 
 	return dram_desc[id];
 }
