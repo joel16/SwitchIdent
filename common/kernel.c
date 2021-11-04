@@ -48,33 +48,25 @@ char *SwitchIdent_GetFirmwareVersion(void) {
 
 char *SwitchIdent_GetHardwareType(void) {
 	Result ret = 0;
-	u64 hardware_type = 4;
+	u64 hardware_type;
 
-	char *hardware_300[] = {
+	char *hardware_string[] = {
 		"Icosa",
 		"Copper",
 		"Hoag",
-		"Unknown"
-	};
-
-	char *hardware_400[] = {
-		"Icosa",
-		"Copper",
-		"Hoag",
-		"Mariko",
+		"Iowa",
+		"Calcio",
+		"Aula",
 		"Unknown"
 	};
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_HardwareType, &hardware_type)))
 		printf("splGetConfig(SplConfigItem_HardwareType) failed: 0x%x.\n\n", ret);
-	else {
-		if (kernelAbove400())
-			return hardware_400[hardware_type];
-		else
-			return hardware_300[hardware_type];
-	}
 
-	return hardware_400[4];
+	if (hardware_type >= 6)
+		return hardware_string[6];
+	
+	return hardware_string[hardware_type];
 }
 
 // [4.0.0+] Kiosk mode (0 = retail; 1 = kiosk)
@@ -134,10 +126,10 @@ u64 SwitchIdent_GetDeviceID(void) {
 
 char *SwitchIdent_GetSerialNumber(void) {
 	Result ret = 0;
-	static char serial[0x19];
+	static SetSysSerialNumber serial;
 
-	if (R_FAILED(ret = setsysGetSerialNumber(serial)))
+	if (R_FAILED(ret = setsysGetSerialNumber(&serial)))
 		printf("setsysGetSerialNumber() failed: 0x%x.\n\n", ret);
 
-	return serial;
+	return serial.number;
 }

@@ -2,13 +2,15 @@
 
 #include "menus.h"
 #include "power.h"
-#include "setcal.h"
 #include "SDL_helper.h"
 #include "wlan.h"
 
 static void Term_Services(void) {
 	wlaninfExit();
-	pcvExit();
+	if (hosversionAtLeast(8, 0, 0))
+		clkrstExit();
+	else
+		pcvExit();
 	psmExit();
 	nsExit();
 	apmExit();
@@ -41,7 +43,7 @@ static void Init_Services(void) {
 	if (R_FAILED(ret = splInitialize()))
 		printf("splInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = nifmInitialize()))
+	if (R_FAILED(ret = nifmInitialize(NifmServiceType_User)))
 		printf("nifmInitialize() failed: 0x%x.\n\n", ret);
 
 	if (R_FAILED(ret = socketInitializeDefault()))
@@ -59,8 +61,13 @@ static void Init_Services(void) {
 	if (R_FAILED(ret = psmInitialize()))
 		printf("psmInitialize() failed: 0x%x.\n\n", ret);
 
-	if (R_FAILED(ret = pcvInitialize()))
-		printf("pcvInitialize() failed: 0x%x.\n\n", ret);
+	if (hosversionAtLeast(8, 0, 0)) {
+		if (R_FAILED(ret = clkrstInitialize()))
+			printf("clkrstInitialize() failed: 0x%x.\n\n", ret);
+	} else {
+		if (R_FAILED(ret = pcvInitialize()))
+			printf("pcvInitialize() failed: 0x%x.\n\n", ret);
+	}
 
 	if (R_FAILED(ret = wlaninfInitialize()))
 		printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);

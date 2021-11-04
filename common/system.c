@@ -4,7 +4,6 @@
 #include <switch.h>
 
 #include "misc.h"
-#include "setcal.h"
 
 char *SwitchIdent_GetLanguage(void) {
 	Result ret = 0;
@@ -40,56 +39,56 @@ char *SwitchIdent_GetRegion(void) {
 	return regions[regionCode];
 }
 
-u32 SwitchIdent_GetCPUClock(void) {
+u32 SwitchIdent_GetClock(PcvModule module) {
 	Result ret = 0;
 	u32 out = 0;
 
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_CpuBus, &out)))
-		printf("pcvGetClockRate(PcvModule_CpuBus) failed: 0x%x.\n\n", ret);
+	if (hosversionAtLeast(8, 0, 0)) {
+		ClkrstSession session = {0};
+		PcvModuleId module_id;
 
-	return out/1000000;
-}
+		if (R_FAILED(ret = pcvGetModuleId(&module_id, module)))
+			printf("pcvGetModuleId() failed: 0x%x.\n\n", ret);
+		else if (R_FAILED(ret = clkrstOpenSession(&session, module_id, 3)))
+			printf("clkrstOpenSession() failed: 0x%x.\n\n", ret);
+		else if (R_FAILED(ret = clkrstGetClockRate(&session, &out)))
+			printf("clkrstGetClockRate() failed: 0x%x.\n\n", ret);
+		else
+			clkrstCloseSession(&session);
+	} else {
+		if (R_FAILED(ret = pcvGetClockRate(module, &out)))
+			printf("pcvGetClockRate() failed: 0x%x.\n\n", ret);
+	}
 
-u32 SwitchIdent_GetGPUClock(void) {
-	Result ret = 0;
-	u32 out = 0;
-
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_GPU, &out)))
-		printf("pcvGetClockRate(PcvModule_GPU) failed: 0x%x.\n\n", ret);
-	
-	return out/1000000;
-}
-
-u32 SwitchIdent_GetEMCClock(void) {
-	Result ret = 0;
-	u32 out = 0;
-
-	if (R_FAILED(ret = pcvGetClockRate(PcvModule_EMC , &out)))
-		printf("pcvGetClockRate(PcvModule_EMC ) failed: 0x%x.\n\n", ret);
-	
 	return out/1000000;
 }
 
 char *SwitchIdent_GetBluetoothBdAddress(void) {
 	Result ret = 0;
-	static char bd_addr[0x13];
+	static char bd_addr_string[0x13];
+	SetCalBdAddress bd_addr;
 
-	if (R_FAILED(ret = setcalGetBluetoothBdAddress(bd_addr))) {
-		printf("setcalGetBluetoothBdAddress() failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = setcalGetBdAddress(&bd_addr))) {
+		printf("setcalGetBdAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}
 
-	return bd_addr;
+	snprintf(bd_addr_string, 0x12, "%02X:%02X:%02X:%02X:%02X:%02X", bd_addr.bd_addr[0], bd_addr.bd_addr[1], bd_addr.bd_addr[2], bd_addr.bd_addr[3], bd_addr.bd_addr[4], bd_addr.bd_addr[5]);
+
+	return bd_addr_string;
 }
 
 char *SwitchIdent_GetWirelessLanMacAddress(void) {
 	Result ret = 0;
-	static char mac_addr[0x13];
+	static char mac_addr_string[0x13];
+	SetCalMacAddress mac_addr;
 
-	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(mac_addr))) {
+	if (R_FAILED(ret = setcalGetWirelessLanMacAddress(&mac_addr))) {
 		printf("setcalGetWirelessLanMacAddress() failed: 0x%x.\n\n", ret);
 		return NULL;
 	}
 
-	return mac_addr;
+	snprintf(mac_addr_string, 0x12, "%02X:%02X:%02X:%02X:%02X:%02X", mac_addr.addr[0], mac_addr.addr[1], mac_addr.addr[2], mac_addr.addr[3], mac_addr.addr[4], mac_addr.addr[5]);
+
+	return mac_addr_string;
 }

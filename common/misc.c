@@ -8,12 +8,52 @@ char *SwitchIdent_GetOperationMode(void) {
 	return "Docked";
 }
 
-bool SwitchIdent_GetFlag(SetSysFlag flag) {
+bool SwitchIdent_GetWirelessLanEnableFlag() {
 	Result ret = 0;
 	bool out = false;
 
-	if (R_FAILED(ret = setsysGetFlag(flag, &out)))
-		printf("setsysGetFlag() failed: 0x%x.\n\n", ret);
+	if (R_FAILED(ret = setsysGetWirelessLanEnableFlag(&out)))
+		printf("setsysGetWirelessLanEnableFlag() failed: 0x%x.\n\n", ret);
+
+	return out;
+}
+
+bool SwitchIdent_GetBluetoothEnableFlag() {
+	Result ret = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = setsysGetBluetoothEnableFlag(&out)))
+		printf("setsysGetBluetoothEnableFlag() failed: 0x%x.\n\n", ret);
+
+	return out;
+}
+
+bool SwitchIdent_GetNfcEnableFlag() {
+	Result ret = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = setsysGetNfcEnableFlag(&out)))
+		printf("setsysGetNfcEnableFlag() failed: 0x%x.\n\n", ret);
+
+	return out;
+}
+
+bool SwitchIdent_GetAutoUpdateEnableFlag() {
+	Result ret = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = setsysGetAutoUpdateEnableFlag(&out)))
+		printf("setsysGetAutoUpdateEnableFlag() failed: 0x%x.\n\n", ret);
+
+	return out;
+}
+
+bool SwitchIdent_GetConsoleInformationUploadFlag() {
+	Result ret = 0;
+	bool out = false;
+
+	if (R_FAILED(ret = setsysGetConsoleInformationUploadFlag(&out)))
+		printf("setsysGetConsoleInformationUploadFlag() failed: 0x%x.\n\n", ret);
 
 	return out;
 }
