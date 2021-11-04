@@ -3,9 +3,7 @@
 
 char *SwitchIdent_GetLanguage(void);
 char *SwitchIdent_GetRegion(void);
-u32 SwitchIdent_GetCPUClock(void);
-u32 SwitchIdent_GetGPUClock(void);
-u32 SwitchIdent_GetEMCClock(void);
+u32 SwitchIdent_GetClock(PcvModule module);
 char *SwitchIdent_GetBluetoothBdAddress(void);
 char *SwitchIdent_GetWirelessLanMacAddress(void);
 

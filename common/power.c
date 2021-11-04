@@ -1,150 +1,17 @@
 #include <stdio.h>
 #include <switch.h>
 
-#include "setcal.h"
+static Result _psmCmdNoInOutBool(Service* srv, bool *out, u32 cmd_id) {
+    u8 outval = 0;
+    Result rc = serviceDispatchOut(srv, cmd_id, outval);
+    if (R_SUCCEEDED(rc)) {
+        if (out) *out = outval & 1;
+    }
+    return rc;
+}
 
 static Result psmIsBatteryChargingEnabled(bool *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 4;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u8 enable;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->enable;
-        }
-    }
-    
-    return rc;
-}
-
-static Result psmGetRawBatteryChargePercentage(u64 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 13;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u64 age_percentage;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->age_percentage;
-        }
-    }
-    
-    return rc;
-}
-
-static Result psmIsEnoughPowerSupplied(bool *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 14;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u8 power_supplied;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->power_supplied;
-        }
-    }
-    
-    return rc;
-}
-
-static Result psmGetBatteryAgePercentage(u64 *out) {
-    IpcCommand c;
-    ipcInitialize(&c);
-    
-    struct {
-        u64 magic;
-        u64 cmd_id;
-    } *raw;
-    
-    raw = ipcPrepareHeader(&c, sizeof(*raw));
-    
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 15;
-    
-    Result rc = serviceIpcDispatch(psmGetServiceSession());
-    
-    if(R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        ipcParse(&r);
-        
-        struct {
-            u64 magic;
-            u64 result;
-            u64 age_percentage;
-        } *resp = r.Raw;
-        
-        rc = resp->result;
-        
-        if (R_SUCCEEDED(rc)) {
-            *out = resp->age_percentage;
-        }
-    }
-    
-    return rc;
+    return _psmCmdNoInOutBool(psmGetServiceSession(), out, 4);
 }
 
 u32 SwitchIdent_GetBatteryPercent(void) {
@@ -159,14 +26,14 @@ u32 SwitchIdent_GetBatteryPercent(void) {
 
 char *SwitchIdent_GetChargerType(void) {
 	Result ret = 0;
-	ChargerType charger_type;
+	PsmChargerType charger_type;
 
 	if (R_FAILED(ret = psmGetChargerType(&charger_type)))
 		return NULL;
 
-    if (charger_type == ChargerType_Charger)
+    if (charger_type == PsmChargerType_EnoughPower)
         return "Official charger or dock";
-    else if (charger_type == ChargerType_Usb)
+    else if (charger_type == PsmChargerType_LowPower)
         return "USB-C charger";
     else
         return "No charger connected";
@@ -176,15 +43,12 @@ char *SwitchIdent_GetChargerType(void) {
 
 bool SwitchIdent_IsCharging(void) {
     Result ret = 0;
-    ChargerType charger_type;
+    PsmChargerType charger_type;
 
     if (R_FAILED(ret = psmGetChargerType(&charger_type)))
         return false;
 
-    if ((charger_type == ChargerType_Charger) || (charger_type == ChargerType_Usb))
-        return true;
-
-    return false;
+    return charger_type != PsmChargerType_Unconnected;
 }
 
 bool SwitchIdent_IsChargingEnabled(void) {
@@ -219,9 +83,9 @@ char *SwitchIdent_GetVoltageState(void) {
     return states[4];
 }
 
-u64 SwitchIdent_GetRawBatteryChargePercentage(void) {
+double SwitchIdent_GetRawBatteryChargePercentage(void) {
 	Result ret = 0;
-	u64 out = 0;
+	double out = 0;
 
 	if (R_FAILED(ret = psmGetRawBatteryChargePercentage(&out)))
 		return -1;
@@ -239,9 +103,9 @@ bool SwitchIdent_IsEnoughPowerSupplied(void) {
 	return out;
 }
 
-u64 SwitchIdent_GetBatteryAgePercent(void) {
+double SwitchIdent_GetBatteryAgePercent(void) {
 	Result ret = 0;
-	u64 out = 0;
+	double out = 0;
 
 	if (R_FAILED(ret = psmGetBatteryAgePercentage(&out)))
 		return -1;
@@ -251,12 +115,12 @@ u64 SwitchIdent_GetBatteryAgePercent(void) {
 
 char *SwitchIdent_GetBatteryLot(void) {
     Result ret = 0;
-    static char battery_lot[0x13];
+    static SetBatteryLot battery_lot;
 
-    if (R_FAILED(ret = setcalGetBatteryLot(battery_lot))) {
+    if (R_FAILED(ret = setcalGetBatteryLot(&battery_lot))) {
         printf("setcalGetBatteryLot() failed: 0x%x.\n\n", ret);
         return NULL;
     }
 
-    return battery_lot;
+    return battery_lot.lot;
 }

@@ -41,12 +41,12 @@ static void Menu_Kernel(void) {
 
 static void Menu_System(void) {
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "Region:",  SwitchIdent_GetRegion());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetCPUClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetGPUClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "EMC clock:", "%lu MHz", SwitchIdent_GetEMCClock());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetFlag(SetSysFlag_WirelessLanEnable)? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI()));
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Bluetooth:", "%s", SwitchIdent_GetFlag(SetSysFlag_BluetoothEnable)? "Enabled" : "Disabled");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "NFC:", SwitchIdent_GetFlag(SetSysFlag_NfcEnable)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "CPU clock:", "%lu MHz", SwitchIdent_GetClock(PcvModule_CpuBus));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "GPU clock:", "%lu MHz", SwitchIdent_GetClock(PcvModule_GPU));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "EMC clock:", "%lu MHz", SwitchIdent_GetClock(PcvModule_EMC));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent_GetWirelessLanEnableFlag()? "Enabled" : "Disabled", SwitchIdent_GetWlanRSSI(), SwitchIdent_GetWlanQuality(SwitchIdent_GetWlanRSSI()));
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Bluetooth:", "%s", SwitchIdent_GetBluetoothEnableFlag()? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "NFC:", SwitchIdent_GetNfcEnableFlag()? "Enabled" : "Disabled");
 }
 
 static void Menu_Power(void) {
@@ -59,28 +59,28 @@ static void Menu_Power(void) {
 }
 
 static void Menu_Storage(void) {
-	u64 sd_used = SwitchIdent_GetUsedStorage(FsStorageId_SdCard);
-	u64 sd_total = SwitchIdent_GetTotalStorage(FsStorageId_SdCard);
+	u64 sd_used = SwitchIdent_GetUsedStorage(NcmStorageId_SdCard);
+	u64 sd_total = SwitchIdent_GetTotalStorage(NcmStorageId_SdCard);
 
-	u64 nand_u_used = SwitchIdent_GetUsedStorage(FsStorageId_NandUser);
-	u64 nand_u_total = SwitchIdent_GetTotalStorage(FsStorageId_NandUser);
+	u64 nand_u_used = SwitchIdent_GetUsedStorage(NcmStorageId_BuiltInUser);
+	u64 nand_u_total = SwitchIdent_GetTotalStorage(NcmStorageId_BuiltInUser);
 
-	u64 nand_s_used = SwitchIdent_GetUsedStorage(FsStorageId_NandSystem);
-	u64 nand_s_total = SwitchIdent_GetTotalStorage(FsStorageId_NandSystem);
+	u64 nand_s_used = SwitchIdent_GetUsedStorage(NcmStorageId_BuiltInSystem);
+	u64 nand_s_total = SwitchIdent_GetTotalStorage(NcmStorageId_BuiltInSystem);
 
 	char sd_total_str[16], sd_free_str[16], sd_used_str[16];
 	Utils_GetSizeString(sd_total_str, sd_total);
-	Utils_GetSizeString(sd_free_str, SwitchIdent_GetFreeStorage(FsStorageId_SdCard));
+	Utils_GetSizeString(sd_free_str, SwitchIdent_GetFreeStorage(NcmStorageId_SdCard));
 	Utils_GetSizeString(sd_used_str, sd_used);
 
 	char nand_u_total_str[16], nand_u_free_str[16], nand_u_used_str[16];
 	Utils_GetSizeString(nand_u_total_str, nand_u_total);
-	Utils_GetSizeString(nand_u_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandUser));
+	Utils_GetSizeString(nand_u_free_str, SwitchIdent_GetFreeStorage(NcmStorageId_BuiltInUser));
 	Utils_GetSizeString(nand_u_used_str, nand_u_used);
 
 	char nand_s_total_str[16], nand_s_free_str[16], nand_s_used_str[16];
 	Utils_GetSizeString(nand_s_total_str, nand_s_total);
-	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(FsStorageId_NandSystem));
+	Utils_GetSizeString(nand_s_free_str, SwitchIdent_GetFreeStorage(NcmStorageId_BuiltInSystem));
 	Utils_GetSizeString(nand_s_used_str, nand_s_used);
 
 	SDL_DrawRect(400, 50, 880, 670, BACKGROUND_COLOUR);
@@ -121,8 +121,8 @@ static void Menu_Misc(void) {
 	Result ret = gethostname(hostname, sizeof(hostname));
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 50, "IP:",  R_SUCCEEDED(ret)? hostname : NULL);
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 100, "State:", SwitchIdent_GetOperationMode());
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Automatic update:", SwitchIdent_GetFlag(SetSysFlag_AutoUpdateEnable)? "Enabled" : "Disabled");
-	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetFlag(SetSysFlag_ConsoleInformationUpload)? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 150, "Automatic update:", SwitchIdent_GetAutoUpdateEnableFlag()? "Enabled" : "Disabled");
+	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 200, "Console information upload:", SwitchIdent_GetConsoleInformationUploadFlag()? "Enabled" : "Disabled");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 250, "SD card status:", isSDInserted? "Inserted" : "Not inserted");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 300, "Game card status:", isGameCardInserted? "Inserted" : "Not inserted");
 	Menu_DrawItem(450, 250 + ((MENU_Y_DIST - item_height) / 2) + 350, "BT address:", SwitchIdent_GetBluetoothBdAddress());
@@ -147,6 +147,11 @@ void Menu_Main(void) {
 
 	fsDeviceOperatorClose(&fsDeviceOperator);
 
+	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+
+	PadState pad;
+    padInitializeDefault(&pad);
+
 	while(appletMainLoop()) {
 		SDL_ClearScreen(BACKGROUND_COLOUR);
 		SDL_DrawRect(0, 0, 1280, 50, STATUS_BAR_COLOUR);
@@ -165,12 +170,12 @@ void Menu_Main(void) {
 		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 4), 25, selection == 4? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Misc");
 		SDL_DrawText(30, 50 + ((MENU_Y_DIST - item_height) / 2) + (MENU_Y_DIST * 5), 25, selection == 5? ITEM_SELECTED_COLOUR : ITEM_COLOUR, "Exit");
 
-		hidScanInput();
-		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+		padUpdate(&pad);
+		u32 kDown = padGetButtonsDown(&pad);
 
-		if (kDown & KEY_DDOWN)
+		if (kDown & HidNpadButton_AnyDown)
 			selection++;
-		else if (kDown & KEY_DUP)
+		else if (kDown & HidNpadButton_AnyUp)
 			selection--;
 
 		if (selection > MAX_MENU_ITEMS) 
@@ -198,7 +203,7 @@ void Menu_Main(void) {
 		
 		SDL_Renderdisplay();
 
-		if ((kDown & KEY_PLUS) || ((kDown & KEY_A) && (selection == MAX_MENU_ITEMS)))
+		if ((kDown & HidNpadButton_Plus) || ((kDown & HidNpadButton_A) && (selection == MAX_MENU_ITEMS)))
 			break;
 	}
 }

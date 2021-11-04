@@ -6,9 +6,9 @@ char *SwitchIdent_GetChargerType(void);
 bool SwitchIdent_IsCharging(void);
 bool SwitchIdent_IsChargingEnabled(void);
 char *SwitchIdent_GetVoltageState(void);
-u64 SwitchIdent_GetRawBatteryChargePercentage(void);
+double SwitchIdent_GetRawBatteryChargePercentage(void);
 bool SwitchIdent_IsEnoughPowerSupplied(void);
-u64 SwitchIdent_GetBatteryAgePercent(void);
+double SwitchIdent_GetBatteryAgePercent(void);
 char *SwitchIdent_GetBatteryLot(void);
 
 #endif
