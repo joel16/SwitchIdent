@@ -1,3 +1,4 @@
+
 #---------------------------------------------------------------------------------
 .SUFFIXES:
 #---------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 # SOURCES is a list of directories containing source code
 # DATA is a list of directories containing data files
 # INCLUDES is a list of directories containing header files
-# EXEFS_SRC is the optional input directory containing data copied into exefs, if anything this normally should only contain "main.npdm".
+# ROMFS is the directory containing data to be added to RomFS, relative to the Makefile (Optional)
 #
 # NO_ICON: if set to anything, do not use icon.
 # NO_NACP: if set to anything, no .nacp file is generated.
@@ -28,42 +29,47 @@ include $(DEVKITPRO)/libnx/switch_rules
 #     - <Project name>.jpg
 #     - icon.jpg
 #     - <libnx folder>/default_icon.jpg
+#
+# CONFIG_JSON is the filename of the NPDM config file (.json), relative to the project folder.
+#   If not set, it attempts to use one of the following (in this order):
+#     - <Project name>.json
+#     - config.json
+#   If a JSON file is provided or autodetected, an ExeFS PFS0 (.nsp) is built instead
+#   of a homebrew executable (.nro). This is intended to be used for sysmodules.
+#   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
-TARGET      := $(notdir $(CURDIR))
-BUILD       := build
-SOURCES     := source common
-DATA        := data
-INCLUDES    := include common
-EXEFS_SRC   := exefs_src
-ROMFS       := romfs
+TARGET		:=	$(notdir $(CURDIR))
+BUILD		:=	build
+SOURCES		:=	source
+DATA		:=	data
+INCLUDES	:=	include
+ROMFS		:=	romfs
 
-VERSION_MAJOR := 0
-VERSION_MINOR := 3
-VERSION_MICRO := 0
+VERSION_MAJOR	:=	0
+VERSION_MINOR	:=	3
+VERSION_MICRO	:=	0
 
-APP_TITLE   := SwitchIdent
-APP_AUTHOR  := Joel16
-APP_VERSION := ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
+APP_TITLE   	:=	SwitchIdent
+APP_AUTHOR  	:=	Joel16
+APP_VERSION	:=	${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	 := -march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
+ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS   := -g -Wall -O3 -ffunction-sections \
-            -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_MICRO=$(VERSION_MICRO) \
-            -DAPP_TITLE="\"$(APP_TITLE)\"" \
-            -DGITVERSION="\"${GITVERSION}\"" \
-            $(ARCH) $(DEFINES)
+CFLAGS	:=	`$(PREFIX)pkg-config --cflags sdl2 SDL2_image` -Wall -O2 -ffunction-sections \
+			$(ARCH) $(DEFINES)
 
-CFLAGS	 += -D__SWITCH__ $(INCLUDE) `freetype-config --cflags` `sdl2-config --cflags`
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	+=	-DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_MICRO=$(VERSION_MICRO)
 
-CXXFLAGS := $(CFLAGS) -fno-rtti -fno-exceptions
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
-ASFLAGS  := -g $(ARCH)
-LDFLAGS  = -specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map) -L$(PWD)/$(BUILD)
+ASFLAGS	:=	-g $(ARCH)
+LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS     := -lSDL2_ttf -lSDL2_image -lwebp -lpng -lturbojpeg `sdl2-config --libs` `freetype-config --libs` -lnx
+LIBS	:=	`$(PREFIX)pkg-config --libs sdl2 SDL2_image SDL2_ttf` -lnx
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -79,36 +85,47 @@ LIBDIRS	:= $(PORTLIBS) $(LIBNX)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
-export OUTPUT  := $(CURDIR)/$(TARGET)
-export TOPDIR  := $(CURDIR)
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export TOPDIR	:=	$(CURDIR)
 
-export VPATH   := $(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-                  $(foreach dir,$(DATA),$(CURDIR)/$(dir))
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 
-export DEPSDIR := $(CURDIR)/$(BUILD)
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
-CFILES         := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES       := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-SFILES         := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES       := $(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 #---------------------------------------------------------------------------------
-# use CXX for linking C++ projects, CC for standard C
+# use CXX for linking C++ and libEGL dependent projects
 #---------------------------------------------------------------------------------
-export LD              := $(CXX)
+export LD	:=	$(CXX)
 
-export OFILES_BIN      := $(addsuffix .o,$(BINFILES))
-export OFILES_SRC      := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
-export OFILES          := $(OFILES_BIN) $(OFILES_SRC)
-export HFILES_BIN      := $(addsuffix .h,$(subst .,_,$(BINFILES)))
+export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
+export OFILES_SRC	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES 	:=	$(OFILES_BIN) $(OFILES_SRC)
+export HFILES_BIN	:=	$(addsuffix .h,$(subst .,_,$(BINFILES)))
 
-export INCLUDE         := $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-                          $(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-                          -I$(CURDIR)/$(BUILD)
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+			-I$(CURDIR)/$(BUILD)
 
-export LIBPATHS        := $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
-export BUILD_EXEFS_SRC := $(TOPDIR)/$(EXEFS_SRC)
+ifeq ($(strip $(CONFIG_JSON)),)
+	jsons := $(wildcard *.json)
+	ifneq (,$(findstring $(TARGET).json,$(jsons)))
+		export APP_JSON := $(TOPDIR)/$(TARGET).json
+	else
+		ifneq (,$(findstring config.json,$(jsons)))
+			export APP_JSON := $(TOPDIR)/config.json
+		endif
+	endif
+else
+	export APP_JSON := $(TOPDIR)/$(CONFIG_JSON)
+endif
 
 ifeq ($(strip $(ICON)),)
 	icons := $(wildcard *.jpg)
@@ -151,7 +168,11 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).pfs0 $(TARGET).nso $(TARGET).nro $(TARGET).nacp $(TARGET).elf
+ifeq ($(strip $(APP_JSON)),)
+	@rm -fr $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf
+else
+	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
+endif
 
 
 #---------------------------------------------------------------------------------
@@ -163,21 +184,29 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-all	           : $(OUTPUT).pfs0 $(OUTPUT).nro
+ifeq ($(strip $(APP_JSON)),)
 
-$(OUTPUT).pfs0 : $(OUTPUT).nso
-
-$(OUTPUT).nso  : $(OUTPUT).elf
+all	:	$(OUTPUT).nro
 
 ifeq ($(strip $(NO_NACP)),)
-$(OUTPUT).nro  : $(OUTPUT).elf $(OUTPUT).nacp
+$(OUTPUT).nro	:	$(OUTPUT).elf $(OUTPUT).nacp
 else
-$(OUTPUT).nro  : $(OUTPUT).elf
+$(OUTPUT).nro	:	$(OUTPUT).elf
 endif
 
-$(OUTPUT).elf  : $(OFILES)
+else
 
-$(OFILES_SRC)  : $(HFILES_BIN)
+all	:	$(OUTPUT).nsp
+
+$(OUTPUT).nsp	:	$(OUTPUT).nso $(OUTPUT).npdm
+
+$(OUTPUT).nso	:	$(OUTPUT).elf
+
+endif
+
+$(OUTPUT).elf	:	$(OFILES)
+
+$(OFILES_SRC)	: $(HFILES_BIN)
 
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data

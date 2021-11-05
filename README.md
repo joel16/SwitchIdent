@@ -1,8 +1,6 @@
-# SwitchIdent [![Travis](https://img.shields.io/travis/joel16/SwitchIdent.svg?style=flat-square)](https://github.com/joel16/SwitchIdent/tree/gh-pages)
+# SwitchIdent ![Github latest downloads](https://img.shields.io/github/downloads/joel16/SwitchIdent/total.svg)
 
 This is yet another identity tool that is continuing the series of <*device name here*>ident. This tool allows users to get various bits of information from your Nintendo Switch device, hence the name 'ident' as in identifying your Nintendo Switch.
-
-Bleeding edge builds can be found in the [gh-pages branch](https://github.com/joel16/SwitchIdent/tree/gh-pages).
 
 # Features: 
 - Displays system firmware version.
@@ -27,5 +25,6 @@ Bleeding edge builds can be found in the [gh-pages branch](https://github.com/jo
 - Displays WiFi and Bluetooth MAC address.
 
 # Credits:
+- shchmue: Added missing DRAM descriptors and fix compatibility with libnx v4.2.0+
 - Eve/Hikari/Junko, Klodeckel and hopperplaysmc: Beta testing
 - preetisketch: Banner
