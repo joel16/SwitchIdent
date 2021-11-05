@@ -2,12 +2,14 @@
 #include <SDL2/SDL_image.h>
 
 #include "gui.hpp"
+#include "SDL_FontCache.h"
+
+SDL_Texture *banner = nullptr, *drive = nullptr, *menu_icons[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace GUI {
     static SDL_Window *g_window = nullptr;
     static SDL_Renderer *g_renderer = nullptr;
-    static FC_Font *g_font = nullptr;
-    static SDL_Texture *banner = nullptr, *drive = nullptr;
+    static FC_Font *g_font = nullptr; 
 
     static void LoadImage(SDL_Texture **texture, const char *path) {
         SDL_Surface *image = nullptr;
@@ -38,14 +40,28 @@ namespace GUI {
             
         GUI::LoadImage(&banner, "romfs:/banner.png");
         GUI::LoadImage(&drive, "romfs:/drive.png");
+        GUI::LoadImage(&menu_icons[0], "romfs:/kernel.png");
+        GUI::LoadImage(&menu_icons[1], "romfs:/system.png");
+        GUI::LoadImage(&menu_icons[2], "romfs:/power.png");
+        GUI::LoadImage(&menu_icons[3], "romfs:/storage.png");
+        GUI::LoadImage(&menu_icons[4], "romfs:/misc.png");
+        GUI::LoadImage(&menu_icons[5], "romfs:/exit.png");
         
         g_font = FC_CreateFont();
-        FC_LoadFont(g_font, g_renderer, "romfs:/Ubuntu-R.ttf", 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);
+        FC_LoadFont(g_font, g_renderer, "romfs:/Ubuntu-Regular.ttf", 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);
         return 0;
     }
 
     void Exit(void) {
         FC_FreeFont(g_font);
+        SDL_DestroyTexture(menu_icons[5]);
+        SDL_DestroyTexture(menu_icons[4]);
+        SDL_DestroyTexture(menu_icons[3]);
+        SDL_DestroyTexture(menu_icons[2]);
+        SDL_DestroyTexture(menu_icons[1]);
+        SDL_DestroyTexture(menu_icons[0]);
+        SDL_DestroyTexture(banner);
+        SDL_DestroyTexture(drive);
         TTF_Quit();
         IMG_Quit();
         SDL_DestroyRenderer(g_renderer);
@@ -85,7 +101,7 @@ namespace GUI {
             *height = FC_GetHeight(g_font, text);
     }
     
-    static void DrawImage(SDL_Texture *texture, int x, int y) {
+    void DrawImage(SDL_Texture *texture, int x, int y) {
         SDL_Rect position;
         position.x = x; position.y = y;
         SDL_QueryTexture(texture, nullptr, nullptr, &position.w, &position.h);

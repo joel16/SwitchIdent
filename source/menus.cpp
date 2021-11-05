@@ -4,13 +4,23 @@
 #include "common.hpp"
 #include "gui.hpp"
 #include "menus.hpp"
+#include "SDL_FontCache.h"
 
 namespace Menus {
+    // Globals
     static u32 g_item_height = 0;
     static bool g_is_sd_inserted = false, g_is_gamecard_inserted = false;
     static const int g_item_dist = 67;
     static const int g_start_x = 450;
     static const int g_start_y = 250;
+
+    // Colours
+    static const SDL_Color bg_colour = FC_MakeColor(62, 62, 62, 255);
+    static const SDL_Color status_bar_colour = FC_MakeColor(44, 44, 44, 255);
+    static const SDL_Color menu_bar_colour = FC_MakeColor(52, 52, 52, 255);
+    static const SDL_Color selector_colour = FC_MakeColor(223, 74, 22, 255);
+    static const SDL_Color title_colour = FC_MakeColor(252, 252, 252, 255);
+    static const SDL_Color descr_colour = FC_MakeColor(182, 182, 182, 255);
     
     enum MenuState {
         STATE_KERNEL_INFO = 0,
@@ -24,20 +34,20 @@ namespace Menus {
     static void DrawItem(int x, int y, const char *title, const char *text) {
         u32 title_width = 0;
         GUI::GetTextDimensions(25, title, &title_width, nullptr);
-        GUI::DrawText(x, y, 25, MENU_INFO_TITLE_COLOUR, title);
-        GUI::DrawText(x + title_width + 20, y, 25, MENU_INFO_DESC_COLOUR, text);
+        GUI::DrawText(x, y, 25, title_colour, title);
+        GUI::DrawText(x + title_width + 20, y, 25, descr_colour, text);
     }
 
     static void DrawItemf(int x, int y, const char *title, const char *text, ...) {
         u32 title_width = 0;
         GUI::GetTextDimensions(25, title, &title_width, nullptr);
-        GUI::DrawText(x, y, 25, MENU_INFO_TITLE_COLOUR, title);
+        GUI::DrawText(x, y, 25, title_colour, title);
         
         char buffer[256];
         va_list args;
         va_start(args, text);
         std::vsnprintf(buffer, 256, text, args);
-        GUI::DrawText(x + title_width + 20, y, 25, MENU_INFO_DESC_COLOUR, buffer);
+        GUI::DrawText(x + title_width + 20, y, 25, descr_colour, buffer);
         va_end(args);
     }
 
@@ -97,34 +107,34 @@ namespace Menus {
         SwitchIdent::GetSizeString(nand_s_free_str, SwitchIdent::GetFreeStorage(NcmStorageId_BuiltInSystem));
         SwitchIdent::GetSizeString(nand_s_used_str, nand_s_used);
         
-        GUI::DrawRect(400, 50, 880, 670, BACKGROUND_COLOUR);
+        GUI::DrawRect(400, 50, 880, 670, bg_colour);
         
-        GUI::DrawDriveIcon(450, 88);
-        GUI::DrawRect(450, 226, 128, 25, STATUS_BAR_COLOUR);
-        GUI::DrawRect(452, 228, 124, 21, BACKGROUND_COLOUR);
-        GUI::DrawRect(452, 228, (((double)sd_used / (double)sd_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+        GUI::DrawImage(drive, 450, 88);
+        GUI::DrawRect(450, 226, 128, 25, descr_colour);
+        GUI::DrawRect(452, 228, 124, 21, bg_colour);
+        GUI::DrawRect(452, 228, (((double)sd_used / (double)sd_total) * 124.0), 21, selector_colour);
         
-        GUI::DrawDriveIcon(450, 296);
-        GUI::DrawRect(450, 434, 128, 25, STATUS_BAR_COLOUR);
-        GUI::DrawRect(452, 436, 124, 21, BACKGROUND_COLOUR);
-        GUI::DrawRect(452, 436, (((double)nand_u_used / (double)nand_u_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+        GUI::DrawImage(drive, 450, 296);
+        GUI::DrawRect(450, 434, 128, 25, descr_colour);
+        GUI::DrawRect(452, 436, 124, 21, bg_colour);
+        GUI::DrawRect(452, 436, (((double)nand_u_used / (double)nand_u_total) * 124.0), 21, selector_colour);
         
-        GUI::DrawDriveIcon(450, 504);
-        GUI::DrawRect(450, 642, 128, 25, STATUS_BAR_COLOUR);
-        GUI::DrawRect(452, 644, 124, 21, BACKGROUND_COLOUR);
-        GUI::DrawRect(452, 644, (((double)nand_s_used / (double)nand_s_total) * 124.0), 21, MENU_SELECTOR_COLOUR);
+        GUI::DrawImage(drive, 450, 504);
+        GUI::DrawRect(450, 642, 128, 25, descr_colour);
+        GUI::DrawRect(452, 644, 124, 21, bg_colour);
+        GUI::DrawRect(452, 644, (((double)nand_s_used / (double)nand_s_total) * 124.0), 21, selector_colour);
         
-        GUI::DrawText(600, 38 + ((g_item_dist - g_item_height) / 2) + 50, 25, MENU_INFO_DESC_COLOUR, "SD");
+        GUI::DrawText(600, 38 + ((g_item_dist - g_item_height) / 2) + 50, 25, descr_colour, "SD");
         Menus::DrawItem(600, 38 + ((g_item_dist - g_item_height) / 2) + 88, "Total storage capacity:",  sd_total_str);
         Menus::DrawItem(600, 38 + ((g_item_dist - g_item_height) / 2) + 126, "Free storage capacity:", sd_free_str);
         Menus::DrawItem(600, 38 + ((g_item_dist - g_item_height) / 2) + 164, "Used storage capacity:", sd_used_str);
         
-        GUI::DrawText(600, 246 + ((g_item_dist - g_item_height) / 2) + 50, 25, MENU_INFO_DESC_COLOUR, "NAND User");
+        GUI::DrawText(600, 246 + ((g_item_dist - g_item_height) / 2) + 50, 25, descr_colour, "NAND User");
         Menus::DrawItem(600, 246 + ((g_item_dist - g_item_height) / 2) + 88, "Total storage capacity:",  nand_u_total_str);
         Menus::DrawItem(600, 246 + ((g_item_dist - g_item_height) / 2) + 126, "Free storage capacity:", nand_u_free_str);
         Menus::DrawItem(600, 246 + ((g_item_dist - g_item_height) / 2) + 164, "Used storage capacity:", nand_u_used_str);
         
-        GUI::DrawText(600, 454 + ((g_item_dist - g_item_height) / 2) + 50, 25, MENU_INFO_DESC_COLOUR, "NAND System");
+        GUI::DrawText(600, 454 + ((g_item_dist - g_item_height) / 2) + 50, 25, descr_colour, "NAND System");
         Menus::DrawItem(600, 454 + ((g_item_dist - g_item_height) / 2) + 88, "Total storage capacity:",  nand_s_total_str);
         Menus::DrawItem(600, 454 + ((g_item_dist - g_item_height) / 2) + 126, "Free storage capacity:", nand_s_free_str);
         Menus::DrawItem(600, 454 + ((g_item_dist - g_item_height) / 2) + 164, "Used storage capacity:", nand_s_used_str);
@@ -180,17 +190,19 @@ namespace Menus {
         };
 
         while(appletMainLoop()) {
-            GUI::ClearScreen(BACKGROUND_COLOUR);
-            GUI::DrawRect(0, 0, 1280, 50, STATUS_BAR_COLOUR);
-            GUI::DrawRect(0, 50, 400, 670, MENU_BAR_COLOUR);
+            GUI::ClearScreen(bg_colour);
+            GUI::DrawRect(0, 0, 1280, 50, status_bar_colour);
+            GUI::DrawRect(0, 50, 400, 670, menu_bar_colour);
             
-            GUI::DrawTextf(30, ((50 - title_height) / 2), 25, BACKGROUND_COLOUR, "SwitchIdent v%d.%d", VERSION_MAJOR, VERSION_MINOR);
-            GUI::DrawBanner(400 + ((880 - (banner_width)) / 2),  80);
+            GUI::DrawTextf(30, ((50 - title_height) / 2), 25, title_colour, "SwitchIdent v%d.%d", VERSION_MAJOR, VERSION_MINOR);
+            GUI::DrawImage(banner, 400 + ((880 - (banner_width)) / 2),  80);
             
-            GUI::DrawRect(0, 50 + (g_item_dist * selection), 400, g_item_dist, MENU_SELECTOR_COLOUR);
+            GUI::DrawRect(0, 50 + (g_item_dist * selection), 400, g_item_dist, selector_colour);
 
-            for (int i = 0; i < MAX_ITEMS + 1; i++)
-                GUI::DrawText(30, 50 + ((g_item_dist - g_item_height) / 2) + (g_item_dist * i), 25, selection == i? ITEM_SELECTED_COLOUR : ITEM_COLOUR, items[i]);
+            for (int i = 0; i < MAX_ITEMS + 1; i++) {
+                GUI::DrawImage(menu_icons[i], 20, 52 + ((g_item_dist - g_item_height) / 2) + (g_item_dist * i));
+                GUI::DrawText(75, 50 + ((g_item_dist - g_item_height) / 2) + (g_item_dist * i), 25, title_colour, items[i]);
+            }
             
             padUpdate(&pad);
             u32 kDown = padGetButtonsDown(&pad);
