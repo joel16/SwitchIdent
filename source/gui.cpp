@@ -108,14 +108,6 @@ namespace GUI {
         SDL_RenderCopy(g_renderer, texture, nullptr, &position);
     }
     
-    void DrawBanner(int x, int y) {
-        GUI::DrawImage(banner, x, y);
-    }
-    
-    void DrawDriveIcon(int x, int y) {
-        GUI::DrawImage(drive, x, y);
-    }
-    
     void Render(void) {
         SDL_RenderPresent(g_renderer);
     }
