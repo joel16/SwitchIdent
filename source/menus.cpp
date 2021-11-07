@@ -10,6 +10,8 @@ namespace Menus {
     // Globals
     static u32 g_item_height = 0;
     static bool g_is_sd_inserted = false, g_is_gamecard_inserted = false;
+    static HidsysUniquePadId g_unique_pad_ids[2] = {0};
+    static PadState g_pad;
     static const int g_item_dist = 67;
     static const int g_start_x = 450;
     static const int g_start_y = 250;
@@ -27,7 +29,9 @@ namespace Menus {
         STATE_SYSTEM_INFO,
         STATE_POWER_INFO,
         STATE_STORAGE_INFO,
+        STATE_JOYCON_INFO,
         STATE_MISC_INFO,
+        STATE_EXIT,
         MAX_ITEMS
     };
     
@@ -140,6 +144,17 @@ namespace Menus {
         Menus::DrawItem(600, 454 + ((g_item_dist - g_item_height) / 2) + 164, "Used storage capacity:", nand_s_used_str);
     }
 
+    void JoyconInfo(void) {
+        // TODO: account for HidNpadIdType_Other;
+        // Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 50, "JC fw:", "%llu", SwitchIdent::GetJoyconFirmwareVersion(g_unique_pad_ids[0]));
+
+        HidPowerInfo info_left = SwitchIdent::GetJoyconPowerInfoL(padIsHandheld(&g_pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1);
+        HidPowerInfo info_right = SwitchIdent::GetJoyconPowerInfoR(padIsHandheld(&g_pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1);
+
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 50, "Left Joycon battery:", "%lu %% (%s)", (info_left.battery_level * 25), info_left.is_charging? "charging" : "not charging");
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 100, "Right Joycon battery:", "%lu %% (%s)", (info_right.battery_level * 25), info_right.is_charging? "charging" : "not charging");
+    }
+
     void MiscInfo(void) {
         char hostname[128];
         Result ret = gethostname(hostname, sizeof(hostname));
@@ -177,14 +192,25 @@ namespace Menus {
         fsDeviceOperatorClose(&fsDeviceOperator);
         
         padConfigureInput(1, HidNpadStyleSet_NpadStandard);
-        PadState pad;
-        padInitializeDefault(&pad);
+        padInitializeDefault(&g_pad);
+        padUpdate(&g_pad);
+        
+        // For SwitchIdent::GetJoyconFirmwareVersion()
+        // memset(g_unique_pad_ids, 0, sizeof(g_unique_pad_ids));
+
+        // s32 total_entries = 0;
+        // if (R_FAILED(ret = hidsysGetUniquePadsFromNpad(padIsHandheld(&g_pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1, g_unique_pad_ids, 2, &total_entries)))
+        //     std::printf("hidsysGetUniquePadsFromNpad(): 0x%x.\n\n", ret);
+        
+        // if (R_SUCCEEDED(ret))
+        //     std::printf("hidsysGetUniquePadsFromNpad: total_entries (%d)\n", total_entries);
 
         const char *items[] = {
             "Kernel",
             "System",
             "Power",
             "Storage",
+            "Joycon",
             "Misc",
             "Exit"
         };
@@ -199,23 +225,23 @@ namespace Menus {
             
             GUI::DrawRect(0, 50 + (g_item_dist * selection), 400, g_item_dist, selector_colour);
 
-            for (int i = 0; i < MAX_ITEMS + 1; i++) {
+            for (int i = 0; i < MAX_ITEMS; i++) {
                 GUI::DrawImage(menu_icons[i], 20, 52 + ((g_item_dist - g_item_height) / 2) + (g_item_dist * i));
                 GUI::DrawText(75, 50 + ((g_item_dist - g_item_height) / 2) + (g_item_dist * i), 25, title_colour, items[i]);
             }
             
-            padUpdate(&pad);
-            u32 kDown = padGetButtonsDown(&pad);
+            padUpdate(&g_pad);
+            u32 kDown = padGetButtonsDown(&g_pad);
             
             if (kDown & HidNpadButton_AnyDown)
                 selection++;
             else if (kDown & HidNpadButton_AnyUp)
                 selection--;
                 
-            if (selection > MAX_ITEMS) 
+            if (selection > STATE_EXIT) 
                 selection = 0;
             if (selection < 0) 
-                selection = MAX_ITEMS;
+                selection = STATE_EXIT;
                 
             switch (selection) {
                 case STATE_KERNEL_INFO:
@@ -233,6 +259,10 @@ namespace Menus {
                 case STATE_STORAGE_INFO:
                     Menus::StorageInfo();
                     break;
+
+                case STATE_JOYCON_INFO:
+                    Menus::JoyconInfo();
+                    break;
                     
                 case STATE_MISC_INFO:
                     Menus::MiscInfo();
@@ -244,7 +274,7 @@ namespace Menus {
             
             GUI::Render();
             
-            if ((kDown & HidNpadButton_Plus) || ((kDown & HidNpadButton_A) && (selection == MAX_ITEMS)))
+            if ((kDown & HidNpadButton_Plus) || ((kDown & HidNpadButton_A) && (selection == STATE_EXIT)))
                 break;
         }
     }

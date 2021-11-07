@@ -53,6 +53,12 @@ namespace SwitchIdent {
     u32 GetWlanState(void);
     s32 GetWlanQuality(s32 dBm);
     u32 GetWlanRSSI(void);
+
+    // Joycon
+    u128 GetJoyconFirmwareVersion(HidsysUniquePadId unique_pad_id);
+    HidPowerInfo GetJoyconPowerInfo(HidNpadIdType id);
+    HidPowerInfo GetJoyconPowerInfoL(HidNpadIdType id);
+    HidPowerInfo GetJoyconPowerInfoR(HidNpadIdType id);
 }
 
 #endif

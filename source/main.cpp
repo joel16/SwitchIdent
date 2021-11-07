@@ -6,6 +6,8 @@
 
 namespace Services {
     void Exit(void) {
+        // hiddbgExit();
+        // hidsysExit();
         wlaninfExit();
         
         if (hosversionAtLeast(8, 0, 0))
@@ -25,10 +27,14 @@ namespace Services {
         setExit();
         GUI::Exit();
         romfsExit();
+        socketExit();
     }
 
     void Init(void) {
         Result ret = 0;
+
+        socketInitializeDefault();
+        nxlinkStdio();
         
         if (R_FAILED(ret = romfsInit()))
             std::printf("romfsInit() failed: 0x%x.\n\n", ret);
@@ -73,6 +79,12 @@ namespace Services {
         
         if (R_FAILED(ret = wlaninfInitialize()))
             std::printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+
+        // if (R_FAILED(ret = hidsysInitialize()))
+        //     std::printf("hidsysInitialize() failed: 0x%x.\n\n", ret);
+
+        // if (R_FAILED(ret = hiddbgInitialize()))
+        //     std::printf("hiddbgInitialize() failed: 0x%x.\n\n", ret);
             
         GUI::Init();
     }
