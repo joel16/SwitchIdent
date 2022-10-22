@@ -77,8 +77,10 @@ namespace Services {
                 std::printf("pcvInitialize() failed: 0x%x.\n\n", ret);
         }
         
-        if (R_FAILED(ret = wlaninfInitialize()))
-            std::printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+        if (hosversionBefore(15, 0, 0)) {
+            if (R_FAILED(ret = wlaninfInitialize()))
+                std::printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+        }
 
         // if (R_FAILED(ret = hidsysInitialize()))
         //     std::printf("hidsysInitialize() failed: 0x%x.\n\n", ret);
