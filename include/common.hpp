@@ -26,6 +26,7 @@ namespace SwitchIdent {
     bool IsGameCardInserted(FsDeviceOperator *fsDeviceOperator);
 
     // Power
+    Result TsInitialize(void);
     u32 GetBatteryPercentage(void);
     const char *GetChargerType(void);
     bool IsCharging(void);
@@ -35,6 +36,7 @@ namespace SwitchIdent {
     bool IsEnoughPowerSupplied(void);
     double GetBatteryAgePercentage(void);
     SetBatteryLot GetBatteryLot(void);
+    s32 GetBatteryTemperature(TsLocation location);
 
     // Storage
     s64 GetTotalStorage(NcmStorageId storage_id);

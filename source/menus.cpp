@@ -78,12 +78,16 @@ namespace Menus {
     }
 
     void PowerInfo(void) {
+        s32 int_temp = SwitchIdent::GetBatteryTemperature(TsLocation_Internal);
+        s32 ext_temp = SwitchIdent::GetBatteryTemperature(TsLocation_External);
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 50, "Battery percentage:",  "%lu %% (%s)", SwitchIdent::GetBatteryPercentage(), SwitchIdent::IsCharging()? "charging" : "not charging");
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 100, "Battery voltage state:", SwitchIdent::GetVoltageState());
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 150, "Battery charger type:", SwitchIdent::GetChargerType());
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent::IsChargingEnabled()? "Yes" : "No");
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent::IsEnoughPowerSupplied()? "Yes" : "No");
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Battery lot number:", SwitchIdent::GetBatteryLot().lot);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 350, "Battery internal temperature:", "%d °C (%d °F)", int_temp, ((int_temp * 9/5) + 32));
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 400, "Battery external temperature:", "%d °C (%d °F)", ext_temp, ((ext_temp * 9/5) + 32));
     }
 
     void StorageInfo(void) {

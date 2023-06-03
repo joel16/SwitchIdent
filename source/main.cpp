@@ -8,13 +8,16 @@ namespace Services {
     void Exit(void) {
         // hiddbgExit();
         // hidsysExit();
+        tsExit();
         wlaninfExit();
         
-        if (hosversionAtLeast(8, 0, 0))
+        if (hosversionAtLeast(8, 0, 0)) {
             clkrstExit();
-        else
+        }
+        else {
             pcvExit();
-            
+        }
+        
         psmExit();
         nsExit();
         apmExit();
@@ -36,38 +39,49 @@ namespace Services {
         socketInitializeDefault();
         nxlinkStdio();
         
-        if (R_FAILED(ret = romfsInit()))
+        if (R_FAILED(ret = romfsInit())) {
             std::printf("romfsInit() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = setInitialize()))
+        if (R_FAILED(ret = setInitialize())) {
             std::printf("setInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = setsysInitialize()))
+        if (R_FAILED(ret = setsysInitialize())) {
             std::printf("setsysInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = setcalInitialize()))
+        if (R_FAILED(ret = setcalInitialize())) {
             std::printf("setcalInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = splInitialize()))
+        if (R_FAILED(ret = splInitialize())) {
             std::printf("splInitialize() failed: 0x%x.\n\n", ret);
+        }
         
-        if (R_FAILED(ret = nifmInitialize(NifmServiceType_User)))
+        if (R_FAILED(ret = nifmInitialize(NifmServiceType_User))) {
             std::printf("nifmInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = socketInitializeDefault()))
+        if (R_FAILED(ret = socketInitializeDefault())) {
             std::printf("socketInitializeDefault() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = appletInitialize()))
+        if (R_FAILED(ret = appletInitialize())) {
             std::printf("appletInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = apmInitialize()))
+        if (R_FAILED(ret = apmInitialize())) {
             std::printf("apmInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = nsInitialize()))
+        if (R_FAILED(ret = nsInitialize())) {
             std::printf("nsInitialize() failed: 0x%x.\n\n", ret);
+        }
             
-        if (R_FAILED(ret = psmInitialize()))
+        if (R_FAILED(ret = psmInitialize())) {
             std::printf("psmInitialize() failed: 0x%x.\n\n", ret);
+        }
             
         if (hosversionAtLeast(8, 0, 0)) {
             if (R_FAILED(ret = clkrstInitialize()))
@@ -78,8 +92,13 @@ namespace Services {
         }
         
         if (hosversionBefore(15, 0, 0)) {
-            if (R_FAILED(ret = wlaninfInitialize()))
+            if (R_FAILED(ret = wlaninfInitialize())) {
                 std::printf("wlaninfInitialize() failed: 0x%x.\n\n", ret);
+            }
+        }
+
+        if (R_FAILED(ret = tsInitialize())) {
+            std::printf("tsInitialize() failed: 0x%x.\n\n", ret);
         }
 
         // if (R_FAILED(ret = hidsysInitialize()))

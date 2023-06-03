@@ -2,13 +2,13 @@
 #include "common.hpp"
 
 namespace SwitchIdent {
-    
     static Result _psmCmdNoInOutBool(Service* srv, bool *out, u32 cmd_id) {
         u8 outval = 0;
         Result ret = serviceDispatchOut(srv, cmd_id, outval);
         if (R_SUCCEEDED(ret)) {
-            if (out)
+            if (out) {
                 *out = outval & 1;
+            }
         }
         
         return ret;
@@ -22,8 +22,9 @@ namespace SwitchIdent {
         Result ret = 0;
         u32 percentage = 0;
         
-        if (R_FAILED(ret = psmGetBatteryChargePercentage(&percentage)))
+        if (R_FAILED(ret = psmGetBatteryChargePercentage(&percentage))) {
             return -1;
+        }
         
         return percentage;
     }
@@ -32,15 +33,19 @@ namespace SwitchIdent {
         Result ret = 0;
         PsmChargerType charger_type;
         
-        if (R_FAILED(ret = psmGetChargerType(&charger_type)))
+        if (R_FAILED(ret = psmGetChargerType(&charger_type))) {
             return nullptr;
+        }
             
-        if (charger_type == PsmChargerType_EnoughPower)
+        if (charger_type == PsmChargerType_EnoughPower) {
             return "Official charger or dock";
-        else if (charger_type == PsmChargerType_LowPower)
+        }
+        else if (charger_type == PsmChargerType_LowPower) {
             return "USB-C charger";
-        else
+        }
+        else {
             return "No charger connected";
+        }
             
         return nullptr;
     }
@@ -49,8 +54,9 @@ namespace SwitchIdent {
         Result ret = 0;
         PsmChargerType charger_type;
         
-        if (R_FAILED(ret = psmGetChargerType(&charger_type)))
+        if (R_FAILED(ret = psmGetChargerType(&charger_type))) {
             return false;
+        }
             
         return charger_type != PsmChargerType_Unconnected;
     }
@@ -59,8 +65,9 @@ namespace SwitchIdent {
         Result ret = 0;
         bool is_charing_enabled = 0;
         
-        if (R_FAILED(ret = psmIsBatteryChargingEnabled(&is_charing_enabled)))
+        if (R_FAILED(ret = psmIsBatteryChargingEnabled(&is_charing_enabled))) {
             return -1;
+        }
         
         return is_charing_enabled;
     }
@@ -77,8 +84,9 @@ namespace SwitchIdent {
         };
         
         if (R_SUCCEEDED(ret = psmGetBatteryVoltageState(&voltage_state))) {
-            if (voltage_state < 4)
+            if (voltage_state < 4) {
                 return states[voltage_state];
+            }
         }
         
         std::printf("psmGetBatteryVoltageState() failed: 0x%x.\n\n", ret);
@@ -89,8 +97,9 @@ namespace SwitchIdent {
         Result ret = 0;
         double raw_percentage = 0;
         
-        if (R_FAILED(ret = psmGetRawBatteryChargePercentage(&raw_percentage)))
+        if (R_FAILED(ret = psmGetRawBatteryChargePercentage(&raw_percentage))) {
             return -1;
+        }
             
         return raw_percentage;
     }
@@ -99,8 +108,9 @@ namespace SwitchIdent {
         Result ret = 0;
         bool is_power_supplied = 0;
         
-        if (R_FAILED(ret = psmIsEnoughPowerSupplied(&is_power_supplied)))
+        if (R_FAILED(ret = psmIsEnoughPowerSupplied(&is_power_supplied))) {
             return -1;
+        }
             
         return is_power_supplied;
     }
@@ -109,8 +119,9 @@ namespace SwitchIdent {
         Result ret = 0;
         double age_percentage = 0;
         
-        if (R_FAILED(ret = psmGetBatteryAgePercentage(&age_percentage)))
+        if (R_FAILED(ret = psmGetBatteryAgePercentage(&age_percentage))) {
             return -1;
+        }
             
         return age_percentage;
     }
@@ -119,9 +130,21 @@ namespace SwitchIdent {
         Result ret = 0;
         SetBatteryLot battery_lot;
         
-        if (R_FAILED(ret = setcalGetBatteryLot(&battery_lot)))
+        if (R_FAILED(ret = setcalGetBatteryLot(&battery_lot))) {
             std::printf("setcalGetBatteryLot() failed: 0x%x.\n\n", ret);
+        }
             
         return battery_lot;
+    }
+
+    s32 GetBatteryTemperature(TsLocation location) {
+        Result ret = 0;
+        s32 temp = 0;
+
+        if (R_FAILED(ret = tsGetTemperature(location, &temp))) {
+            std::printf("tsGetTemperature() failed: 0x%x.\n\n", ret);
+        }
+        
+        return temp;
     }
 }
