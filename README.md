@@ -19,7 +19,6 @@ This is yet another identity tool that is continuing the series of <*device name
 - Displays storage sizes for SD, NAND (user) and NAND (system).
 - Displays various system statuses. (Bluetooth, WLAN, NFC, etc.)
 - Displays battery percentage and charging status.
-- Displays battery charger type.
 - Displays if battery charging is enabled.
 - Displays if ample power is supplied.
 - Displays wireless RSSI signals and quality.
@@ -27,6 +26,17 @@ This is yet another identity tool that is continuing the series of <*device name
 - Displays battery lot number.
 - Displays SD and gamecard slot statuses.
 - Displays WiFi and Bluetooth MAC address.
+- Display battery age (in percentage and pcm).
+- Display battery internal and external temperature.
+- Display battery internal and external temperature.
+- Display battery charger input and output current limit.
+- Display battery charging current limit.
+- Display battery charging voltage limit.
+- Display battery capacity (pcm) and age (pcm).
+- Display battery voltage avg.
+- Display battery charger type.
+- Display battery charger current limit.
+- Display battery charger voltage limit.
 
 # Credits:
 - shchmue: Added missing DRAM descriptors and fix compatibility with libnx v4.2.0+
