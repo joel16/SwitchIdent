@@ -17,6 +17,10 @@ namespace SwitchIdent {
     static Result psmIsBatteryChargingEnabled(bool *out) {
         return _psmCmdNoInOutBool(psmGetServiceSession(), out, 4);
     }
+
+    static Result psmGetBatteryChargeInfoFields(BatteryChargeInfoFields *batteryChargeInfoFields) {
+        return serviceDispatchOut(psmGetServiceSession(), 17, *batteryChargeInfoFields);
+    }
     
     u32 GetBatteryPercentage(void) {
         Result ret = 0;
@@ -146,5 +150,15 @@ namespace SwitchIdent {
         }
         
         return temp;
+    }
+
+    s32 GetBatteryChargeInfoFields(BatteryChargeInfoFields * batteryChargeInfoFields) {
+        Result ret = 0;
+
+        if (R_FAILED(ret = psmGetBatteryChargeInfoFields(batteryChargeInfoFields))) {
+            std::printf("psmGetBatteryChargeInfoFields() failed: 0x%x.\n\n", ret);
+        }
+
+        return ret;
     }
 }

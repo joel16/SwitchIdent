@@ -3,6 +3,25 @@
 
 #include <switch.h>
 
+typedef struct {
+    u32 in_curr_limit;
+    u32 out_curr_limit;
+    u32 charge_curr_limit;
+    u32 charge_volt_limit;
+    u32 power_role;
+    u32 enable_battery_charge;
+    u32 charge_limits_temp;
+    u32 battery_temp;
+    u32 capacity;
+    u32 voltage_avg;
+    u32 battery_age;
+    u32 power_role_2;
+    u32 charger;
+    u32 charger_volt_limit;
+    u32 charger_curr_limit;
+    u32 charge_method;
+} BatteryChargeInfoFields;
+
 namespace SwitchIdent {
     // Kernel
     const char *GetDramDesc(void);
@@ -37,6 +56,7 @@ namespace SwitchIdent {
     double GetBatteryAgePercentage(void);
     SetBatteryLot GetBatteryLot(void);
     s32 GetBatteryTemperature(TsLocation location);
+    s32 GetBatteryChargeInfoFields(BatteryChargeInfoFields *batteryChargeInfoFields);
 
     // Storage
     s64 GetTotalStorage(NcmStorageId storage_id);

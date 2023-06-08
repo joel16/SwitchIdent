@@ -27,7 +27,8 @@ namespace Menus {
     enum MenuState {
         STATE_KERNEL_INFO = 0,
         STATE_SYSTEM_INFO,
-        STATE_POWER_INFO,
+        STATE_BATTERY_INFO,
+        STATE_CHARGER_INFO,
         STATE_STORAGE_INFO,
         STATE_JOYCON_INFO,
         STATE_MISC_INFO,
@@ -77,17 +78,43 @@ namespace Menus {
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 350, "NFC:", SwitchIdent::GetNfcEnableFlag()? "Enabled" : "Disabled");
     }
 
-    void PowerInfo(void) {
+    void BatteryInfo(void) {
         s32 int_temp = SwitchIdent::GetBatteryTemperature(TsLocation_Internal);
         s32 ext_temp = SwitchIdent::GetBatteryTemperature(TsLocation_External);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 50, "Battery percentage:",  "%lu %% (%s)", SwitchIdent::GetBatteryPercentage(), SwitchIdent::IsCharging()? "charging" : "not charging");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 100, "Battery voltage state:", SwitchIdent::GetVoltageState());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 150, "Battery charger type:", SwitchIdent::GetChargerType());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 200, "Battery charging enabled:", SwitchIdent::IsChargingEnabled()? "Yes" : "No");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 250, "Battery ample power supplied:", SwitchIdent::IsEnoughPowerSupplied()? "Yes" : "No");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Battery lot number:", SwitchIdent::GetBatteryLot().lot);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 350, "Battery internal temperature:", "%d °C (%d °F)", int_temp, ((int_temp * 9/5) + 32));
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 400, "Battery external temperature:", "%d °C (%d °F)", ext_temp, ((ext_temp * 9/5) + 32));
+
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 50, "Percentage:",  "%lu %% (%s)", SwitchIdent::GetBatteryPercentage(), SwitchIdent::IsCharging()? "charging" : "not charging");
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 100, "Age percentage:", "%.2f %%", SwitchIdent::GetBatteryAgePercentage());
+        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 150, "Voltage state:", SwitchIdent::GetVoltageState());
+        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 200, "Lot number:", SwitchIdent::GetBatteryLot().lot);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 250, "Internal temperature:", "%d °C (%d °F)", int_temp, ((int_temp * 9/5) + 32));
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "External temperature:", "%d °C (%d °F)", ext_temp, ((ext_temp * 9/5) + 32));
+    }
+
+    void ChargerInfo(void) {
+        const char *chargers[] = {
+            "Unknown",
+            "PD",
+            "Type-C 1.5A",
+            "Type-C 3.0A"
+            "DCP",
+            "CDP",
+            "SDP",
+            "Apple 500mA",
+            "Apple 1000mA",
+            "Apple 2000mA"
+        };
+
+        BatteryChargeInfoFields batteryChargeInfoFields = { 0 };
+        SwitchIdent::GetBatteryChargeInfoFields(&batteryChargeInfoFields);
+
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 50, "Current limit:",  "(In: %d mA) (Out: %d mA)", batteryChargeInfoFields.in_curr_limit, batteryChargeInfoFields.out_curr_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 100, "Battery charging current limit:",  "%d mA", batteryChargeInfoFields.charge_curr_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 150, "Battery charging voltage  limit:",  "%d mV", batteryChargeInfoFields.charge_volt_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 200, "Capacity:",  "%d pcm (Age: %d pcm)", batteryChargeInfoFields.capacity, batteryChargeInfoFields.battery_age);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 250, "Voltage average:", "%d mV", batteryChargeInfoFields.voltage_avg);
+        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Charger:", chargers[batteryChargeInfoFields.charger]);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 350, "Charger voltage limit:", "%d mV", batteryChargeInfoFields.charger_volt_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 400, "Charger current limit:", "%d mA", batteryChargeInfoFields.charger_curr_limit);
     }
 
     void StorageInfo(void) {
@@ -199,6 +226,7 @@ namespace Menus {
         padInitializeDefault(&g_pad);
         padUpdate(&g_pad);
         
+        
         // For SwitchIdent::GetJoyconFirmwareVersion()
         // memset(g_unique_pad_ids, 0, sizeof(g_unique_pad_ids));
 
@@ -212,7 +240,8 @@ namespace Menus {
         const char *items[] = {
             "Kernel",
             "System",
-            "Power",
+            "Battery",
+            "Charger",
             "Storage",
             "Joycon",
             "Misc",
@@ -256,8 +285,12 @@ namespace Menus {
                     Menus::SystemInfo();
                     break;
                 
-                case STATE_POWER_INFO:
-                    Menus::PowerInfo();
+                case STATE_BATTERY_INFO:
+                    Menus::BatteryInfo();
+                    break;
+
+                case STATE_CHARGER_INFO:
+                    Menus::ChargerInfo();
                     break;
                 
                 case STATE_STORAGE_INFO:

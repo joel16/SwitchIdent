@@ -4,7 +4,7 @@
 #include "gui.hpp"
 #include "SDL_FontCache.h"
 
-SDL_Texture *banner = nullptr, *drive = nullptr, *menu_icons[7] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+SDL_Texture *banner = nullptr, *drive = nullptr, *menu_icons[8] = { 0 };
 
 namespace GUI {
     static SDL_Window *g_window = nullptr;
@@ -43,10 +43,11 @@ namespace GUI {
         GUI::LoadImage(&menu_icons[0], "romfs:/kernel.png");
         GUI::LoadImage(&menu_icons[1], "romfs:/system.png");
         GUI::LoadImage(&menu_icons[2], "romfs:/power.png");
-        GUI::LoadImage(&menu_icons[3], "romfs:/storage.png");
-        GUI::LoadImage(&menu_icons[4], "romfs:/joycon.png");
-        GUI::LoadImage(&menu_icons[5], "romfs:/misc.png");
-        GUI::LoadImage(&menu_icons[6], "romfs:/exit.png");
+        menu_icons[3] = menu_icons[2];
+        GUI::LoadImage(&menu_icons[4], "romfs:/storage.png");
+        GUI::LoadImage(&menu_icons[5], "romfs:/joycon.png");
+        GUI::LoadImage(&menu_icons[6], "romfs:/misc.png");
+        GUI::LoadImage(&menu_icons[7], "romfs:/exit.png");
         
         g_font = FC_CreateFont();
         FC_LoadFont(g_font, g_renderer, "romfs:/Ubuntu-Regular.ttf", 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);

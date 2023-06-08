@@ -4,7 +4,7 @@
 #include <switch.h>
 #include <SDL2/SDL.h>
 
-extern SDL_Texture *banner, *drive, *menu_icons[7];
+extern SDL_Texture *banner, *drive, *menu_icons[8];
 
 namespace GUI {
     int Init(void);
