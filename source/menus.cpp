@@ -98,15 +98,17 @@ namespace Menus {
         BatteryChargeInfoFields batteryChargeInfoFields = { 0 };
         SwitchIdent::GetBatteryChargeInfoFields(&batteryChargeInfoFields);
 
+        u32 battery_temp = batteryChargeInfoFields.battery_temp * 0.001;
+
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Battery Percentage:",  "%lu %% (%s)", SwitchIdent::GetBatteryPercentage(), SwitchIdent::IsCharging()? "charging" : "not charging");
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Battery age percentage:", "%.2f %%", SwitchIdent::GetBatteryAgePercentage());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Battery voltage state:", SwitchIdent::GetVoltageState());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Battery lot number:", SwitchIdent::GetBatteryLot().lot);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Charger current limit:",  "(In: %d mA) (Out: %d mA)", batteryChargeInfoFields.in_curr_limit, batteryChargeInfoFields.out_curr_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Battery charging current limit:",  "%d mA", batteryChargeInfoFields.charge_curr_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "Battery charging voltage  limit:",  "%d mV", batteryChargeInfoFields.charge_volt_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 480, "Battery capacity:",  "%d pcm (Age: %d pcm)", batteryChargeInfoFields.capacity, batteryChargeInfoFields.battery_age);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 540, "Battery voltage average:", "%d mV", batteryChargeInfoFields.voltage_avg);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Battery temperature", "%d °C (%d °F)", battery_temp, ((battery_temp * 9/5) + 32));
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Battery voltage state:", "%s (Avg: %d mV)", SwitchIdent::GetVoltageState(), batteryChargeInfoFields.voltage_avg);
+        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Battery lot number:", SwitchIdent::GetBatteryLot().lot);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Charger current limit:",  "(In: %d mA) (Out: %d mA)", batteryChargeInfoFields.in_curr_limit, batteryChargeInfoFields.out_curr_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "Battery charging current limit:",  "%d mA", batteryChargeInfoFields.charge_curr_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 480, "Battery charging voltage  limit:",  "%d mV", batteryChargeInfoFields.charge_volt_limit);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 540, "Battery capacity:",  "%d pcm (Age: %d pcm)", batteryChargeInfoFields.capacity, batteryChargeInfoFields.battery_age);
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 600, "Charger:", chargers[batteryChargeInfoFields.charger]);
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 660, "Charger voltage limit:", "%d mV", batteryChargeInfoFields.charger_volt_limit);
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 720, "Charger current limit:", "%d mA", batteryChargeInfoFields.charger_curr_limit);
