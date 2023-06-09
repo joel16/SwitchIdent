@@ -1,22 +1,24 @@
 #include <cstdio>
 #include <SDL2/SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "gui.hpp"
-#include "SDL_FontCache.h"
 
 SDL_Texture *banner = nullptr, *drive = nullptr, *menu_icons[8] = { 0 };
 
 namespace GUI {
     static SDL_Window *g_window = nullptr;
     static SDL_Renderer *g_renderer = nullptr;
-    static FC_Font *g_font = nullptr; 
+    static TTF_Font *g_font = nullptr; 
 
     static void LoadImage(SDL_Texture **texture, const char *path) {
         SDL_Surface *image = nullptr;
         image = IMG_Load(path);
         
-        if (!image)
+        if (!image) {
+            SDL_Log("IMG_Load failed: %s\n", IMG_GetError());
             return;
+        }
             
         SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGBA8888, 0);
         *texture = SDL_CreateTextureFromSurface(g_renderer, image);
@@ -24,19 +26,28 @@ namespace GUI {
     }
 
     int Init(void) {
-        if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+            SDL_Log("SDL_Init failed: %s\n", SDL_GetError());
             return -1;
+        }
             
-        g_window = SDL_CreateWindow("SwitchIdent", 0, 0, 1280, 720, SDL_WINDOW_FULLSCREEN);
-        if (g_window == nullptr)
+        g_window = SDL_CreateWindow("SwitchIdent", 0, 0, 1920, 1080, SDL_WINDOW_FULLSCREEN);
+        if (g_window == nullptr) {
+            SDL_Log("SDL_CreateWindow failed: %s\n", SDL_GetError());
             return -1;
+        }
             
-        g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+        g_renderer = SDL_CreateRenderer(g_window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        if (g_renderer == nullptr) {
+            SDL_Log("SDL_CreateRenderer failed: %s\n", SDL_GetError());
+            return -1;
+        }
         
         int flags = IMG_INIT_PNG;
-        if ((IMG_Init(flags) & flags) != flags)
+        if ((IMG_Init(flags) & flags) != flags) {
+            SDL_Log("SDL_CreateWindow failed: %s\n", SDL_GetError());
             return -1;
+        }
             
         GUI::LoadImage(&banner, "romfs:/banner.png");
         GUI::LoadImage(&drive, "romfs:/drive.png");
@@ -48,14 +59,14 @@ namespace GUI {
         GUI::LoadImage(&menu_icons[5], "romfs:/joycon.png");
         GUI::LoadImage(&menu_icons[6], "romfs:/misc.png");
         GUI::LoadImage(&menu_icons[7], "romfs:/exit.png");
-        
-        g_font = FC_CreateFont();
-        FC_LoadFont(g_font, g_renderer, "romfs:/Ubuntu-Regular.ttf", 25, FC_MakeColor(0, 0, 0, 255), TTF_STYLE_NORMAL);
+
+        TTF_Init();
+        g_font = TTF_OpenFont("romfs:/Ubuntu-Regular.ttf", 36);
         return 0;
     }
 
     void Exit(void) {
-        FC_FreeFont(g_font);
+        TTF_CloseFont(g_font);
         SDL_DestroyTexture(menu_icons[6]);
         SDL_DestroyTexture(menu_icons[5]);
         SDL_DestroyTexture(menu_icons[4]);
@@ -85,7 +96,16 @@ namespace GUI {
     }
     
     void DrawText(int x, int y, int size, SDL_Color colour, const char *text) {
-        FC_DrawColor(g_font, g_renderer, x, y, colour, text);
+        SDL_Surface *surface = nullptr;
+        SDL_Texture *texture = nullptr;
+        
+        surface = TTF_RenderUTF8_Blended(g_font, text, colour);
+        texture = SDL_CreateTextureFromSurface(g_renderer, surface);
+        SDL_Rect position = {x, y, surface->w, surface->h};
+
+        SDL_RenderCopy(g_renderer, texture, nullptr, &position);
+        SDL_DestroyTexture(texture);
+        SDL_FreeSurface(surface);
     }
     
     void DrawTextf(int x, int y, int size, SDL_Color colour, const char* text, ...) {
@@ -97,11 +117,8 @@ namespace GUI {
         va_end(args);
     }
     
-    void GetTextDimensions(int size, const char *text, u32 *width, u32 *height) {
-        if (width != nullptr) 
-            *width = FC_GetWidth(g_font, text);
-        if (height != nullptr) 
-            *height = FC_GetHeight(g_font, text);
+    void GetTextDimensions(int size, const char *text, int *width, int *height) {
+        TTF_SizeText(g_font, text, width, height);
     }
     
     void DrawImage(SDL_Texture *texture, int x, int y) {

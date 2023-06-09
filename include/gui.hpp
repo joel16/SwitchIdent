@@ -13,7 +13,7 @@ namespace GUI {
     void DrawRect(int x, int y, int w, int h, SDL_Color colour);
     void DrawText(int x, int y, int size, SDL_Color colour, const char *text);
     void DrawTextf(int x, int y, int size, SDL_Color colour, const char* text, ...);
-    void GetTextDimensions(int size, const char *text, u32 *width, u32 *height);
+    void GetTextDimensions(int size, const char *text, int *width, int *height);
     void DrawImage(SDL_Texture *texture, int x, int y);
     void Render(void);
 }
