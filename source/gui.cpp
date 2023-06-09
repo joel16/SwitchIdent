@@ -45,7 +45,7 @@ namespace GUI {
         
         int flags = IMG_INIT_PNG;
         if ((IMG_Init(flags) & flags) != flags) {
-            SDL_Log("SDL_CreateWindow failed: %s\n", SDL_GetError());
+            SDL_Log("IMG_Init failed: %s\n", IMG_GetError());
             return -1;
         }
             
