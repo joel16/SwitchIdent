@@ -4,7 +4,7 @@
 
 #include "gui.hpp"
 
-SDL_Texture *banner = nullptr, *drive = nullptr, *menu_icons[8] = { 0 };
+SDL_Texture *banner = nullptr, *drive = nullptr, *menu_icons[7] = { 0 };
 
 namespace GUI {
     static SDL_Window *g_window = nullptr;
@@ -54,11 +54,10 @@ namespace GUI {
         GUI::LoadImage(&menu_icons[0], "romfs:/kernel.png");
         GUI::LoadImage(&menu_icons[1], "romfs:/system.png");
         GUI::LoadImage(&menu_icons[2], "romfs:/power.png");
-        menu_icons[3] = menu_icons[2];
-        GUI::LoadImage(&menu_icons[4], "romfs:/storage.png");
-        GUI::LoadImage(&menu_icons[5], "romfs:/joycon.png");
-        GUI::LoadImage(&menu_icons[6], "romfs:/misc.png");
-        GUI::LoadImage(&menu_icons[7], "romfs:/exit.png");
+        GUI::LoadImage(&menu_icons[3], "romfs:/storage.png");
+        GUI::LoadImage(&menu_icons[4], "romfs:/joycon.png");
+        GUI::LoadImage(&menu_icons[5], "romfs:/misc.png");
+        GUI::LoadImage(&menu_icons[6], "romfs:/exit.png");
 
         TTF_Init();
         g_font = TTF_OpenFont("romfs:/Ubuntu-Regular.ttf", 36);
