@@ -1,5 +1,4 @@
-#ifndef _SWITCHIDENT_COMMON_H_
-#define _SWITCHIDENT_COMMON_H_
+#pragma once
 
 #include <switch.h>
 
@@ -40,7 +39,6 @@ namespace SwitchIdent {
     bool IsSafeMode(void);
     u64 GetDeviceID(void);
     SetSysSerialNumber GetSerialNumber(void);
-
 
     // Misc
     const char *GetOperationMode(void);
@@ -90,5 +88,3 @@ namespace SwitchIdent {
     HidPowerInfo GetJoyconPowerInfoL(HidNpadIdType id);
     HidPowerInfo GetJoyconPowerInfoR(HidNpadIdType id);
 }
-
-#endif

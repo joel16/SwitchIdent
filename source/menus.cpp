@@ -216,8 +216,9 @@ namespace Menus {
         Result ret = 0;
         
         FsDeviceOperator fsDeviceOperator;
-        if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator)))
+        if (R_FAILED(ret = fsOpenDeviceOperator(&fsDeviceOperator))) {
             std::printf("fsOpenDeviceOperator() failed: 0x%x.\n\n", ret);
+        }
             
         g_is_sd_inserted = SwitchIdent::IsSDCardInserted(&fsDeviceOperator);
         g_is_gamecard_inserted = SwitchIdent::IsGameCardInserted(&fsDeviceOperator);
@@ -255,16 +256,20 @@ namespace Menus {
             padUpdate(&g_pad);
             u32 kDown = padGetButtonsDown(&g_pad);
             
-            if (kDown & HidNpadButton_AnyDown)
+            if (kDown & HidNpadButton_AnyDown) {
                 selection++;
-            else if (kDown & HidNpadButton_AnyUp)
+            }
+            else if (kDown & HidNpadButton_AnyUp) {
                 selection--;
+            }
                 
-            if (selection > STATE_EXIT) 
+            if (selection > STATE_EXIT) {
                 selection = 0;
-            if (selection < 0) 
+            }
+            if (selection < 0) {
                 selection = STATE_EXIT;
-                
+            }
+
             switch (selection) {
                 case STATE_KERNEL_INFO:
                     Menus::KernelInfo();
@@ -296,8 +301,9 @@ namespace Menus {
             
             GUI::Render();
             
-            if ((kDown & HidNpadButton_Plus) || ((kDown & HidNpadButton_A) && (selection == STATE_EXIT)))
+            if ((kDown & HidNpadButton_Plus) || ((kDown & HidNpadButton_A) && (selection == STATE_EXIT))) {
                 break;
+            }
         }
     }
 }

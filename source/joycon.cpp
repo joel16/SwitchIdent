@@ -15,8 +15,9 @@ namespace SwitchIdent {
     Result GetJoyconFirmwareVersion(HidDeviceTypeBits deviceType, HIDFirmwareVersion *version) {
         Result ret = 0;
 
-        if (R_FAILED(ret = hiddbgGetFirmwareVersion(HidNpadIdType_No1, deviceType, version)))
+        if (R_FAILED(ret = hiddbgGetFirmwareVersion(HidNpadIdType_No1, deviceType, version))) {
             std::printf("hiddbgGetFirmwareVersion() failed: 0x%x.\n\n", ret);
+        }
 
         return ret;
     }

@@ -1,5 +1,4 @@
-#ifndef _SWITCHIDENT_GUI_H_
-#define _SWITCHIDENT_GUI_H_
+#pragma once
 
 #include <switch.h>
 #include <SDL2/SDL.h>
@@ -17,5 +16,3 @@ namespace GUI {
     void DrawImage(SDL_Texture *texture, int x, int y);
     void Render(void);
 }
-
-#endif

@@ -41,11 +41,13 @@ namespace SwitchIdent {
             "Unknown"
         };
         
-        if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id)))
+        if (R_FAILED(ret = splGetConfig(SplConfigItem_DramId, &id))) {
             std::printf("splGetConfig(SplConfigItem_DramId) failed: 0x%x.\n\n", ret);
+        }
             
-        if (id >= 30)
+        if (id >= 30) {
             return dram_desc[30];
+        }
             
         return dram_desc[id];
     }
@@ -54,8 +56,9 @@ namespace SwitchIdent {
         Result ret = 0;
         SetSysFirmwareVersion version;
         
-        if (R_FAILED(ret = setsysGetFirmwareVersion(&version)))
+        if (R_FAILED(ret = setsysGetFirmwareVersion(&version))) {
             std::printf("setsysGetFirmwareVersion() failed: 0x%x.\n\n", ret);
+        }
 
         return version;
     }
@@ -74,11 +77,13 @@ namespace SwitchIdent {
             "Unknown"
         };
         
-        if (R_FAILED(ret = splGetConfig(SplConfigItem_HardwareType, &hardware_type)))
+        if (R_FAILED(ret = splGetConfig(SplConfigItem_HardwareType, &hardware_type))) {
             std::printf("splGetConfig(SplConfigItem_HardwareType) failed: 0x%x.\n\n", ret);
+        }
             
-        if (hardware_type >= 6)
+        if (hardware_type >= 6) {
             return hardware_string[6];
+        }
             
         return hardware_string[hardware_type];
     }
@@ -88,8 +93,9 @@ namespace SwitchIdent {
         u64 is_kiosk_mode = 0;
         Result ret = 0;
         
-        if (R_FAILED(ret = splGetConfig(SplConfigItem_IsKiosk , &is_kiosk_mode)))
+        if (R_FAILED(ret = splGetConfig(SplConfigItem_IsKiosk , &is_kiosk_mode))) {
             std::printf("splGetConfig(SplConfigItem_IsKiosk) failed: 0x%x.\n\n", ret);
+        }
         
         return is_kiosk_mode? true : false;
     }
@@ -116,21 +122,20 @@ namespace SwitchIdent {
         Result ret = 0;
         u64 safemode = 0;
         
-        if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRecoveryBoot, &safemode)))
+        if (R_FAILED(ret = splGetConfig(SplConfigItem_IsRecoveryBoot, &safemode))) {
             std::printf("splGetConfig(SplConfigItem_IsRecoveryBoot) failed: 0x%x.\n\n", ret);
-            
-        if (safemode)
-            return true;
+        }
         
-        return false;
+        return safemode? true : false;
     }
     
     u64 GetDeviceID(void) {
         Result ret = 0;
         u64 id = 0;
         
-        if (R_FAILED(ret = splGetConfig(SplConfigItem_DeviceId, &id)))
+        if (R_FAILED(ret = splGetConfig(SplConfigItem_DeviceId, &id))) {
             std::printf("splGetConfig(SplConfigItem_DeviceId) failed: 0x%x.\n\n", ret);
+        }
             
         return id;
     }
@@ -139,8 +144,9 @@ namespace SwitchIdent {
         Result ret = 0;
         SetSysSerialNumber serial;
         
-        if (R_FAILED(ret = setsysGetSerialNumber(&serial)))
+        if (R_FAILED(ret = setsysGetSerialNumber(&serial))) {
             std::printf("setsysGetSerialNumber() failed: 0x%x.\n\n", ret);
+        }
             
         return serial;
     }

@@ -1,8 +1,5 @@
-#ifndef _SWITCHIDENT_MENUS_H_
-#define _SWITCHIDENT_MENUS_H_
+#pragma once
 
 namespace Menus {
     void Main(void);
 }
-
-#endif

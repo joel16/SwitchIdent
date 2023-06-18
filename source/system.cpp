@@ -7,8 +7,9 @@ namespace SwitchIdent {
         Result ret = 0;
         u64 language = 0;
         
-        if (R_FAILED(ret = setGetSystemLanguage(&language)))
+        if (R_FAILED(ret = setGetSystemLanguage(&language))) {
             std::printf("setGetSystemLanguage() failed: 0x%x.\n\n", ret);
+        }
             
         return language;
     }
@@ -43,18 +44,23 @@ namespace SwitchIdent {
             ClkrstSession session = {0};
             PcvModuleId module_id;
             
-            if (R_FAILED(ret = pcvGetModuleId(&module_id, module)))
+            if (R_FAILED(ret = pcvGetModuleId(&module_id, module))) {
                 std::printf("pcvGetModuleId() failed: 0x%x.\n\n", ret);
-            else if (R_FAILED(ret = clkrstOpenSession(&session, module_id, 3)))
+            }
+            else if (R_FAILED(ret = clkrstOpenSession(&session, module_id, 3))) {
                 std::printf("clkrstOpenSession() failed: 0x%x.\n\n", ret);
-            else if (R_FAILED(ret = clkrstGetClockRate(&session, &out)))
+            }
+            else if (R_FAILED(ret = clkrstGetClockRate(&session, &out))) {
                 std::printf("clkrstGetClockRate() failed: 0x%x.\n\n", ret);
-            else
+            }
+            else {
                 clkrstCloseSession(&session);
+            }
         }
         else {
-            if (R_FAILED(ret = pcvGetClockRate(module, &out)))
+            if (R_FAILED(ret = pcvGetClockRate(module, &out))) {
                 std::printf("pcvGetClockRate() failed: 0x%x.\n\n", ret);
+            }
         }
         
         return out/1000000;
@@ -64,8 +70,9 @@ namespace SwitchIdent {
         Result ret = 0;
         SetCalBdAddress bd_addr;
         
-        if (R_FAILED(ret = setcalGetBdAddress(&bd_addr)))
+        if (R_FAILED(ret = setcalGetBdAddress(&bd_addr))) {
             std::printf("setcalGetBdAddress() failed: 0x%x.\n\n", ret);
+        }
             
         return bd_addr;
     }
@@ -74,8 +81,9 @@ namespace SwitchIdent {
         Result ret = 0;
         SetCalMacAddress mac_addr;
         
-        if (R_FAILED(ret = setcalGetWirelessLanMacAddress(&mac_addr)))
+        if (R_FAILED(ret = setcalGetWirelessLanMacAddress(&mac_addr))) {
             std::printf("setcalGetWirelessLanMacAddress() failed: 0x%x.\n\n", ret);
+        }
             
         return mac_addr;
     }

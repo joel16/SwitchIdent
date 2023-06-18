@@ -6,8 +6,9 @@ namespace SwitchIdent {
         Result ret = 0;
         s64 total = 0;
         
-        if (R_FAILED(ret = nsGetTotalSpaceSize(storage_id, &total)))
+        if (R_FAILED(ret = nsGetTotalSpaceSize(storage_id, &total))) {
             std::printf("nsGetFreeSpaceSize() failed: 0x%x.\n\n", ret);
+        }
             
         return total;
     }
@@ -16,8 +17,9 @@ namespace SwitchIdent {
         Result ret = 0;
         s64 free = 0;
         
-        if (R_FAILED(ret = nsGetFreeSpaceSize(storage_id, &free)))
+        if (R_FAILED(ret = nsGetFreeSpaceSize(storage_id, &free))) {
             std::printf("nsGetFreeSpaceSize() failed: 0x%x.\n\n", ret);
+        }
             
         return free;
     }
