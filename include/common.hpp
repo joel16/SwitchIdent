@@ -22,6 +22,14 @@ typedef struct {
     u32 charge_method;
 } BatteryChargeInfoFields;
 
+typedef struct {
+    u8 major;
+    u8 minor;
+    u8 micro;
+    u8 rev;
+    u8 device_identifier[0xC];
+} HIDFirmwareVersion;
+
 namespace SwitchIdent {
     // Kernel
     const char *GetDramDesc(void);
@@ -77,7 +85,7 @@ namespace SwitchIdent {
     u32 GetWlanRSSI(void);
 
     // Joycon
-    u128 GetJoyconFirmwareVersion(HidsysUniquePadId unique_pad_id);
+    Result GetJoyconFirmwareVersion(HidDeviceTypeBits deviceType, HIDFirmwareVersion *version);
     HidPowerInfo GetJoyconPowerInfo(HidNpadIdType id);
     HidPowerInfo GetJoyconPowerInfoL(HidNpadIdType id);
     HidPowerInfo GetJoyconPowerInfoR(HidNpadIdType id);

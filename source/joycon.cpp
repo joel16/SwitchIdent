@@ -3,30 +3,22 @@
 #include "common.hpp"
 
 namespace SwitchIdent {
-    // TODO: Fix this
-    static Result hiddbgGetFirmwareVersion(HidsysUniquePadId unique_pad_id, u128 *out) {
-        if (hosversionBefore(6,0,0))
-            return MAKERESULT(Module_Libnx, LibnxError_IncompatSysVer);
-
-        u128 temp = 0;
-        Result ret = serviceDispatchInOut(hiddbgGetServiceSession(), 205, unique_pad_id.id, temp);
-        if (R_SUCCEEDED(ret) && out) {
-            *out = temp;
-        }
-        else
-            std::printf("serviceDispatchInOut failed: 0x%x\n", ret);
+    static Result hiddbgGetFirmwareVersion(HidNpadIdType id, u8 deviceType, HIDFirmwareVersion *version) {
+        const struct {
+            HidNpadIdType a;
+            u8 b;
+        } in = { id, deviceType };
         
-        return ret;
+        return serviceDispatchInOut(hiddbgGetServiceSession(), 205, in, *version);
     }
 
-    u128 GetJoyconFirmwareVersion(HidsysUniquePadId unique_pad_id) {
+    Result GetJoyconFirmwareVersion(HidDeviceTypeBits deviceType, HIDFirmwareVersion *version) {
         Result ret = 0;
-        u128 version = 0;
 
-        if (R_FAILED(ret = hiddbgGetFirmwareVersion(unique_pad_id, &version)))
+        if (R_FAILED(ret = hiddbgGetFirmwareVersion(HidNpadIdType_No1, deviceType, version)))
             std::printf("hiddbgGetFirmwareVersion() failed: 0x%x.\n\n", ret);
 
-        return version;
+        return ret;
     }
 
     HidPowerInfo GetJoyconPowerInfo(HidNpadIdType id) {

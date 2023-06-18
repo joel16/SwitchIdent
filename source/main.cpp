@@ -6,8 +6,7 @@
 
 namespace Services {
     void Exit(void) {
-        // hiddbgExit();
-        // hidsysExit();
+        hiddbgExit();
         tsExit();
         wlaninfExit();
         
@@ -101,11 +100,9 @@ namespace Services {
             std::printf("tsInitialize() failed: 0x%x.\n\n", ret);
         }
 
-        // if (R_FAILED(ret = hidsysInitialize()))
-        //     std::printf("hidsysInitialize() failed: 0x%x.\n\n", ret);
-
-        // if (R_FAILED(ret = hiddbgInitialize()))
-        //     std::printf("hiddbgInitialize() failed: 0x%x.\n\n", ret);
+        if (R_FAILED(ret = hiddbgInitialize())) {
+            std::printf("hiddbgInitialize() failed: 0x%x.\n\n", ret);
+        }
             
         GUI::Init();
     }

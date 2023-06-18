@@ -9,7 +9,6 @@ namespace Menus {
     // Globals
     static int g_item_height = 0;
     static bool g_is_sd_inserted = false, g_is_gamecard_inserted = false;
-    static HidsysUniquePadId g_unique_pad_ids[2] = {0};
     static PadState g_pad;
     static const int g_item_dist = 67;
     static const int g_start_x = 450;
@@ -173,14 +172,19 @@ namespace Menus {
     }
 
     void JoyconInfo(void) {
-        // TODO: account for HidNpadIdType_Other;
-        // Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "JC fw:", "%llu", SwitchIdent::GetJoyconFirmwareVersion(g_unique_pad_ids[0]));
-
+        // TODO: Get info on other connected controllers
         HidPowerInfo info_left = SwitchIdent::GetJoyconPowerInfoL(padIsHandheld(&g_pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1);
         HidPowerInfo info_right = SwitchIdent::GetJoyconPowerInfoR(padIsHandheld(&g_pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1);
 
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Left Joycon battery:", "%lu %% (%s)", (info_left.battery_level * 25), info_left.is_charging? "charging" : "not charging");
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Right Joycon battery:", "%lu %% (%s)", (info_right.battery_level * 25), info_right.is_charging? "charging" : "not charging");
+        HIDFirmwareVersion version_left;
+        HIDFirmwareVersion version_right;
+        SwitchIdent::GetJoyconFirmwareVersion(padIsHandheld(&g_pad) ? HidDeviceTypeBits_HandheldLeft : HidDeviceTypeBits_JoyLeft, &version_left);
+        SwitchIdent::GetJoyconFirmwareVersion(padIsHandheld(&g_pad) ? HidDeviceTypeBits_HandheldRight : HidDeviceTypeBits_JoyRight, &version_right);
+
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Left Joy-con battery:", "%lu %% (%s)", (info_left.battery_level * 25), info_left.is_charging? "charging" : "not charging");
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Right Joy-con battery:", "%lu %% (%s)", (info_right.battery_level * 25), info_right.is_charging? "charging" : "not charging");
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Left Joy-con firmware:", "%d.%d.%d", version_left.major, version_left.minor, version_left.micro);
+        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Right Joy-con firmware:", "%d.%d.%d", version_right.major, version_right.minor, version_right.micro);
     }
 
     void MiscInfo(void) {
@@ -222,24 +226,13 @@ namespace Menus {
         padConfigureInput(1, HidNpadStyleSet_NpadStandard);
         padInitializeDefault(&g_pad);
         padUpdate(&g_pad);
-        
-        
-        // For SwitchIdent::GetJoyconFirmwareVersion()
-        // memset(g_unique_pad_ids, 0, sizeof(g_unique_pad_ids));
-
-        // s32 total_entries = 0;
-        // if (R_FAILED(ret = hidsysGetUniquePadsFromNpad(padIsHandheld(&g_pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1, g_unique_pad_ids, 2, &total_entries)))
-        //     std::printf("hidsysGetUniquePadsFromNpad(): 0x%x.\n\n", ret);
-        
-        // if (R_SUCCEEDED(ret))
-        //     std::printf("hidsysGetUniquePadsFromNpad: total_entries (%d)\n", total_entries);
 
         const char *items[] = {
             "Kernel",
             "System",
             "Battery",
             "Storage",
-            "Joycon",
+            "Joy-con",
             "Misc",
             "Exit"
         };
