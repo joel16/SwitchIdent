@@ -78,6 +78,7 @@ namespace Menus {
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "NFC:", SwitchIdent::GetNfcEnableFlag()? "Enabled" : "Disabled");
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 480, "Internal (PCB) temperature:", "%d °C (%d °F)", int_temp, ((int_temp * 9/5) + 32));
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 540, "External (SoC) temperature:", "%d °C (%d °F)", ext_temp, ((ext_temp * 9/5) + 32));
+        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 600, "Headphone Status:",  SwitchIdent::GetHeadphoneStatus());
     }
 
     void BatteryInfo(void) {

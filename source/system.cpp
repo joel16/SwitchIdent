@@ -87,4 +87,21 @@ namespace SwitchIdent {
             
         return mac_addr;
     }
+
+    const char *GetHeadphoneStatus(void) {
+        Result ret = 0;
+        GpioPadSession button;
+        GpioValue value;
+
+        if (R_FAILED(ret = gpioOpenSession(&button, static_cast<GpioPadName>(21)))) {
+            std::printf("gpioOpenSession() failed: 0x%x.\n\n", ret);
+        }
+        
+        if (R_FAILED(ret = gpioPadGetValue(&button, &value))) {
+            std::printf("gpioPadGetValue() failed: 0x%x.\n\n", ret);
+        }
+        
+        gpioPadClose(&button);
+        return (value == GpioValue_Low)? "Inserted": "Not inserted";
+    }
 }

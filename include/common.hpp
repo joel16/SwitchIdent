@@ -76,6 +76,7 @@ namespace SwitchIdent {
     u32 GetClock(PcvModule module);
     SetCalBdAddress GetBluetoothBdAddress(void);
     SetCalMacAddress GetWirelessLanMacAddress(void);
+    const char *GetHeadphoneStatus(void);
 
     // Wlan
     u32 GetWlanState(void);
