@@ -150,4 +150,15 @@ namespace SwitchIdent {
             
         return serial;
     }
+
+    DockFirmwareVersion GetDockFirmware(void) {
+        Result ret = 0;
+        DockFirmwareVersion version;
+
+        if (R_FAILED(ret = appletGetCradleFwVersion(&version.major, &version.minor, &version.micro, &version.rev))) {
+            std::printf("appletGetCradleFwVersion() failed: 0x%x.\n\n", ret);
+        }
+
+        return version;
+    }
 }

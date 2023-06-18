@@ -29,6 +29,13 @@ typedef struct {
     u8 device_identifier[0xC];
 } HIDFirmwareVersion;
 
+typedef struct {
+    u32 major;
+    u32 minor;
+    u32 micro;
+    u32 rev;
+} DockFirmwareVersion;
+
 namespace SwitchIdent {
     // Kernel
     const char *GetDramDesc(void);
@@ -39,6 +46,7 @@ namespace SwitchIdent {
     bool IsSafeMode(void);
     u64 GetDeviceID(void);
     SetSysSerialNumber GetSerialNumber(void);
+    DockFirmwareVersion GetDockFirmware(void);
 
     // Misc
     const char *GetOperationMode(void);

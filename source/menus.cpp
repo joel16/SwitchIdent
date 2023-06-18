@@ -55,6 +55,7 @@ namespace Menus {
 
     void KernelInfo(void) {
         SetSysFirmwareVersion ver = SwitchIdent::GetFirmwareVersion();
+        //DockFirmwareVersion dock_ver = SwitchIdent::GetDockFirmware();
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Firmware version:", 
             "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Hardware:", SwitchIdent::GetHardwareType());
@@ -62,6 +63,10 @@ namespace Menus {
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Serial:", SwitchIdent::GetSerialNumber().number);
         Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "DRAM ID:", SwitchIdent::GetDramDesc());
         Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Device ID:", "%llu", SwitchIdent::GetDeviceID());
+
+        // if (hosversionAtLeast(2, 0, 0) && appletGetOperationMode() == AppletOperationMode_Console) {
+        //     Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "Dock firmware:", "%d.%d.%d.%d", dock_ver.major, dock_ver.minor, dock_ver.micro, dock_ver.rev);
+        // }
     }
 
     void SystemInfo(void) {
