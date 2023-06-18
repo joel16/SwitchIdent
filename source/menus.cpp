@@ -40,32 +40,40 @@ namespace Menus {
         GUI::DrawText(x + title_width + 20, y, 25, descr_colour, text);
     }
 
-    static void DrawItemf(int x, int y, const char *title, const char *text, ...) {
+    static void DrawItem(int index, const char *title, const char *text) {
         int title_width = 0;
+        int y = g_start_y + ((g_item_dist - g_item_height) / 2) + 60 * index;
         GUI::GetTextDimensions(25, title, &title_width, nullptr);
-        GUI::DrawText(x, y, 25, title_colour, title);
+        GUI::DrawText(g_start_x, y, 25, title_colour, title);
+        GUI::DrawText(g_start_x + title_width + 20, y, 25, descr_colour, text);
+    }
+
+    static void DrawItemf(int index, const char *title, const char *text, ...) {
+        int title_width = 0;
+        int y = g_start_y + ((g_item_dist - g_item_height) / 2) + 60 * index;
+        GUI::GetTextDimensions(25, title, &title_width, nullptr);
+        GUI::DrawText(g_start_x, y, 25, title_colour, title);
         
         char buffer[256];
         va_list args;
         va_start(args, text);
         std::vsnprintf(buffer, 256, text, args);
-        GUI::DrawText(x + title_width + 20, y, 25, descr_colour, buffer);
+        GUI::DrawText(g_start_x + title_width + 20, y, 25, descr_colour, buffer);
         va_end(args);
     }
 
     void KernelInfo(void) {
         SetSysFirmwareVersion ver = SwitchIdent::GetFirmwareVersion();
         //DockFirmwareVersion dock_ver = SwitchIdent::GetDockFirmware();
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Firmware version:", 
-            "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Hardware:", SwitchIdent::GetHardwareType());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Unit:", SwitchIdent::GetUnit());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Serial:", SwitchIdent::GetSerialNumber().number);
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "DRAM ID:", SwitchIdent::GetDramDesc());
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Device ID:", "%llu", SwitchIdent::GetDeviceID());
+        Menus::DrawItemf(1, "Firmware version:", "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
+        Menus::DrawItem(2, "Hardware:", SwitchIdent::GetHardwareType());
+        Menus::DrawItem(3, "Unit:", SwitchIdent::GetUnit());
+        Menus::DrawItem(4, "Serial:", SwitchIdent::GetSerialNumber().number);
+        Menus::DrawItem(5, "DRAM ID:", SwitchIdent::GetDramDesc());
+        Menus::DrawItemf(6, "Device ID:", "%llu", SwitchIdent::GetDeviceID());
 
         // if (hosversionAtLeast(2, 0, 0) && appletGetOperationMode() == AppletOperationMode_Console) {
-        //     Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "Dock firmware:", "%d.%d.%d.%d", dock_ver.major, dock_ver.minor, dock_ver.micro, dock_ver.rev);
+        //     Menus::DrawItemf(7, "Dock firmware:", "%d.%d.%d.%d", dock_ver.major, dock_ver.minor, dock_ver.micro, dock_ver.rev);
         // }
     }
 
@@ -73,17 +81,16 @@ namespace Menus {
         s32 int_temp = SwitchIdent::GetBatteryTemperature(TsLocation_Internal);
         s32 ext_temp = SwitchIdent::GetBatteryTemperature(TsLocation_External);
 
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Region:",  SwitchIdent::GetRegion());
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "CPU clock:", "%lu MHz", SwitchIdent::GetClock(PcvModule_CpuBus));
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "GPU clock:", "%lu MHz", SwitchIdent::GetClock(PcvModule_GPU));
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "EMC clock:", "%lu MHz", SwitchIdent::GetClock(PcvModule_EMC));
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Wireless LAN:", 
-            "%s (RSSI: %d) (Quality: %lu)", SwitchIdent::GetWirelessLanEnableFlag()? "Enabled" : "Disabled", SwitchIdent::GetWlanRSSI(), SwitchIdent::GetWlanQuality(SwitchIdent::GetWlanRSSI()));
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Bluetooth:", SwitchIdent::GetBluetoothEnableFlag()? "Enabled" : "Disabled");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "NFC:", SwitchIdent::GetNfcEnableFlag()? "Enabled" : "Disabled");
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 480, "Internal (PCB) temperature:", "%d °C (%d °F)", int_temp, ((int_temp * 9/5) + 32));
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 540, "External (SoC) temperature:", "%d °C (%d °F)", ext_temp, ((ext_temp * 9/5) + 32));
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 600, "Headphone Status:",  SwitchIdent::GetHeadphoneStatus());
+        Menus::DrawItem(1, "Region:",  SwitchIdent::GetRegion());
+        Menus::DrawItemf(2, "CPU clock:", "%lu MHz", SwitchIdent::GetClock(PcvModule_CpuBus));
+        Menus::DrawItemf(3, "GPU clock:", "%lu MHz", SwitchIdent::GetClock(PcvModule_GPU));
+        Menus::DrawItemf(4, "EMC clock:", "%lu MHz", SwitchIdent::GetClock(PcvModule_EMC));
+        Menus::DrawItemf(5, "Wireless LAN:", "%s (RSSI: %d) (Quality: %lu)", SwitchIdent::GetWirelessLanEnableFlag()? "Enabled" : "Disabled", SwitchIdent::GetWlanRSSI(), SwitchIdent::GetWlanQuality(SwitchIdent::GetWlanRSSI()));
+        Menus::DrawItem(6, "Bluetooth:", SwitchIdent::GetBluetoothEnableFlag()? "Enabled" : "Disabled");
+        Menus::DrawItem(7, "NFC:", SwitchIdent::GetNfcEnableFlag()? "Enabled" : "Disabled");
+        Menus::DrawItemf(8, "Internal (PCB) temperature:", "%d °C (%d °F)", int_temp, ((int_temp * 9/5) + 32));
+        Menus::DrawItemf(9, "External (SoC) temperature:", "%d °C (%d °F)", ext_temp, ((ext_temp * 9/5) + 32));
+        Menus::DrawItem(10, "Headphone Status:",  SwitchIdent::GetHeadphoneStatus());
     }
 
     void BatteryInfo(void) {
@@ -105,18 +112,18 @@ namespace Menus {
 
         u32 battery_temp = batteryChargeInfoFields.battery_temp * 0.001;
 
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Battery Percentage:",  "%lu %% (%s)", SwitchIdent::GetBatteryPercentage(), SwitchIdent::IsCharging()? "charging" : "not charging");
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Battery age percentage:", "%.2f %%", SwitchIdent::GetBatteryAgePercentage());
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Battery temperature", "%d °C (%d °F)", battery_temp, ((battery_temp * 9/5) + 32));
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Battery voltage state:", "%s (Avg: %d mV)", SwitchIdent::GetVoltageState(), batteryChargeInfoFields.voltage_avg);
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "Battery lot number:", SwitchIdent::GetBatteryLot().lot);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Charger current limit:",  "(In: %d mA) (Out: %d mA)", batteryChargeInfoFields.in_curr_limit, batteryChargeInfoFields.out_curr_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "Battery charging current limit:",  "%d mA", batteryChargeInfoFields.charge_curr_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 480, "Battery charging voltage  limit:",  "%d mV", batteryChargeInfoFields.charge_volt_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 540, "Battery capacity:",  "%d pcm (Age: %d pcm)", batteryChargeInfoFields.capacity, batteryChargeInfoFields.battery_age);
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 600, "Charger:", chargers[batteryChargeInfoFields.charger]);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 660, "Charger voltage limit:", "%d mV", batteryChargeInfoFields.charger_volt_limit);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 720, "Charger current limit:", "%d mA", batteryChargeInfoFields.charger_curr_limit);
+        Menus::DrawItemf(1, "Battery Percentage:",  "%lu %% (%s)", SwitchIdent::GetBatteryPercentage(), SwitchIdent::IsCharging()? "charging" : "not charging");
+        Menus::DrawItemf(2, "Battery age percentage:", "%.2f %%", SwitchIdent::GetBatteryAgePercentage());
+        Menus::DrawItemf(3, "Battery temperature", "%d °C (%d °F)", battery_temp, ((battery_temp * 9/5) + 32));
+        Menus::DrawItemf(4, "Battery voltage state:", "%s (Avg: %d mV)", SwitchIdent::GetVoltageState(), batteryChargeInfoFields.voltage_avg);
+        Menus::DrawItem(5, "Battery lot number:", SwitchIdent::GetBatteryLot().lot);
+        Menus::DrawItemf(6, "Charger current limit:",  "(In: %d mA) (Out: %d mA)", batteryChargeInfoFields.in_curr_limit, batteryChargeInfoFields.out_curr_limit);
+        Menus::DrawItemf(7, "Battery charging current limit:",  "%d mA", batteryChargeInfoFields.charge_curr_limit);
+        Menus::DrawItemf(8, "Battery charging voltage  limit:",  "%d mV", batteryChargeInfoFields.charge_volt_limit);
+        Menus::DrawItemf(9, "Battery capacity:",  "%d pcm (Age: %d pcm)", batteryChargeInfoFields.capacity, batteryChargeInfoFields.battery_age);
+        Menus::DrawItem(10, "Charger:", chargers[batteryChargeInfoFields.charger]);
+        Menus::DrawItemf(11, "Charger voltage limit:", "%d mV", batteryChargeInfoFields.charger_volt_limit);
+        Menus::DrawItemf(12, "Charger current limit:", "%d mA", batteryChargeInfoFields.charger_curr_limit);
     }
 
     void StorageInfo(void) {
@@ -187,10 +194,10 @@ namespace Menus {
         SwitchIdent::GetJoyconFirmwareVersion(padIsHandheld(&g_pad) ? HidDeviceTypeBits_HandheldLeft : HidDeviceTypeBits_JoyLeft, &version_left);
         SwitchIdent::GetJoyconFirmwareVersion(padIsHandheld(&g_pad) ? HidDeviceTypeBits_HandheldRight : HidDeviceTypeBits_JoyRight, &version_right);
 
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "Left Joy-con battery:", "%lu %% (%s)", (info_left.battery_level * 25), info_left.is_charging? "charging" : "not charging");
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "Right Joy-con battery:", "%lu %% (%s)", (info_right.battery_level * 25), info_right.is_charging? "charging" : "not charging");
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Left Joy-con firmware:", "%d.%d.%d", version_left.major, version_left.minor, version_left.micro);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Right Joy-con firmware:", "%d.%d.%d", version_right.major, version_right.minor, version_right.micro);
+        Menus::DrawItemf(1, "Left Joy-con battery:", "%lu %% (%s)", (info_left.battery_level * 25), info_left.is_charging? "charging" : "not charging");
+        Menus::DrawItemf(2, "Right Joy-con battery:", "%lu %% (%s)", (info_right.battery_level * 25), info_right.is_charging? "charging" : "not charging");
+        Menus::DrawItemf(3, "Left Joy-con firmware:", "%d.%d.%d", version_left.major, version_left.minor, version_left.micro);
+        Menus::DrawItemf(4, "Right Joy-con firmware:", "%d.%d.%d", version_right.major, version_right.minor, version_right.micro);
     }
 
     void MiscInfo(void) {
@@ -200,16 +207,14 @@ namespace Menus {
         SetCalBdAddress bd_addr = SwitchIdent::GetBluetoothBdAddress();
         SetCalMacAddress mac_addr = SwitchIdent::GetWirelessLanMacAddress();
 
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 60, "IP:",  R_SUCCEEDED(ret)? hostname : nullptr);
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 120, "State:", SwitchIdent::GetOperationMode());
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 180, "Automatic update:", SwitchIdent::GetAutoUpdateEnableFlag()? "Enabled" : "Disabled");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 240, "Console information upload:", SwitchIdent::GetConsoleInformationUploadFlag()? "Enabled" : "Disabled");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 300, "SD card status:", g_is_sd_inserted? "Inserted" : "Not inserted");
-        Menus::DrawItem(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 360, "Game card status:", g_is_gamecard_inserted? "Inserted" : "Not inserted");
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 420, "BT address:",
-            "%02X:%02X:%02X:%02X:%02X:%02X", bd_addr.bd_addr[0], bd_addr.bd_addr[1], bd_addr.bd_addr[2], bd_addr.bd_addr[3], bd_addr.bd_addr[4], bd_addr.bd_addr[5]);
-        Menus::DrawItemf(g_start_x, g_start_y + ((g_item_dist - g_item_height) / 2) + 480, "WLAN address:", 
-            "%02X:%02X:%02X:%02X:%02X:%02X", mac_addr.addr[0], mac_addr.addr[1], mac_addr.addr[2], mac_addr.addr[3], mac_addr.addr[4], mac_addr.addr[5]);
+        Menus::DrawItem(1, "IP:",  R_SUCCEEDED(ret)? hostname : nullptr);
+        Menus::DrawItem(2, "State:", SwitchIdent::GetOperationMode());
+        Menus::DrawItem(3, "Automatic update:", SwitchIdent::GetAutoUpdateEnableFlag()? "Enabled" : "Disabled");
+        Menus::DrawItem(4, "Console information upload:", SwitchIdent::GetConsoleInformationUploadFlag()? "Enabled" : "Disabled");
+        Menus::DrawItem(5, "SD card status:", g_is_sd_inserted? "Inserted" : "Not inserted");
+        Menus::DrawItem(6, "Game card status:", g_is_gamecard_inserted? "Inserted" : "Not inserted");
+        Menus::DrawItemf(7, "BT address:", "%02X:%02X:%02X:%02X:%02X:%02X", bd_addr.bd_addr[0], bd_addr.bd_addr[1], bd_addr.bd_addr[2], bd_addr.bd_addr[3], bd_addr.bd_addr[4], bd_addr.bd_addr[5]);
+        Menus::DrawItemf(8, "WLAN address:", "%02X:%02X:%02X:%02X:%02X:%02X", mac_addr.addr[0], mac_addr.addr[1], mac_addr.addr[2], mac_addr.addr[3], mac_addr.addr[4], mac_addr.addr[5]);
     }
 
     void Main(void) {
