@@ -27,8 +27,8 @@ This is yet another identity tool that is continuing the series of <*device name
 - Displays SD and gamecard slot statuses.
 - Displays WiFi and Bluetooth MAC address.
 - Display battery age (in percentage and pcm).
-- Display battery internal and external temperature.
-- Display battery internal and external temperature.
+- Display internal (PCB) temperature.
+- Display external (SoC) temperature.
 - Display battery charger input and output current limit.
 - Display battery charging current limit.
 - Display battery charging voltage limit.
@@ -37,6 +37,10 @@ This is yet another identity tool that is continuing the series of <*device name
 - Display battery charger type.
 - Display battery charger current limit.
 - Display battery charger voltage limit.
+- Display battery temperature.
+- Display headphone port status.
+- Display joy-con battery.
+- Display joy-con firmware.
 
 # Credits:
 - shchmue: Added missing DRAM descriptors and fix compatibility with libnx v4.2.0+

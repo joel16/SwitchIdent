@@ -46,7 +46,7 @@ INCLUDES	:=	include
 ROMFS		:=	romfs
 
 VERSION_MAJOR	:=	0
-VERSION_MINOR	:=	4
+VERSION_MINOR	:=	5
 VERSION_MICRO	:=	0
 
 APP_TITLE   	:=	SwitchIdent
