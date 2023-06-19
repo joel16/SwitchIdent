@@ -46,3 +46,6 @@ This is yet another identity tool that is continuing the series of <*device name
 - shchmue: Added missing DRAM descriptors and fix compatibility with libnx v4.2.0+
 - Eve/Hikari/Junko, Klodeckel and hopperplaysmc: Beta testing
 - preetisketch: Banner
+- masagrator for pointing out that the internal/external temperatures were related to PCB and SoC respectively.
+- SwitchBrew wiki for documenting various service API uses in SwitchIdent.
+- devkitPro for the devkitA64 toolchain and libnx support.
