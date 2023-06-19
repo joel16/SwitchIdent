@@ -6,6 +6,7 @@
 
 namespace Services {
     void Exit(void) {
+        gpioPadClose(&hp_inserted);
         gpioExit();
         hiddbgExit();
         tsExit();
@@ -107,6 +108,10 @@ namespace Services {
 
         if (R_FAILED(ret = gpioInitialize())) {
             std::printf("gpioInitialize() failed: 0x%x.\n\n", ret);
+        }
+        
+        if (R_FAILED(ret = gpioOpenSession(&hp_inserted, static_cast<GpioPadName>(21)))) {
+            std::printf("gpioOpenSession() failed: 0x%x.\n\n", ret);
         }
             
         GUI::Init();

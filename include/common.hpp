@@ -36,6 +36,8 @@ typedef struct {
     u32 rev;
 } DockFirmwareVersion;
 
+extern GpioPadSession hp_inserted;
+
 namespace SwitchIdent {
     // Kernel
     const char *GetDramDesc(void);
