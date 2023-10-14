@@ -40,6 +40,7 @@ namespace Menus {
         SetSysSerialNumber serial_number;
         const char *dram_desc;
         u64 device_id;
+        HIDFirmwareVersion touchscreen_version;
     } KernelInfo;
 
     typedef struct {
@@ -116,6 +117,10 @@ namespace Menus {
         Menus::DrawItem(4, "Serial:", kernel_info.serial_number.number);
         Menus::DrawItem(5, "DRAM ID:", kernel_info.dram_desc);
         Menus::DrawItemf(6, "Device ID:", "%llu", kernel_info.device_id);
+
+        if (hosversionAtLeast(9, 0, 0)) {
+            Menus::DrawItemf(7, "Touchscreen firmware:", "%d.%d.%d.%d", kernel_info.touchscreen_version.major, kernel_info.touchscreen_version.minor, kernel_info.touchscreen_version.micro, kernel_info.touchscreen_version.rev);
+        }
 
         // if (hosversionAtLeast(2, 0, 0) && g_applet_operation_mode == AppletOperationMode_Console) {
         //     Menus::DrawItemf(7, "Dock firmware:", "%d.%d.%d.%d", kernel_info.dock_version.major, kernel_info.dock_version.minor, kernel_info.dock_version.micro, kernel_info.dock_version.rev);
@@ -269,6 +274,7 @@ namespace Menus {
         kernel_info.serial_number = SwitchIdent::GetSerialNumber();
         kernel_info.dram_desc = SwitchIdent::GetDramDesc();
         kernel_info.device_id = SwitchIdent::GetDeviceID();
+        SwitchIdent::GetTouchScreenFirmwareVersion(&kernel_info.touchscreen_version);
 
         SystemInfo system_info = { 0 };
         system_info.region = SwitchIdent::GetRegion();

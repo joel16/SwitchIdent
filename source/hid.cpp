@@ -41,4 +41,18 @@ namespace SwitchIdent {
         hidGetNpadPowerInfoSplit(id, &info_left, &info_right);
         return info_right;
     }
+
+    static Result hidsysGetTouchScreenFirmwareVersion(HIDFirmwareVersion *version) {
+        return serviceDispatchOut(hidsysGetServiceSession(), 1151, *version);
+    }
+
+    Result GetTouchScreenFirmwareVersion(HIDFirmwareVersion *version) {
+        Result ret = 0;
+
+        if (R_FAILED(ret = hidsysGetTouchScreenFirmwareVersion(version))) {
+            std::printf("hidsysGetTouchScreenFirmwareVersion() failed: 0x%x.\n\n", ret);
+        }
+
+        return ret;
+    }
 }

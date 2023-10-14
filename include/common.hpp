@@ -93,9 +93,10 @@ namespace SwitchIdent {
     s32 GetWlanQuality(s32 dBm);
     u32 GetWlanRSSI(void);
 
-    // Joycon
+    // HID
     Result GetJoyconFirmwareVersion(HidDeviceTypeBits deviceType, HIDFirmwareVersion *version);
     HidPowerInfo GetJoyconPowerInfo(HidNpadIdType id);
     HidPowerInfo GetJoyconPowerInfoL(HidNpadIdType id);
     HidPowerInfo GetJoyconPowerInfoR(HidNpadIdType id);
+    Result GetTouchScreenFirmwareVersion(HIDFirmwareVersion *version);
 }

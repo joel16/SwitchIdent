@@ -8,6 +8,7 @@ namespace Services {
     void Exit(void) {
         gpioPadClose(&hp_inserted);
         gpioExit();
+        hidsysExit();
         hiddbgExit();
         tsExit();
         wlaninfExit();
@@ -104,6 +105,10 @@ namespace Services {
 
         if (R_FAILED(ret = hiddbgInitialize())) {
             std::printf("hiddbgInitialize() failed: 0x%x.\n\n", ret);
+        }
+
+        if (R_FAILED(ret = hidsysInitialize())) {
+            std::printf("hidsysInitialize() failed: 0x%x.\n\n", ret);
         }
 
         if (R_FAILED(ret = gpioInitialize())) {
